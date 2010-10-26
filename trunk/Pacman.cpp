@@ -61,7 +61,7 @@ bool	gDead1 = FALSE;		// Ghost 1 Dead?
 bool	gDead2 = FALSE;		// Ghost 2 Dead?
 bool	gDead3 = FALSE;		// Ghost 3 Dead?
 bool	gDead4 = FALSE;		// Ghost 4 Dead?
-bool	levelCom = FALSE;	// Level Completion
+bool	levelCom = TRUE;	// Level Completion
 int		currLevel =  1;		// The Level of Gameplay
 vector<char> worldLayout;	// World Layout Storage
 
@@ -1114,45 +1114,68 @@ void DrawBuildings(GLvoid)
 }
 void DrawWorld(GLvoid)
 {
-	if(!levelCom) {
-		FILE* world;
+	if(levelCom) {
+		levelCom = FALSE;
+		ifstream world;
 		char* level = NULL;
-		char* worldC = NULL;
+		char worldC = ' ';
 		//sprintf_s(level,sizeof("data/level1.txt")+1,"%s","data/level1.txt");
 		//sprintf(level,"data\\level%d.txt",currLevel);
-		//sprintf_s(level,sizeof("data\\level%d.txt"),"data\\level%d.txt",currLevel);
-		world = fopen("data/level1.txt", "rt");
-		for(int j = 0; j < 14; j++) {
-			fgets(level, 255, world);
-			for(unsigned int i = 0; i < 20; i++)
-				worldLayout.push_back(level[i]);
+		//sprintf(level,"data/level%d.txt",currLevel);
+		world.open("data\\level1.txt");
+		for(int count = 0;count < 294; count++) {
+			world.get(worldC);
+			worldLayout.push_back(worldC);
 		}
-		fclose(world);
-		for(unsigned int i = 0; i < worldLayout.size(); i++) {
-			switch(worldLayout[i]) {
-				case 'W':
-					break;
-				case 'X':
-					break;
-				case 'Y':
-					break;
-				case 'Z':
-					break;
-			}
-		}
+		MessageBox(NULL,"Loading World.","Loading...",MB_OK | MB_ICONINFORMATION);
+		//world = fopen("data/level1.txt", "rt");
+		/*if(!fopen_s(&world,level,"r"))
+			MessageBox(NULL,"Failed to load file.","DATA ERROR",MB_OK | MB_ICONERROR);
+		while(worldC != EOF) {
+			worldC = getc(world);
+			worldLayout.push_back(worldC);
+		*/
+		world.close();
 	}
-	else {
-		for(unsigned int i = 0; i < worldLayout.size(); i++) {
-			switch(worldLayout[i]) {
-				case 'W':
-					break;
-				case 'X':
-					break;
-				case 'Y':
-					break;
-				case 'Z':
-					break;
-			}
+	for(unsigned int i = 1; (i-1) < worldLayout.size(); i++) {
+		switch(worldLayout[i-1]) {
+			case 'W':
+				//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
+				glPushMatrix();
+				if(i == 1) {
+					glTranslatef(-10.0f,0.0f,-10);
+					glRotatef(90,1,0,0);
+					glRotatef(90,0,0,1);
+				}
+				else if(i<20) {
+					glRotatef(90,0,1,0);
+					glTranslatef(-10.0f,0.0f,float(-10+i));
+					glRotatef(90,1,0,0);
+				}
+				else if((i > 20) && (i < 273)) {
+					glTranslatef(-10.0f,0.0f,0.0f);
+					glRotatef(90,1,0,0);
+					glRotatef(90,0,0,1);
+				}
+				else if(i>273) {
+					glRotatef(90,0,1,0);
+					glTranslatef(10.0f,0.0f,float(10-i));
+					glRotatef(90,1,0,0);
+				}
+				glBegin(GL_QUADS);
+					glVertex3f(0.0f,0.0f,0.0f);
+					glVertex3f(0.0f,0.0f,-3.0f);
+					glVertex3f(0.0f,5.0f,-3.0f);
+					glVertex3f(0.0f,5.0f,0.0f);
+				glEnd();
+				glPopMatrix();
+				break;
+			case 'X':
+				break;
+			case 'Y':
+				break;
+			case 'Z':
+				break;
 		}
 	}
 }
@@ -1193,7 +1216,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// Draw Buildings
 	//DrawBuildings();
 	// Draw World
-	//DrawWorld();
+	DrawWorld();
 
 	return TRUE;										// Everything Went OK
 }
@@ -1597,7 +1620,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					}
 				}
 
-				if ((keys[VK_DOWN] || keys['S']) && !sp)
+				if (keys['S'] && !sp)
 				{
 					// Crouch, half movement
 					/*if (keys[VK_CONTROL])
@@ -1634,33 +1657,61 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					yrot = heading;
 				}
 
-				if (!keys[VK_DOWN] && !keys['S'])
+				if (!keys['S'])
 				{
 					sp = FALSE;
 				}
 
-				if ((keys[VK_RIGHT] || keys['D']) && !dp)
+				if(keys[VK_DOWN])
+				{						
+					xpos += (float)sin(heading*piover180) * 0.05f;
+					zpos += (float)cos(heading*piover180) * 0.05f;
+					if (walkbiasangle <= 1.0f)
+					{
+						walkbiasangle = 359.0f;
+					}
+					else
+					{
+						walkbiasangle-= 10;
+					}
+					walkbias = (float)sin(walkbiasangle * piover180)/20.0f;
+				}
+
+
+				if (keys['D'] && !dp)
 				{
 					dp = TRUE;
 					heading -= 90.0f;
 					yrot = heading;
 				}
 
-				if(!keys[VK_RIGHT] && !keys['D'])
+				if(!keys['D'])
 				{
 					dp = FALSE;
 				}
 
-				if ((keys[VK_LEFT] || keys['A']) && !ap)
+				if(keys[VK_RIGHT])
+				{
+					heading -= 1.0f;
+					yrot = heading;
+				}
+
+				if (keys['A'] && !ap)
 				{
 					ap = TRUE;
 					heading += 90.0f;	
 					yrot = heading;
 				}
 
-				if(!keys[VK_LEFT] && !keys['A'])
+				if(!keys['A'])
 				{
 					ap = FALSE;
+				}
+
+				if(keys[VK_LEFT])
+				{
+					heading += 1.0f;
+					yrot = heading;
 				}
 
 				if (keys[VK_CONTROL])
