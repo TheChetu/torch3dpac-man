@@ -156,7 +156,7 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	// Calculate The Aspect Ratio Of The Window
 	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
 
-	glTranslatef(0.0f,-1.0f,0.0f);						// Increase Height of Camera Position
+	glTranslatef(0.0f,-3.0f,-5.0f);						// Increase Height of Camera Position
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -1137,44 +1137,119 @@ void DrawWorld(GLvoid)
 		*/
 		world.close();
 	}
-	for(unsigned int i = 1; (i-1) < worldLayout.size(); i++) {
+	for(unsigned int i = 0; i < worldLayout.size(); i++) {
 		switch(worldLayout[i-1]) {
-			case 'W':
+			case 'T':
 				//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
 				glPushMatrix();
-				if(i == 1) {
-					glTranslatef(-10.0f,0.0f,-10);
+				if(i < 10) {
+					glTranslatef(-float(i)*5.0f,0.0f,-30.0f);
 					glRotatef(90,1,0,0);
 					glRotatef(90,0,0,1);
 				}
-				else if(i<20) {
-					glRotatef(90,0,1,0);
-					glTranslatef(-10.0f,0.0f,float(-10+i));
-					glRotatef(90,1,0,0);
-				}
-				else if((i > 20) && (i < 273)) {
-					glTranslatef(-10.0f,0.0f,0.0f);
+				else if((i <= 20) && (i >= 10)) {
+					glTranslatef(float(i-10)*5.0f,0.0f,-30.0f);
 					glRotatef(90,1,0,0);
 					glRotatef(90,0,0,1);
 				}
-				else if(i>273) {
-					glRotatef(90,0,1,0);
-					glTranslatef(10.0f,0.0f,float(10-i));
+				else {
+					float t;
+					t = float((i/20)%13);
+					if (t < 7)
+						t *= -3.0f;
+					else {
+						t = int(t) % 7;
+						t *= 3.0f;
+					}
+					glTranslatef(-float(i%20)*5.0f,0.0f,t);
 					glRotatef(90,1,0,0);
+					glRotatef(90,0,0,1);
 				}
-				glBegin(GL_QUADS);
-					glVertex3f(0.0f,0.0f,0.0f);
-					glVertex3f(0.0f,0.0f,-3.0f);
-					glVertex3f(0.0f,5.0f,-3.0f);
-					glVertex3f(0.0f,5.0f,0.0f);
-				glEnd();
+				if(i!=10) {
+					glScalef(5.0f,5.0f,1.0f);
+					glBegin(GL_QUADS);
+						glVertex3f(0.0f,0.0f,0.0f);
+						glVertex3f(0.0f,0.0f,-3.0f);
+						glVertex3f(0.0f,-1.0f,-3.0f);
+						glVertex3f(0.0f,-1.0f,0.0f);
+					glEnd();
+				}
+				else {
+					glScalef(5.0f,5.0f,1.0f);
+					glBegin(GL_QUADS);
+						glVertex3f(0.0f,-1.0f,0.0f);
+						glVertex3f(0.0f,-1.0f,-3.0f);
+						glVertex3f(0.0f,1.0f,-3.0f);
+						glVertex3f(0.0f,1.0f,0.0f);
+					glEnd();
+				}
 				glPopMatrix();
+				break;
+			case 'B':
+				//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
+				int fpos;
+				fpos = int(worldLayout.size()) - int(i);
+				glPushMatrix();
+				if(fpos > 10) {
+					glTranslatef(-float(fpos-10)*5.0f,0.0f,30.0f);
+					glRotatef(90,1,0,0);
+					glRotatef(90,0,0,1);
+				}
+				else if(fpos <= 10) {
+					glTranslatef(float(fpos)*5.0f,0.0f,30.0f);
+					glRotatef(90,1,0,0);
+					glRotatef(90,0,0,1);
+				}
+				else {
+					float b = float((i/20)%13);
+					if (b < 7)
+						b *= -3.0f;
+					else {
+						b = int(b) % 7;
+						b *= 3.0f;
+					}
+					glTranslatef(-float(i%20)*5.0f,0.0f,b);
+					glRotatef(90,1,0,0);
+					glRotatef(90,0,0,1);
+				}
+				if(fpos!=10) {
+					glScalef(5.0f,5.0f,1.0f);
+					glBegin(GL_QUADS);
+						glVertex3f(0.0f,0.0f,0.0f);
+						glVertex3f(0.0f,0.0f,-3.0f);
+						glVertex3f(0.0f,-1.0f,-3.0f);
+						glVertex3f(0.0f,-1.0f,0.0f);
+					glEnd();
+				}
+				else {
+//================================================NEEDS FIX====================================================
+					glScalef(5.0f,5.0f,1.0f);
+					glBegin(GL_QUADS);
+						glVertex3f(0.0f,-2.0f,0.0f);
+						glVertex3f(0.0f,-2.0f,-3.0f);
+						glVertex3f(0.0f,0.0f,-3.0f);
+						glVertex3f(0.0f,0.0f,0.0f);
+					glEnd();
+				}
+				glPopMatrix();
+				break;
+			case 'L':
+				break;
+			case 'R':
+				break;
+			case 'C':
+				break;
+			case 'Z':
+				break;
+			case 'O':
 				break;
 			case 'X':
 				break;
+			case 'G':
+				break;
 			case 'Y':
 				break;
-			case 'Z':
+			case 'S':
 				break;
 		}
 	}
