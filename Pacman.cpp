@@ -156,6 +156,7 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	// Calculate The Aspect Ratio Of The Window
 	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
 
+	glRotatef(18.0f,1.0f,0.0f,0.0f);
 	glTranslatef(0.0f,-3.0f,-5.0f);						// Increase Height of Camera Position
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
@@ -366,7 +367,7 @@ void DrawPacMan(GLvoid)
 {
 	glPushMatrix();
 		glScalef(0.5f,0.5f,0.5f);
-		glTranslatef(0.0f,0.5f,-5.0f);
+		glTranslatef(0.0f,0.9f,-10.0f);
 		glDisable(GL_LIGHTING);
 		glColor3ub(255,255,0);
 		gluSphere(quadratic,1.0,100,100);
@@ -1112,6 +1113,128 @@ void DrawBuildings(GLvoid)
 	glPopMatrix();
 //************************************* End Buildings *************************************
 }
+void DrawTop(int place)
+{
+	//MessageBox(NULL,"T","Loading...",MB_OK | MB_ICONINFORMATION);
+	glPushMatrix();
+	if(place < 10) {
+		glTranslatef(-float(place)*5.0f,0.0f,-30.0f);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,0,1);
+	}
+	else if((place < 20) && (place >= 10)) {
+		glTranslatef(float(place-10)*5.0f,0.0f,-30.0f);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,0,1);
+	}
+	else {
+		float t;
+		t = float((place/20)%13);
+		if (t < 7)
+			t *= -3.0f;
+		else {
+			t = int(t) % 7;
+			t *= 3.0f;
+		}
+		int mx = place%19;
+		if(mx < 10)
+			mx *= -5;
+		else {
+			mx = mx % 10;
+			mx *= 5;
+		}
+		glTranslatef(float(mx),0.0f,t);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,0,1);
+	}
+		glScalef(5.0f,5.0f,1.0f);
+
+		glBegin(GL_QUADS);
+			glVertex3f(0.0f,0.0f,0.0f);
+			glVertex3f(0.0f,0.0f,-3.0f);
+			glVertex3f(0.0f,-1.0f,-3.0f);
+			glVertex3f(0.0f,-1.0f,0.0f);
+		glEnd();
+	glPopMatrix();
+}
+void DrawBottom(int place)
+{
+	//MessageBox(NULL,"B","Loading...",MB_OK | MB_ICONINFORMATION);
+	int fpos;
+	fpos = int(worldLayout.size()) - 1 - int(place);
+	glPushMatrix();
+	if(fpos < 10) {
+		glTranslatef(-float(fpos)*5.0f,0.0f,30.0f);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,0,1);
+	}
+	else if((fpos >= 10) && (fpos < 20)) {
+		glTranslatef(float(fpos-11)*5.0f,0.0f,30.0f);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,0,1);
+	}
+	else {
+		float b = float((place/20)%13);
+		if (b < 7)
+			b *= -3.0f;
+		else {
+			b = int(b) % 7;
+			b *= 3.0f;
+		}
+	
+		int mx = (place%19) / 13;
+		if(mx < 7)
+			mx *= -5;
+		else {
+			mx = mx % 7;
+			mx *= 5;
+		}
+		glTranslatef(float(mx),0.0f,b);
+		glRotatef(90,1,0,0);
+		glRotatef(90,0,0,1);
+	}
+	glScalef(5.0f,5.0f,1.0f);
+		glBegin(GL_QUADS);
+			glVertex3f(0.0f,0.0f,0.0f);
+			glVertex3f(0.0f,0.0f,-3.0f);
+			glVertex3f(0.0f,-1.0f,-3.0f);
+			glVertex3f(0.0f,-1.0f,0.0f);
+		glEnd();
+	glPopMatrix();
+}
+void DrawLeft(int place)
+{
+	//MessageBox(NULL,"L","Loading...",MB_OK | MB_ICONINFORMATION);
+	
+}
+void DrawRight(int place)
+{
+	//MessageBox(NULL,"R","Loading...",MB_OK | MB_ICONINFORMATION);
+}
+void DrawCorner(int place)
+{
+	//MessageBox(NULL,"C","Loading...",MB_OK | MB_ICONINFORMATION);
+}
+void DrawDots(int place)
+{
+	//MessageBox(NULL,"Z","Loading...",MB_OK | MB_ICONINFORMATION);
+}
+void DrawGZone(int place)
+{
+	//MessageBox(NULL,"G","Loading...",MB_OK | MB_ICONINFORMATION);
+}
+void DrawTeleport(int place)
+{
+	//MessageBox(NULL,"Y","Loading...",MB_OK | MB_ICONINFORMATION);
+}
+void PlaceStart(int place)
+{
+	//MessageBox(NULL,"S","Loading...",MB_OK | MB_ICONINFORMATION);
+}
+void DrawTPWalls(int place)
+{
+	//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
+}
 void DrawWorld(GLvoid)
 {
 	if(levelCom) {
@@ -1119,137 +1242,49 @@ void DrawWorld(GLvoid)
 		ifstream world;
 		char* level = NULL;
 		char worldC = ' ';
-		//sprintf_s(level,sizeof("data/level1.txt")+1,"%s","data/level1.txt");
-		//sprintf(level,"data\\level%d.txt",currLevel);
-		//sprintf(level,"data/level%d.txt",currLevel);
 		world.open("data\\level1.txt");
 		for(int count = 0;count < 294; count++) {
 			world.get(worldC);
-			worldLayout.push_back(worldC);
+			string worldN; worldN = worldC;
+			if(strcmp(worldN.c_str(),"\n") != 0)
+				worldLayout.push_back(worldC);
 		}
-		MessageBox(NULL,"Loading World.","Loading...",MB_OK | MB_ICONINFORMATION);
-		//world = fopen("data/level1.txt", "rt");
-		/*if(!fopen_s(&world,level,"r"))
-			MessageBox(NULL,"Failed to load file.","DATA ERROR",MB_OK | MB_ICONERROR);
-		while(worldC != EOF) {
-			worldC = getc(world);
-			worldLayout.push_back(worldC);
-		*/
 		world.close();
 	}
 	for(unsigned int i = 0; i < worldLayout.size(); i++) {
-		switch(worldLayout[i-1]) {
+		switch(worldLayout[i]) {
 			case 'T':
-				//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
-				glPushMatrix();
-				if(i < 10) {
-					glTranslatef(-float(i)*5.0f,0.0f,-30.0f);
-					glRotatef(90,1,0,0);
-					glRotatef(90,0,0,1);
-				}
-				else if((i <= 20) && (i >= 10)) {
-					glTranslatef(float(i-10)*5.0f,0.0f,-30.0f);
-					glRotatef(90,1,0,0);
-					glRotatef(90,0,0,1);
-				}
-				else {
-					float t;
-					t = float((i/20)%13);
-					if (t < 7)
-						t *= -3.0f;
-					else {
-						t = int(t) % 7;
-						t *= 3.0f;
-					}
-					glTranslatef(-float(i%20)*5.0f,0.0f,t);
-					glRotatef(90,1,0,0);
-					glRotatef(90,0,0,1);
-				}
-				if(i!=10) {
-					glScalef(5.0f,5.0f,1.0f);
-					glBegin(GL_QUADS);
-						glVertex3f(0.0f,0.0f,0.0f);
-						glVertex3f(0.0f,0.0f,-3.0f);
-						glVertex3f(0.0f,-1.0f,-3.0f);
-						glVertex3f(0.0f,-1.0f,0.0f);
-					glEnd();
-				}
-				else {
-					glScalef(5.0f,5.0f,1.0f);
-					glBegin(GL_QUADS);
-						glVertex3f(0.0f,-1.0f,0.0f);
-						glVertex3f(0.0f,-1.0f,-3.0f);
-						glVertex3f(0.0f,1.0f,-3.0f);
-						glVertex3f(0.0f,1.0f,0.0f);
-					glEnd();
-				}
-				glPopMatrix();
+				DrawTop(i);
 				break;
 			case 'B':
-				//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
-				int fpos;
-				fpos = int(worldLayout.size()) - int(i);
-				glPushMatrix();
-				if(fpos > 10) {
-					glTranslatef(-float(fpos-10)*5.0f,0.0f,30.0f);
-					glRotatef(90,1,0,0);
-					glRotatef(90,0,0,1);
-				}
-				else if(fpos <= 10) {
-					glTranslatef(float(fpos)*5.0f,0.0f,30.0f);
-					glRotatef(90,1,0,0);
-					glRotatef(90,0,0,1);
-				}
-				else {
-					float b = float((i/20)%13);
-					if (b < 7)
-						b *= -3.0f;
-					else {
-						b = int(b) % 7;
-						b *= 3.0f;
-					}
-					glTranslatef(-float(i%20)*5.0f,0.0f,b);
-					glRotatef(90,1,0,0);
-					glRotatef(90,0,0,1);
-				}
-				if(fpos!=10) {
-					glScalef(5.0f,5.0f,1.0f);
-					glBegin(GL_QUADS);
-						glVertex3f(0.0f,0.0f,0.0f);
-						glVertex3f(0.0f,0.0f,-3.0f);
-						glVertex3f(0.0f,-1.0f,-3.0f);
-						glVertex3f(0.0f,-1.0f,0.0f);
-					glEnd();
-				}
-				else {
-//================================================NEEDS FIX====================================================
-					glScalef(5.0f,5.0f,1.0f);
-					glBegin(GL_QUADS);
-						glVertex3f(0.0f,-2.0f,0.0f);
-						glVertex3f(0.0f,-2.0f,-3.0f);
-						glVertex3f(0.0f,0.0f,-3.0f);
-						glVertex3f(0.0f,0.0f,0.0f);
-					glEnd();
-				}
-				glPopMatrix();
+				DrawBottom(i);
 				break;
 			case 'L':
+				DrawLeft(i);
 				break;
 			case 'R':
+				DrawRight(i);
 				break;
-			case 'C':
+			case 'U':
+			case 'D':
+				DrawCorner(i);
 				break;
 			case 'Z':
-				break;
-			case 'O':
+				DrawDots(i);
 				break;
 			case 'X':
 				break;
 			case 'G':
+				DrawGZone(i);
 				break;
 			case 'Y':
+				DrawTeleport(i);
+				break;
+			case 'W':
+				DrawTPWalls(i);
 				break;
 			case 'S':
+				PlaceStart(i);
 				break;
 		}
 	}
@@ -1275,15 +1310,15 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glRotatef(sceneroty,0,1.0f,0);					// Rotation around the Y-axis (looking around)
 
 	// Skybox
-	DrawSkyBox();
+	//DrawSkyBox();
 
 	// Draw Moon and Sun
-	MoonAndSun();
+	//MoonAndSun();
 
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
 
 	// Draw Fixed Lamp
-	DrawLamp();
+	//DrawLamp();
 
 	// Draw Plane
 	DrawPlane();
