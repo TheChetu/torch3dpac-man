@@ -29,6 +29,9 @@
 #include <IL\ilu.h>			// Header File For The DevIL Utilities
 #include <IL\ilut.h>		// Header File For The DevIL Tools
 //#include "Config.h"		// Future Development
+#include <AL\al.h>
+#include <AL\alc.h>
+#include <AL\alut.h>
 
 using namespace std;
 
@@ -90,6 +93,26 @@ GLfloat sGauge = 20.0f;		// Sprinting Gauge
 GLuint	filter;				// Which Filter To Use
 GLuint	texture[8];			// Storage For 8 Texture
 
+//Sound 
+#define NUM_BUFFERS 3
+#define NUM_SOURCES 3
+
+ALfloat listenerPos[]={0.0,0.0,0.0};	
+ALfloat listenerVel[]={0.0,0.0,0.0};	
+ALfloat	listenerOri[]={0.0,0.0,-1.0, 0.0,1.0,0.0};
+
+ALfloat sourcePos[]={ -2.0, 0.0, 0.0};
+ALfloat sourceVel[]={ 0.0, 0.0, 0.0};
+
+ALuint buffers[NUM_BUFFERS];
+ALuint source[NUM_SOURCES];
+
+int GLwin ;
+
+ALsizei size,freq;
+ALenum format;
+ALvoid *data;
+int ch;
 
 // Texture File Names
 //char *GroundBitmap = "Earth.bmp";
@@ -105,7 +128,6 @@ char *SkyBox6Bitmap = "textures\\pos_z.bmp";
 GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
 //#define GL_CLAMP_TO_EDGE 0x812F	// OpenGL 1.2 definition - Unneeded
-
 
 /* Vertex Struct
 struct Vertex 
@@ -166,6 +188,51 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
+
+char al_bool;
+	
+	ALfloat		listenerPos[]={0.0,0.0,0.0};				// At the origin
+	ALfloat		listenerVel[]={0.0,0.0,0.0};				// The velocity (no doppler here)
+	ALfloat		listenerOri[]={0.0,0.0,-1.0, 0.0,1.0,0.0};	// LookAt then Up
+
+	// Init openAL
+	alutInit(0, NULL);	
+	// Clear Error Code
+	alGetError(); 
+
+	// Generate buffers, or no sound will be produced
+	alGenBuffers(NUM_BUFFERS, buffers);
+
+		if(alGetError() != AL_NO_ERROR)
+	{
+		printf("- Error creating buffers !!\n");
+		exit(1);
+	}
+	else
+	{
+		// printf("Created buffers\n");
+	}
+
+	alutLoadWAVFile("sounds//M1.wav",&format,&data,&size,&freq, &al_bool);
+	alBufferData(buffers[0],format,data,size,freq);
+	alutUnloadWAV(format,data,size,freq);
+	
+	alGetError(); /* clear error */
+	alGenSources(NUM_SOURCES, source);
+
+	if(alGetError() != AL_NO_ERROR) {
+		printf("- Error creating sources !!\n");
+		exit(2);
+	}
+	
+	alSourcef(source[0],AL_PITCH,1.0f);
+	alSourcef(source[0],AL_GAIN,1.0f);
+	alSourcefv(source[0],AL_POSITION,sourcePos);
+	alSourcefv(source[0],AL_VELOCITY,sourceVel);
+	alSourcei(source[0],AL_BUFFER,buffers[0]);
+	alSourcei(source[0],AL_LOOPING,AL_TRUE);
+	alSourcePlay(source[0]);
+	/*8**********************************************************/
 	ilInit();
 	iluInit();
 	ilutRenderer(ILUT_OPENGL);
@@ -1644,11 +1711,13 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			// Draw The Scene.  Watch For ESC Key And Quit Messages From DrawGLScene()
 			if ((active && !DrawGLScene()) || keys[VK_ESCAPE])	// Active?  Was There A Quit Received?
 			{
+				alSourceStop(source[0]);
 				done=TRUE;							// ESC or DrawGLScene Signalled A Quit
 			}
 			else									// Not Time To Quit, Update Screen
 			{
 				SwapBuffers(hDC);					// Swap Buffers (Double Buffering)
+
 				if (keys['B'] && !bp)
 				{
 					bp=TRUE;
@@ -1696,7 +1765,8 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 				if (keys[VK_UP] || keys['W'])
 				{	
-
+					//****play sound *** forward//
+									
 					// Sprint, double movement
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
@@ -1732,6 +1802,8 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 				if (keys['S'] && !sp)
 				{
+					
+
 					// Crouch, half movement
 					/*if (keys[VK_CONTROL])
 					{
@@ -1773,7 +1845,8 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				}
 
 				if(keys[VK_DOWN])
-				{						
+				{			
+					//****play sound *** backwards//
 					xpos += (float)sin(heading*piover180) * 0.05f;
 					zpos += (float)cos(heading*piover180) * 0.05f;
 					if (walkbiasangle <= 1.0f)
@@ -1802,6 +1875,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 				if(keys[VK_RIGHT])
 				{
+					//****play sound *** right//
 					heading -= 1.0f;
 					yrot = heading;
 				}
@@ -1820,6 +1894,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 				if(keys[VK_LEFT])
 				{
+					//****play sound *** left//
 					heading += 1.0f;
 					yrot = heading;
 				}
@@ -1863,7 +1938,10 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 						glEnable(GL_DEPTH_TEST);
 					}
 					
+					
+			
 					DrawGLScene();
+						
 				}
 
 				if (!keys['R'])
