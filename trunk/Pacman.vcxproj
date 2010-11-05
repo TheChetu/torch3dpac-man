@@ -32,6 +32,7 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" />
+    <ReferencePath Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">$(VCInstallDir)atlmfc\lib;$(VCInstallDir)lib;$(SolutionDir)\AL;$(SolutionDir)\IL</ReferencePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
     <ClCompile>
@@ -48,7 +49,11 @@
       <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
     <Link>
+<<<<<<< .mine
+      <AdditionalDependencies>$(SolutionDir)\lib\EFX-Util.lib;$(SolutionDir)\lib\OpenAL32.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+=======
       <AdditionalDependencies>$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\OpenAL32.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> .r14
       <AdditionalLibraryDirectories>$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -59,7 +64,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Drawing\Draw.cpp" />
     <ClCompile Include="Pacman.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Drawing\Draw.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
