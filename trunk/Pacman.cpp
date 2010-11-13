@@ -54,6 +54,7 @@ int		currLevel =  1;		// The Level of Gameplay
 int		frameCount = 0;		// Counter for the number of frames drawn
 int		FPS	= 0;			// Current FPS
 int		TPtimer = 0;		// TP timer to prevent continuous teleportation
+int		alcheck = 0;			// Check Current State of Audio Source
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
 
@@ -168,8 +169,14 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 		// printf("Created buffers\n");
 	}
 
-	alutLoadWAVFile("sounds//M1.wav",&format,&data,&size,&freq, &al_bool);
+	// Start Sound Load
+	alutLoadWAVFile("sounds//Start.wav",&format,&data,&size,&freq, &al_bool);
 	alBufferData(buffers[0],format,data,size,freq);
+	alutUnloadWAV(format,data,size,freq);
+
+	// Looping Music Load
+	alutLoadWAVFile("sounds//M1.wav",&format,&data,&size,&freq, &al_bool);
+	alBufferData(buffers[1],format,data,size,freq);
 	alutUnloadWAV(format,data,size,freq);
 	
 	alGetError(); /* clear error */
@@ -180,13 +187,22 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 		exit(2);
 	}
 	
+	// Start Sound
 	alSourcef(source[0],AL_PITCH,1.0f);
 	alSourcef(source[0],AL_GAIN,1.0f);
 	alSourcefv(source[0],AL_POSITION,sourcePos);
 	alSourcefv(source[0],AL_VELOCITY,sourceVel);
 	alSourcei(source[0],AL_BUFFER,buffers[0]);
-	alSourcei(source[0],AL_LOOPING,AL_TRUE);
+	alSourcei(source[0],AL_LOOPING,AL_FALSE);
 	alSourcePlay(source[0]);
+
+	// Looping Music
+	alSourcef(source[1],AL_PITCH,1.0f);
+	alSourcef(source[1],AL_GAIN,1.0f);
+	alSourcefv(source[1],AL_POSITION,sourcePos);
+	alSourcefv(source[1],AL_VELOCITY,sourceVel);
+	alSourcei(source[1],AL_BUFFER,buffers[1]);
+	alSourcei(source[1],AL_LOOPING,AL_TRUE);
 	//****************** End AL Initialization ***************************************
 
 	ilInit();
@@ -360,6 +376,8 @@ int glLoadTexture()
 }
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
+
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 	// Calculate FPS
@@ -446,6 +464,18 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// Draw World
 	Draw::World();
 
+	// Do Nothing Until Start Music Finished
+	while(alcheck != AL_STOPPED) {
+		// Keep World Drawn at Initial State
+		Draw::World();
+		SwapBuffers(hDC);
+		alGetSourcei(source[0],AL_SOURCE_STATE,&alcheck);
+		// Start Looping Music
+		if(alcheck == AL_STOPPED) {
+			alSourcePlay(source[1]);
+		}
+	}
+	
 	return TRUE;										// Everything Went OK
 }
 
