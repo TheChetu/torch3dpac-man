@@ -16,9 +16,6 @@
 		Control: Crouch.
 		Escape: Exit.		
  */
-#include <AL\al.h>
-#include <AL\alc.h>
-#include <AL\alut.h>
 
 #include <Drawing\Draw.h>
 
@@ -52,9 +49,16 @@ bool	gDead2 = FALSE;		// Ghost 2 Dead?
 bool	gDead3 = FALSE;		// Ghost 3 Dead?
 bool	gDead4 = FALSE;		// Ghost 4 Dead?
 bool	levelCom = TRUE;	// Level Completion
+bool	levelStr = FALSE;	// Level Started
 int		currLevel =  1;		// The Level of Gameplay
+int		frameCount = 0;		// Counter for the number of frames drawn
+int		FPS	= 0;			// Current FPS
+int		TPtimer = 0;		// TP timer to prevent continuous teleportation
+GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
 
+vector<TLoc> lctn;				// Translation Locations
+vector<GLint> VBO;				// Vertex Buffer Objects
 
 // PI Constants
 const double sPI = 3.1415926535897;
@@ -115,18 +119,6 @@ GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 int glLoadTexture();
 LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	// Declaration For WndProc
 
-
-/* Vertex Normalization
-Vertex* normalize(Vertex* in) 
-{
-    float l = sqrtf(in->x * in->x + in->y * in->y + in->z * in->z);
-    in->x = in->x / l;
-    in->y = in->y / l;
-    in->z = in->z / l;
-    return in;
-}
-*/
-
 GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize The GL Window
 {
 	if (height==0)										// Prevent A Divide By Zero By
@@ -134,17 +126,19 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 		height=1;										// Making Height Equal One
 	}
 
+	globheight = height;								// Set Global Height
+	globwidth = width;									// Set Global Width
+
 	glViewport(0,0,width,height);						// Reset The Current Viewport
 
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
 	// Calculate The Aspect Ratio Of The Window
-	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
-
-	glRotatef(18.0f,1.0f,0.0f,0.0f);
-	glTranslatef(0.0f,-3.0f,-5.0f);						// Increase Height of Camera Position
-
+	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
+	glRotatef(18.0f,1.0f,0.0f,0.0f);					// Angle Camera Downward
+	glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
+	
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
 	
@@ -213,12 +207,13 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);				// This Will Clear The Background Color To Black
 	glClearDepth(1.0);									// Enables Clearing Of The Depth Buffer
-	glDepthFunc(GL_LESS);								// The Type Of Depth Test To Do
 	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 	glShadeModel(GL_SMOOTH);							// Enables Smooth Color Shading
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
 
-	
+	BuildFont();										// Build The Font
+
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
 
@@ -240,7 +235,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	
 	// Ambient Light
 	GLfloat light_ambient[] = {1.0f, 50.0f, -50.0f, 1.0f};			// Position of Ambient Light
-	GLfloat ambientColor[4] = {0.6f, 0.7f, 0.9f, 0.5f};				// Color of Ambient Light
+	GLfloat ambientColor[4] = {0.6f, 0.7f, 0.9f, 0.7f};				// Color of Ambient Light
 	GLfloat ambientCoeff[] = {0.2f, 0.2f, 0.2f, 0.7f};				// Strength of Effect
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientCoeff);				// Set Effect Strength
 	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientColor);					// Set Ambient Color
@@ -365,6 +360,52 @@ int glLoadTexture()
 }
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
+	glLoadIdentity();									// Reset The Current Modelview Matrix
+	// Calculate FPS
+	FILETIME temp = theTime;
+	GetSystemTimeAsFileTime(&theTime);
+	frameCount++;
+	double fps_p = 0.0;
+	if(((theTime.dwLowDateTime ) - (temp.dwLowDateTime)) > 1000) {
+		FPS = frameCount;
+		frameCount = 0;
+		//char* fps_p = NULL;
+		fps_p = (FPS*1000.0)/(theTime.dwLowDateTime-temp.dwLowDateTime)*10000.0;
+		/*ofstream printfps;
+		printfps.open("data\\fps.txt",ios_base::app);
+		printfps << setprecision(2) << fps_p << endl;
+		printfps.close();*/
+	}
+	else
+		theTime = temp;
+	/*glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+			glLoadIdentity();
+			GLint viewport [4];
+			glGetIntegerv (GL_VIEWPORT, viewport);
+			glOrtho(0,viewport[2],viewport[3],0,0.1,100.0);
+	*/
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+			//gluOrtho2D (0,viewport[2], viewport[3], 0);
+			//glDisable(GL_LIGHTING);
+			//glDepthFunc (GL_ALWAYS);
+			glColor3f(1.0f,1.0f,1.0f);
+			glTranslatef(-0.25f,0.25f,0.0f);
+			//glRasterPos2f(-0.4f,-0.25f);
+			//glRasterPos2f(-0.35f,0.32f);
+ 			glPrint("FPS: %4.2f", fps_p);	// Print GL Text To The Screen
+			//glEnable(GL_LIGHTING);
+			//glDepthFunc(GL_LEQUAL);
+		glPopMatrix();
+	//glMatrixMode(GL_PROJECTION);
+	//glPopMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+
+
+	//Draw::FPS(fps_p);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 	glLoadIdentity();									// Reset The View
 
@@ -374,7 +415,18 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// PacMan
 	Draw::PacMan();
 
-
+	// Reset Camera Prior to Movement
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45.0f,(GLfloat)globwidth/(GLfloat)globheight,0.1f,200.0f);
+	glRotatef(18.0f,1.0f,0.0f,0.0f);					// Angle Camera Downward
+	// if near wall then translate closer than -15.0f
+		//glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
+	// else translate -15.0f
+		glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
 	// Calculate Translation and Rotations
 	GLfloat xtrans = -xpos;							// Movement in the X-direction
 	GLfloat ztrans = -zpos;							// Movement in the Z-direction
@@ -436,6 +488,8 @@ GLvoid KillGLWindow(GLvoid)								// Properly Kill The Window
 		MessageBox(NULL,"Could Not Unregister Class.","SHUTDOWN ERROR",MB_OK | MB_ICONINFORMATION);
 		hInstance=NULL;									// Set hInstance To NULL
 	}
+
+	KillFont();						// Destroy The Font
 }
 
 /*	This Code Creates Our OpenGL Window.  Parameters Are:					*
@@ -491,7 +545,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 		if (ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)
 		{
 			// If The Mode Fails, Offer Two Options.  Quit Or Use Windowed Mode.
-			if (MessageBox(NULL,"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?","JHusein GL",MB_YESNO|MB_ICONEXCLAMATION)==IDYES)
+			if (MessageBox(NULL,"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?","OpenGL",MB_YESNO|MB_ICONEXCLAMATION)==IDYES)
 			{
 				fullscreen=FALSE;		// Windowed Mode Selected.  Fullscreen = FALSE
 			}
@@ -686,7 +740,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	}
 
 	// Create Our OpenGL Window
-	if (!CreateGLWindow("Jacob Husein CS536 Assignment 2",800,600,16,fullscreen))
+	if (!CreateGLWindow("Torch 3D Pacman",800,600,16,fullscreen))
 	{
 		return 0;									// Quit If Window Was Not Created
 	}
@@ -841,6 +895,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					yrot = 0.0f;
 					xpos = 0.0f;
 					zpos = 0.0f;
+					sGauge = 20.0f;
 					heading = 0.0f;
 					filter = 0;
 					if(blend) {
@@ -848,6 +903,8 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 						glDisable(GL_BLEND);
 						glEnable(GL_DEPTH_TEST);
 					}
+					levelStr = false;
+					levelCom = true;
 					
 					DrawGLScene();
 				}
@@ -923,7 +980,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					KillGLWindow();						// Kill Our Current Window
 					fullscreen=!fullscreen;				// Toggle Fullscreen / Windowed Mode
 					// Recreate Our OpenGL Window
-					if (!CreateGLWindow("Jacob Husein CS536 Assignment 2",800,600,16,fullscreen))
+					if (!CreateGLWindow("Torch 3D Pacman",800,600,16,fullscreen))
 					{
 						return 0;						// Quit If Window Was Not Created
 					}

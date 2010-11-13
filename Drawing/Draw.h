@@ -1,17 +1,4 @@
-#include <ctime>			// Header File For C Time
-#include <cstdlib>			// Header File For C Standard Library
-#include <windows.h>		// Header File For Windows Library
-#include <math.h>			// Header File For Math Library 
-#include <string>			// Header File For C++ String Library
-#include <stdio.h>			// Header File For Standard Input/Output
-#include <vector>			// Header File For Vector Library
-#include <fstream>			// Header File For File Stream Library
-#include <gl\gl.h>			// Header File For The OpenGL32 Library
-#include <gl\glu.h>			// Header File For The GLu32 Library
-#include <IL\il.h>			// Header File For The Developer's Image Library
-#include <IL\ilu.h>			// Header File For The DevIL Utilities
-#include <IL\ilut.h>		// Header File For The DevIL Tools
-//#include "Config.h"		// Future Development
+#include <global/globref.h>		// Global definitions
 
 using namespace std;
 
@@ -45,9 +32,15 @@ extern bool	gDead2;				// Ghost 2 Dead?
 extern bool	gDead3;				// Ghost 3 Dead?
 extern bool	gDead4;				// Ghost 4 Dead?
 extern bool	levelCom;			// Level Completion
+extern bool levelStr;			// Level Started
 extern int	currLevel;			// The Level of Gameplay
+extern int	TPtimer;		// TP timer to prevent continuous teleportation
 extern vector<char> worldLayout;// World Layout Storage
+extern bool buffEx;				// If Buffers Exist
+extern GLuint verBO;			// Vertex Buffer Object
 
+extern vector<TLoc> lctn;		// Translation Locations
+extern vector<GLint> VBO;		// Vertex Buffer Objects
 
 // PI Constants
 extern const double sPI;
@@ -83,21 +76,6 @@ extern char *SkyBox6Bitmap;
 
 extern GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
-struct GhostPos
-{
-	float xp,yp,zp;
-	GhostPos()
-	{
-		xp = yp = zp = 0.0f;
-	}
-
-	GhostPos(float xp,float yp, float zp)
-	{
-		this->xp = xp;
-		this->yp = yp;
-		this->zp = zp;
-	}
-};
 
 
 class Draw {
@@ -120,4 +98,5 @@ class Draw {
 		static void Start(int place);
 		static void LoadWorld(GLvoid);
 		static void World(GLvoid);
+		static void FPS(double FrPerSec);
 };
