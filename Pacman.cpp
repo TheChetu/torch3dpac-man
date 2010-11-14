@@ -25,6 +25,7 @@ HWND		hWnd=NULL;		// Holds Our Window Handle
 HINSTANCE	hInstance;		// Holds The Instance Of The Application
 
 bool	keys[256];			// Array Used For The Keyboard Routine
+
 // Track State
 bool	active=TRUE;		// Window Active Flag Set To TRUE By Default
 bool	fullscreen=TRUE;	// Fullscreen Flag Set To Fullscreen Mode By Default
@@ -52,7 +53,7 @@ bool	levelCom = TRUE;	// Level Completion
 bool	levelStr = FALSE;	// Level Started
 int		currLevel =  1;		// The Level of Gameplay
 int		frameCount = 0;		// Counter for the number of frames drawn
-int		FPS	= 0;			// Current FPS
+double	FPS	= 0;			// Current FPS
 int		TPtimer = 0;		// TP timer to prevent continuous teleportation
 int		alcheck = 0;		// Check Current State of Audio Source
 extern ofstream gloLog;		// Global Log
@@ -71,7 +72,6 @@ const float piover180 = 0.0174532925f;
 float heading;		// direction
 float xpos;			// x-position in 3D space
 float zpos;			// z-position in 3D space
-float moonpos = 0;	// moon-position in 3D space
 FILETIME theTime;	// time in milliseconds
 
 // Controls walking
@@ -171,20 +171,10 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alGenBuffers(NUM_BUFFERS, buffers);
 
 	if(alGetError() != AL_NO_ERROR) {
-/*		char* prnError = NULL;
-		FilePrintTimestamp();
-		prnError = (char *)malloc(sizeof("\t - Error creating buffers !!\n")+1);
-		sprintf(prnError,"\t - Error creating buffers !!\n");
-		gloLog << prnError << endl;*/
 		PrintToLog("Error creating buffers !!");
 		exit(1);
 	}
 	else {
-		/*char* prnError = NULL;
-		FilePrintTimestamp();
-		prnError = (char *)malloc(sizeof("\t Created buffers\n")+1);
-		sprintf(prnError,"\t Created buffers\n");
-		gloLog << prnError << endl;*/
 		PrintToLog("Created buffers");
 	}
 
@@ -194,7 +184,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alutUnloadWAV(format,data,size,freq);
 
 	// Looping Music Load
-	alutLoadWAVFile("sounds//M1.wav",&format,&data,&size,&freq, &al_bool);
+	alutLoadWAVFile("sounds//Loop.wav",&format,&data,&size,&freq, &al_bool);
 	alBufferData(buffers[1],format,data,size,freq);
 	alutUnloadWAV(format,data,size,freq);
 	
@@ -202,11 +192,6 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alGenSources(NUM_SOURCES, source);
 
 	if(alGetError() != AL_NO_ERROR) {
-	/*	char* prnError = NULL;
-		FilePrintTimestamp();
-		prnError = (char *)malloc(sizeof("\t - Error creating sources !!\n")+1);
-		sprintf(prnError,"\t - Error creating sources !!\n");
-		gloLog << prnError << endl;*/
 		PrintToLog("Error creating sources !!");
 		exit(2);
 	}
@@ -408,59 +393,47 @@ int glLoadTexture()
 }
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
-
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
+
+	frameCount++;
 	// Calculate FPS
 	FILETIME temp = theTime;
 	GetSystemTimeAsFileTime(&theTime);
-	frameCount++;
 	double fps_p = 0.0;
 	if(((theTime.dwLowDateTime ) - (temp.dwLowDateTime)) > 1000) {
-		FPS = frameCount;
+		FPS = (double)frameCount;
 		frameCount = 0;
-		//char* fps_p = NULL;
 		fps_p = (FPS*1000.0)/(theTime.dwLowDateTime-temp.dwLowDateTime)*10000.0;
-		/*ofstream printfps;
-		printfps.open("data\\fps.txt",ios_base::app);
-		printfps << setprecision(2) << fps_p << endl;
-		printfps.close();*/
+		FPS = fps_p;
 	}
-	else
+	else {
 		theTime = temp;
-	/*glMatrixMode(GL_PROJECTION);
+	}
+
+	// Draw FPS
+	if(filter >= 1) {
+		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
-			glLoadIdentity();
-			GLint viewport [4];
-			glGetIntegerv (GL_VIEWPORT, viewport);
-			glOrtho(0,viewport[2],viewport[3],0,0.1,100.0);
-	*/
-			//glMatrixMode(GL_MODELVIEW);
-			setOrthographicProjection();
-			glPushMatrix();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
-			glLoadIdentity();
-			//gluOrtho2D (0,viewport[2], viewport[3], 0);
-			//glDisable(GL_LIGHTING);
-			//glDepthFunc (GL_ALWAYS);
-			glColor3f(1.0f,1.0f,1.0f);
-			glTranslatef(-0.25f,0.25f,0.0f);
-			//glRasterPos2f(-0.4f,-0.25f);
-			//glRasterPos2f(-0.35f,0.32f);
- 			glPrint("FPS: %4.2f", fps_p);	// Print GL Text To The Screen
-			//glEnable(GL_LIGHTING);
-			//glDepthFunc(GL_LEQUAL);
-			glPopMatrix();
-			resetPerspectiveProjection();
-	//glMatrixMode(GL_PROJECTION);
-	//glPopMatrix();
-	//glMatrixMode(GL_MODELVIEW);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glDisable(GL_LIGHTING);
+		if(FPS <= 20)
+			glColor3f(1.0f,0.0f,0.0f);
+		else if(FPS <= 45)
+			glColor3f(1.0f,1.0f,0.0f);
+		else
+			glColor3f(0.0f,1.0f,0.0f);
+	
+		glRasterPos2f(-6.0f,4.5f);  // Set Position of FPS
+ 		glPrint("FPS: %4.2f", FPS);	// Print GL Text To The Screen
+		glEnable(GL_LIGHTING);
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+	}
 
-
-	//Draw::FPS(fps_p);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 	glLoadIdentity();									// Reset The View
 
 	// Enable and Disable Lighting
@@ -470,6 +443,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	Draw::PacMan();
 
 	// Reset Camera Prior to Movement
+	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(35.0f,(GLfloat)globwidth/(GLfloat)globheight,0.1f,200.0f);
@@ -502,7 +476,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 
 	// Do Nothing Until Start Music Finished
 	while(alcheck != AL_STOPPED) {
-		// Keep World Drawn at Initial State
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
+		// Keep World and PacMan Drawn at Initial State
+		Draw::PacMan();
 		Draw::World();
 		SwapBuffers(hDC);
 		alGetSourcei(source[0],AL_SOURCE_STATE,&alcheck);

@@ -291,39 +291,26 @@ void Draw::Plane(GLvoid)
 	vPlane1z = -50.0f;
 	vPlane2z = 50.0f;
 
-	
-
 	glPushMatrix();
 
-	if(filter == 0) {
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);
-	}
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	
 	// draw plane using quads
 	glBegin(GL_QUADS);
 	// plane
-	if(filter == 0) {
-		glColor3ub(175,175,175);
-		glTexCoord2f(50.0f,0.0f);
-		glVertex3f(-vPlane1x,0.0f,-vPlane1z);
-		glTexCoord2f(50.0f,50.0f);
-		glVertex3f(-vPlane1x,0.0f,-vPlane2z);
-		glTexCoord2f(0.0f,50.0f);
-		glVertex3f(-vPlane2x,0.0f,-vPlane2z);
-		glTexCoord2f(0.0f,0.0f);
-		glVertex3f(-vPlane2x,0.0f,-vPlane1z);
-	}
-	else {
-		glColor3ub(15,50,15);
-		glVertex3f(vPlane1x,0.0f,vPlane1z);
-		glVertex3f(vPlane1x,0.0f,vPlane2z);
-		glVertex3f(vPlane2x,0.0f,vPlane2z);
-		glVertex3f(vPlane2x,0.0f,vPlane1z);
-	}
+	glColor3ub(175,175,175);
+	glTexCoord2f(50.0f,0.0f);
+	glVertex3f(-vPlane1x,0.0f,-vPlane1z);
+	glTexCoord2f(50.0f,50.0f);
+	glVertex3f(-vPlane1x,0.0f,-vPlane2z);
+	glTexCoord2f(0.0f,50.0f);
+	glVertex3f(-vPlane2x,0.0f,-vPlane2z);
+	glTexCoord2f(0.0f,0.0f);
+	glVertex3f(-vPlane2x,0.0f,-vPlane1z);
 	glEnd();
-	if(filter == 0)
-		glDisable(GL_TEXTURE_2D);
+	
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 //******************************** End Plane **********************************************
@@ -542,8 +529,9 @@ void Draw::LoadWorld(GLvoid)
 	ifstream worldIn;
 	char* level = NULL;
 	char worldC = ' ';
-	//sprintf(level,"data\\level%d.txt",currLevel);
-	worldIn.open("data\\level1.txt");
+	level = (char*)malloc(sizeof("data\\level100.txt")+1);
+	sprintf(level,"data\\level%d.txt",currLevel);
+	worldIn.open(level);
 	if(!worldIn.is_open()) {
 		MessageBox(NULL,"ERROR: Unable to find world data.","Loading...",MB_OK | MB_ICONERROR);
 		exit(1);
@@ -630,26 +618,4 @@ void Draw::RevOrder(int &tar, int first, int last)
 			done = true;
 		}
 	}
-}
-void Draw::FPS(double FrPerSec)
-{
-	glPushMatrix();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
-	glLoadIdentity();									// Reset The Current Modelview Matrix
-	// Set Location
-/*	glLoadIdentity();
-	setOrthographicProjection();
-	char* fps_p = NULL;
-	int sprintf_s(	fps_p,
-					size_t(5), "%4.2f",FrPerSec);*/
-	// Print FPS
-		// Print "FPS: "
-	// Set Color
-	glColor3f(1.0f,1.0f,1.0f);
-	//glTranslatef(0.0f,0.0f,-1.0f);
-	glRasterPos2f(0.0f,0.0f);
- 	glPrint("FPS: %4.2f", FrPerSec);	// Print GL Text To The Screen
-	glPopMatrix();
-	// Reset Location
-	//resetPerspectiveProjection();
 }

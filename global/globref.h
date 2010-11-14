@@ -111,6 +111,178 @@ static Vertex* normalize(Vertex* in)
     return in;
 }
 
+
+// For Moving Initialization from Pacman.cpp
+/* MOVE INITIALIZATION IN FUTURE
+bool SetLight(GLvoid)
+{
+	// Flash Light
+	GLfloat light_position_0[] = { 0.0f, 0.0f, 0.0f, 1.0f };		// Positioned at the Camera Origin
+	GLfloat light_color_0[] = { 1.0f, 1.0f, 1.0f, 1.0f};			// White Light Color
+	GLfloat light_direction_0[] = { 0.0f, 0.0f, -1.0f, 1.0f };		// Light in the -Z direction
+	// Set Light Attenuation
+	glLightf (GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
+	glLightf (GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation
+	glLightf (GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.2f);			// Quadratic Light Attenuation
+	// Specify Light Aspects
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_color_0);				// Specular Coloring
+	glLightf (GL_LIGHT0, GL_SPOT_CUTOFF, 15.0f);					// With 30 Degree Angle
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position_0);			// Light At Viewpoint
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION,light_direction_0);		// Spot Light
+	glMaterialfv(GL_FRONT, GL_SPECULAR, light_color_0);				// Set Material Light Effect	
+	glMaterialfv(GL_BACK, GL_SPECULAR, light_color_0);				// Set Material Light Effect
+	glMaterialfv(GL_LEFT, GL_SPECULAR, light_color_0);				// Set Material Light Effect
+	glMaterialfv(GL_RIGHT, GL_SPECULAR, light_color_0);				// Set Material Light Effect
+
+	
+	// Ambient Light
+	GLfloat light_ambient[] = {1.0f, 50.0f, -50.0f, 1.0f};			// Position of Ambient Light
+	GLfloat ambientColor[4] = {0.6f, 0.7f, 0.9f, 0.7f};				// Color of Ambient Light
+	GLfloat ambientCoeff[] = {0.2f, 0.2f, 0.2f, 0.7f};				// Strength of Effect
+	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientCoeff);				// Set Effect Strength
+	glLightfv(GL_LIGHT1, GL_AMBIENT, ambientColor);					// Set Ambient Color
+	glLightfv(GL_LIGHT1, GL_POSITION, light_ambient);				// Set Position of Ambient Light
+
+	return TRUE;
+}
+
+bool InitLight(GLvoid)
+{
+	glEnable(GL_LIGHTING);								// Enable Lighting
+	glEnable(GL_LIGHT0);								// Flash Light
+	glEnable(GL_LIGHT1);								// Ambient Lightning
+	glEnable(GL_LIGHT2);								// Moon Lightning
+	glEnable(GL_LIGHT3);								// Sun Lighting
+	glEnable(GL_LIGHT4);								// Fixed Light
+
+	return TRUE;
+}
+
+bool InitImage(GLvoid)
+{
+	//*************************** IL Initialization *******************************************
+	ilInit();
+	iluInit();
+	ilutRenderer(ILUT_OPENGL);
+	if(!glLoadTexture()) {
+		PrintToLog("Failed to create texture !!");
+		exit(3);
+	}
+	//**************************** End IL Initialization ****************************************
+
+	return TRUE;
+}
+
+bool InitAudio(GLvoid) 
+{
+		//******************************** AL Initialization **********************************
+	char al_bool;
+	ALfloat		listenerPos[]={0.0,0.0,0.0};				// At the origin
+	ALfloat		listenerVel[]={0.0,0.0,0.0};				// The velocity (no doppler here)
+	ALfloat		listenerOri[]={0.0,0.0,-1.0, 0.0,1.0,0.0};	// LookAt then Up
+
+	// Init openAL
+	alutInit(0, NULL);	
+	// Clear Error Code
+	alGetError(); 
+
+	// Generate buffers, or no sound will be produced
+	alGenBuffers(NUM_BUFFERS, buffers);
+
+	if(alGetError() != AL_NO_ERROR) {
+		PrintToLog("Error creating buffers !!");
+		exit(1);
+	}
+	else {
+		PrintToLog("Created buffers");
+	}
+
+	// Start Sound Load
+	alutLoadWAVFile("sounds//Start.wav",&format,&data,&size,&freq, &al_bool);
+	alBufferData(buffers[0],format,data,size,freq);
+	alutUnloadWAV(format,data,size,freq);
+
+	// Looping Music Load
+	alutLoadWAVFile("sounds//Loop.wav",&format,&data,&size,&freq, &al_bool);
+	alBufferData(buffers[1],format,data,size,freq);
+	alutUnloadWAV(format,data,size,freq);
+	
+	alGetError(); // clear error
+	alGenSources(NUM_SOURCES, source);
+
+	if(alGetError() != AL_NO_ERROR) {
+		PrintToLog("Error creating sources !!");
+		exit(2);
+	}
+	
+	// Start Sound
+	alSourcef(source[0],AL_PITCH,1.0f);
+	alSourcef(source[0],AL_GAIN,1.0f);
+	alSourcefv(source[0],AL_POSITION,sourcePos);
+	alSourcefv(source[0],AL_VELOCITY,sourceVel);
+	alSourcei(source[0],AL_BUFFER,buffers[0]);
+	alSourcei(source[0],AL_LOOPING,AL_FALSE);
+	alSourcePlay(source[0]);
+
+	// Looping Music
+	alSourcef(source[1],AL_PITCH,1.0f);
+	alSourcef(source[1],AL_GAIN,1.0f);
+	alSourcefv(source[1],AL_POSITION,sourcePos);
+	alSourcefv(source[1],AL_VELOCITY,sourceVel);
+	alSourcei(source[1],AL_BUFFER,buffers[1]);
+	alSourcei(source[1],AL_LOOPING,AL_TRUE);
+	//*************************** End AL Initialization ***************************************
+
+	return TRUE;
+}
+
+static int InitGL(GLvoid)
+{
+	// Initialize Timer
+	initTime();
+
+	// Initialize Log
+	if(gloLog.is_open()); // do nothing
+	else // open log
+		gloLog.open("data\\log.txt",ios_base::out);
+
+	InitAudio();
+
+	InitImage();
+
+	//**************************** Lighting and GL Initialization *******************************
+	InitLight();
+
+	glEnable(GL_TEXTURE_2D);							// Allow Texture Mapping
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);				// This Will Clear The Background Color To Black
+	glClearDepth(1.0);									// Enables Clearing Of The Depth Buffer
+	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+	glShadeModel(GL_SMOOTH);							// Enables Smooth Color Shading
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+	// Initialize Font
+	BuildFont();										// Build The Font
+
+	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	glLoadIdentity();									// Reset The Modelview Matrix
+
+	// Create Lights
+	SetLight();
+
+	// Used for simple drawing of Sphere and Cylinder
+	quadratic=gluNewQuadric();					// Create A Pointer To The Quadric Object
+	gluQuadricNormals(quadratic, GLU_SMOOTH);	// Create Smooth Normals
+	gluQuadricTexture(quadratic, GL_TRUE);		// Create Texture Coords
+
+	//********************************** End Lighting and GL Initialization *************************
+
+	return TRUE;								// Initialization Went OK
+
+}
+*/
+
 // Simple Set Orthogonal Projection
 static void setOrthographicProjection() {
 
