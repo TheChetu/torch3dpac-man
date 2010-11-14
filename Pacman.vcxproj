@@ -47,6 +47,8 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(SolutionDir)\lib\EFX-Util.lib;$(SolutionDir)\lib\OpenAL32.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -68,6 +70,7 @@
     <ClInclude Include="Drawing\Draw.h" />
     <ClInclude Include="glee\GLee.h" />
     <ClInclude Include="global\globref.h" />
+    <ClInclude Include="global\timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -54,7 +54,8 @@ int		currLevel =  1;		// The Level of Gameplay
 int		frameCount = 0;		// Counter for the number of frames drawn
 int		FPS	= 0;			// Current FPS
 int		TPtimer = 0;		// TP timer to prevent continuous teleportation
-int		alcheck = 0;			// Check Current State of Audio Source
+int		alcheck = 0;		// Check Current State of Audio Source
+extern ofstream gloLog;		// Global Log
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
 
@@ -136,8 +137,8 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	glLoadIdentity();									// Reset The Projection Matrix
 
 	// Calculate The Aspect Ratio Of The Window
-	gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
-	glRotatef(18.0f,1.0f,0.0f,0.0f);					// Angle Camera Downward
+	gluPerspective(35.0f,(GLfloat)width/(GLfloat)height,0.1f,200.0f);
+	glRotatef(10.0f,1.0f,0.0f,0.0f);					// Angle Camera Downward
 	glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
 	
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
@@ -147,7 +148,15 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
-	//************************** AL Initialization ****************
+	// Initialize Timer
+	initTime();
+
+	// Check if Log is Open
+	if(gloLog.is_open()); // do nothing
+	else // open log
+		gloLog.open("data\\log.txt",ios_base::out);
+
+	//******************************** AL Initialization **********************************
 	char al_bool;
 	ALfloat		listenerPos[]={0.0,0.0,0.0};				// At the origin
 	ALfloat		listenerVel[]={0.0,0.0,0.0};				// The velocity (no doppler here)
@@ -162,11 +171,21 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alGenBuffers(NUM_BUFFERS, buffers);
 
 	if(alGetError() != AL_NO_ERROR) {
-		printf("- Error creating buffers !!\n");
+/*		char* prnError = NULL;
+		FilePrintTimestamp();
+		prnError = (char *)malloc(sizeof("\t - Error creating buffers !!\n")+1);
+		sprintf(prnError,"\t - Error creating buffers !!\n");
+		gloLog << prnError << endl;*/
+		PrintToLog("Error creating buffers !!");
 		exit(1);
 	}
 	else {
-		// printf("Created buffers\n");
+		/*char* prnError = NULL;
+		FilePrintTimestamp();
+		prnError = (char *)malloc(sizeof("\t Created buffers\n")+1);
+		sprintf(prnError,"\t Created buffers\n");
+		gloLog << prnError << endl;*/
+		PrintToLog("Created buffers");
 	}
 
 	// Start Sound Load
@@ -183,7 +202,12 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alGenSources(NUM_SOURCES, source);
 
 	if(alGetError() != AL_NO_ERROR) {
-		printf("- Error creating sources !!\n");
+	/*	char* prnError = NULL;
+		FilePrintTimestamp();
+		prnError = (char *)malloc(sizeof("\t - Error creating sources !!\n")+1);
+		sprintf(prnError,"\t - Error creating sources !!\n");
+		gloLog << prnError << endl;*/
+		PrintToLog("Error creating sources !!");
 		exit(2);
 	}
 	
@@ -203,16 +227,19 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alSourcefv(source[1],AL_VELOCITY,sourceVel);
 	alSourcei(source[1],AL_BUFFER,buffers[1]);
 	alSourcei(source[1],AL_LOOPING,AL_TRUE);
-	//****************** End AL Initialization ***************************************
+	//*************************** End AL Initialization ***************************************
 
+	//*************************** IL Initialization *******************************************
 	ilInit();
 	iluInit();
 	ilutRenderer(ILUT_OPENGL);
 	if(!glLoadTexture()) {
-		MessageBox(NULL,"Failed to create texture.","TEXTURE LOADING ERROR",MB_OK | MB_ICONSTOP);
-		exit(1);
+		PrintToLog("Failed to create texture !!");
+		exit(3);
 	}
+	//**************************** End IL Initialization ****************************************
 	
+	//**************************** Lighting and GL Initialization *******************************
 	glEnable(GL_LIGHTING);								// Enable Lighting
 	glEnable(GL_LIGHT0);								// Flash Light
 	glEnable(GL_LIGHT1);								// Ambient Lightning
@@ -246,7 +273,10 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	glLightf (GL_LIGHT0, GL_SPOT_CUTOFF, 15.0f);					// With 30 Degree Angle
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position_0);			// Light At Viewpoint
 	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION,light_direction_0);		// Spot Light
-	glMaterialfv(GL_FRONT, GL_SPECULAR, light_color_0);				// Set Material Light Effect
+	glMaterialfv(GL_FRONT, GL_SPECULAR, light_color_0);				// Set Material Light Effect	
+	glMaterialfv(GL_BACK, GL_SPECULAR, light_color_0);				// Set Material Light Effect
+	glMaterialfv(GL_LEFT, GL_SPECULAR, light_color_0);				// Set Material Light Effect
+	glMaterialfv(GL_RIGHT, GL_SPECULAR, light_color_0);				// Set Material Light Effect
 
 	
 	// Ambient Light
@@ -261,6 +291,8 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	quadratic=gluNewQuadric();					// Create A Pointer To The Quadric Object
 	gluQuadricNormals(quadratic, GLU_SMOOTH);	// Create Smooth Normals
 	gluQuadricTexture(quadratic, GL_TRUE);		// Create Texture Coords
+
+	//********************************** End Lighting and GL Initialization *************************
 
 	return TRUE;								// Initialization Went OK
 }
@@ -404,8 +436,11 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glGetIntegerv (GL_VIEWPORT, viewport);
 			glOrtho(0,viewport[2],viewport[3],0,0.1,100.0);
 	*/
-			glMatrixMode(GL_MODELVIEW);
+			//glMatrixMode(GL_MODELVIEW);
+			setOrthographicProjection();
 			glPushMatrix();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
+			glLoadIdentity();
 			//gluOrtho2D (0,viewport[2], viewport[3], 0);
 			//glDisable(GL_LIGHTING);
 			//glDepthFunc (GL_ALWAYS);
@@ -416,7 +451,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
  			glPrint("FPS: %4.2f", fps_p);	// Print GL Text To The Screen
 			//glEnable(GL_LIGHTING);
 			//glDepthFunc(GL_LEQUAL);
-		glPopMatrix();
+			glPopMatrix();
+			resetPerspectiveProjection();
 	//glMatrixMode(GL_PROJECTION);
 	//glPopMatrix();
 	//glMatrixMode(GL_MODELVIEW);
@@ -436,8 +472,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// Reset Camera Prior to Movement
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f,(GLfloat)globwidth/(GLfloat)globheight,0.1f,200.0f);
-	glRotatef(18.0f,1.0f,0.0f,0.0f);					// Angle Camera Downward
+	gluPerspective(35.0f,(GLfloat)globwidth/(GLfloat)globheight,0.1f,200.0f);
+	glRotatef(10.0f,1.0f,0.0f,0.0f);					// Angle Camera Downward
 	// if near wall then translate closer than -15.0f
 		//glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
 	// else translate -15.0f
@@ -519,6 +555,8 @@ GLvoid KillGLWindow(GLvoid)								// Properly Kill The Window
 		hInstance=NULL;									// Set hInstance To NULL
 	}
 
+	PrintToLog("Exiting Program");
+	gloLog.close();
 	KillFont();						// Destroy The Font
 }
 
@@ -558,6 +596,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	if (!RegisterClass(&wc))									// Attempt To Register The Window Class
 	{
 		MessageBox(NULL,"Failed To Register The Window Class.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Failed to register the window class !!");
 		return FALSE;											// Return FALSE
 	}
 	
@@ -583,6 +622,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 			{
 				// Pop Up A Message Box Letting User Know The Program Is Closing.
 				MessageBox(NULL,"Program Will Now Close.","ERROR",MB_OK|MB_ICONSTOP);
+				PrintToLog("Cannot display fullscreen !!");
 				return FALSE;									// Return FALSE
 			}
 		}
@@ -619,6 +659,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Window Creation Error.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Window creation error !!");
 		return FALSE;								// Return FALSE
 	}
 
@@ -648,6 +689,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Can't Create A GL Device Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Cannot create a GL Device Context !!");
 		return FALSE;								// Return FALSE
 	}
 
@@ -655,6 +697,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Can't Find A Suitable PixelFormat.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Cannot find a suitable PixelFormat !!");
 		return FALSE;								// Return FALSE
 	}
 
@@ -662,6 +705,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Can't Set The PixelFormat.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Cannot set the PixelFormat !!");
 		return FALSE;								// Return FALSE
 	}
 
@@ -669,6 +713,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Can't Create A GL Rendering Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Cannot create a GL Rendering Context !!");
 		return FALSE;								// Return FALSE
 	}
 
@@ -676,6 +721,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Can't Activate The GL Rendering Context.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Cannot activate the GL Rendering Context !!");
 		return FALSE;								// Return FALSE
 	}
 
@@ -688,6 +734,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	{
 		KillGLWindow();								// Reset The Display
 		MessageBox(NULL,"Initialization Failed.","ERROR",MB_OK|MB_ICONEXCLAMATION);
+		PrintToLog("Initialization failed !!");
 		return FALSE;								// Return FALSE
 	}
 

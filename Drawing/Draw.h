@@ -1,6 +1,5 @@
-#include <global/globref.h>		// Global definitions
+#include <global/timer.h>		// Global definitions
 
-using namespace std;
 
 extern HDC			hDC;		// Private GDI Device Context
 extern HGLRC		hRC;		// Permanent Rendering Context
@@ -34,10 +33,11 @@ extern bool	gDead4;				// Ghost 4 Dead?
 extern bool	levelCom;			// Level Completion
 extern bool levelStr;			// Level Started
 extern int	currLevel;			// The Level of Gameplay
-extern int	TPtimer;		// TP timer to prevent continuous teleportation
+extern int	TPtimer;			// TP timer to prevent continuous teleportation
 extern vector<char> worldLayout;// World Layout Storage
 extern bool buffEx;				// If Buffers Exist
 extern GLuint verBO;			// Vertex Buffer Object
+extern ofstream gloLog;			// Global Log File
 
 extern vector<TLoc> lctn;		// Translation Locations
 extern vector<GLint> VBO;		// Vertex Buffer Objects

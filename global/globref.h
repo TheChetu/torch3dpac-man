@@ -1,3 +1,9 @@
+#ifndef GLOBALREF_H
+#define GLOBALREG_H
+
+// Ignore Non-Forced Depreciation
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <ctime>			// Header File For C Time
 #include <cstdlib>			// Header File For C Standard Library
 #include <windows.h>		// Header File For Windows Library
@@ -16,20 +22,26 @@
 #include <AL\al.h>			// Header File For The OpenAL Library
 #include <AL\alc.h>			// Header File For The OpenAL Components
 #include <AL\alut.h>		// Header File For The OpenAL Utilities
-//#include "Config.h"		// Future Development
+//#include <global\timer.h>	// Header File For The Program Timer
+//#include <options\Config.h>	// Header File For External Options Resource
+
+using namespace std;
 
 extern HDC			hDC;				// Private GDI Device Context
 extern HGLRC		hRC;				// Permanent Rendering Context
 extern HWND			hWnd;				// Holds Our Window Handle
 extern HINSTANCE	hInstance;			// Holds The Instance Of The Application
-extern GLsizei globwidth, globheight;	// Allocate Global Setting for Height and Width
+// Allocate Global Setting for Height and Width
+extern GLsizei globwidth;
+extern GLsizei globheight;
 
 static GLuint	base;				// Base Display List For The Font Set
 static GLfloat	cnt1;				// 1st Counter Used To Move Text & For Coloring
 static GLfloat	cnt2;				// 2nd Counter Used To Move Text & For Coloring
 static bool buffEx = FALSE;			// Vertex Buffer Object State
 static GLuint	verBO = 0;			// Vertex Buffer Object
-static ofstream gloLog;				// Global Log
+
+static ofstream gloLog("data\\log.txt");	// Global Log
 
 typedef struct TransLoc TLoc;
 typedef struct GhostPos GhP;
@@ -127,6 +139,7 @@ static void resetPerspectiveProjection() {
 	glMatrixMode(GL_MODELVIEW);
 }
 
+
 // From NeHe Lesson 13
 //	Font Building, Printing, and Destruction
 static GLvoid BuildFont(GLvoid)								// Build Our Bitmap Font
@@ -179,3 +192,5 @@ static GLvoid glPrint(const char *fmt, ...)					// Custom GL "Print" Routine
 	glCallLists(strlen(text), GL_UNSIGNED_BYTE, text);	// Draws The Display List Text
 	glPopAttrib();										// Pops The Display List Bits
 }
+
+#endif
