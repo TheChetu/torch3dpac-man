@@ -51,7 +51,6 @@ extern const float piover180;
 extern float heading;		// direction
 extern float xpos;			// x-position in 3D space
 extern float zpos;			// z-position in 3D space
-extern float moonpos;		// moon-position in 3D space
 extern FILETIME theTime;	// time in milliseconds
 
 // Controls walking
@@ -98,5 +97,4 @@ class Draw {
 		static void Start(int place);
 		static void LoadWorld(GLvoid);
 		static void World(GLvoid);
-		static void FPS(double FrPerSec);
 };
