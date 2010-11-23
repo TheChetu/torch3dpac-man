@@ -18,7 +18,6 @@
  */
 
 #include <Drawing\Draw.h>
-#include <Events\Event.h>
 
 HDC			hDC=NULL;		// Private GDI Device Context
 HGLRC		hRC=NULL;		// Permanent Rendering Context
@@ -68,7 +67,7 @@ vector<char> worldLayout;	// World Layout Storage
 
 vector<TLoc> lctn;				// Translation Locations
 vector<GLint> VBO;				// Vertex Buffer Objects
-vector<TLoc> dotpos;			// Positioning of Dots
+vector<zLoc> dotpos;			// Positioning of Dots
 
 // PI Constants
 const double sPI = 3.1415926535897;
@@ -482,6 +481,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	
 	// Draw World
 	Draw::World();
+
+	// Detect Collision
+	Event::CheckCollideDot();
 
 	// Do Nothing Until Start Music Finished
 	while(alcheck != AL_STOPPED) {
