@@ -109,6 +109,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\torch3dpac-man - Copy\glee\GLee.c"
+				>
+			</File>
+			<File
 				RelativePath="Pacman.cpp"
 				>
 			</File>
@@ -120,6 +124,18 @@
 			>
 			<File
 				RelativePath=".\Drawing\Draw.h"
+				>
+			</File>
+			<File
+				RelativePath="..\torch3dpac-man - Copy\glee\GLee.h"
+				>
+			</File>
+			<File
+				RelativePath=".\global\globref.h"
+				>
+			</File>
+			<File
+				RelativePath=".\global\timer.h"
 				>
 			</File>
 		</Filter>
