@@ -1,3 +1,6 @@
+#ifndef DRAW_H
+#define DRAW_H
+
 #include <global/timer.h>		// Global definitions
 
 
@@ -33,6 +36,10 @@ extern bool	gDead4;				// Ghost 4 Dead?
 extern bool	levelCom;			// Level Completion
 extern bool levelStr;			// Level Started
 extern int	currLevel;			// The Level of Gameplay
+extern int frameCount;			// Current Number of Frames Rendered
+extern double FPS;				// The Current FPS
+extern int currScore;			// The Current Score
+extern int dotsRemaining;		// Number of Dots Still in Play
 extern int	TPtimer;			// TP timer to prevent continuous teleportation
 extern vector<char> worldLayout;// World Layout Storage
 extern bool buffEx;				// If Buffers Exist
@@ -59,7 +66,7 @@ extern GLfloat sGauge;		// Sprinting Gauge
 
 
 extern GLuint	filter;				// Which Filter To Use
-extern GLuint	texture[8];			// Storage For 8 Texture
+extern GLuint	texture[10];			// Storage For 8 Texture
 
 
 // Texture File Names
@@ -98,3 +105,5 @@ class Draw {
 		static void LoadWorld(GLvoid);
 		static void World(GLvoid);
 };
+
+#endif

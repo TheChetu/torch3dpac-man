@@ -54,8 +54,11 @@ bool	levelStr = FALSE;	// Level Started
 int		currLevel =  1;		// The Level of Gameplay
 int		frameCount = 0;		// Counter for the number of frames drawn
 double	FPS	= 0;			// Current FPS
+int		currScore = 0;		// Current Score
 int		TPtimer = 0;		// TP timer to prevent continuous teleportation
 int		alcheck = 0;		// Check Current State of Audio Source
+int		currLives = 4;		// Current Lives
+int		dotsRemaining = 0;	// Number of dots still in play
 extern ofstream gloLog;		// Global Log
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
@@ -80,7 +83,7 @@ GLfloat sGauge = 20.0f;		// Sprinting Gauge
 
 
 GLuint	filter;				// Which Filter To Use
-GLuint	texture[8];			// Storage For 8 Texture
+GLuint	texture[10];		// Storage For 10 Textures
 
 // Sound 
 #define NUM_BUFFERS 3
@@ -113,6 +116,7 @@ char *SkyBox3Bitmap = "textures\\neg_z.bmp";
 char *SkyBox4Bitmap = "textures\\pos_x.bmp";
 char *SkyBox5Bitmap = "textures\\pos_y.bmp";
 char *SkyBox6Bitmap = "textures\\pos_z.bmp";
+char *PLives		= "textures\\life.bmp";
 
 GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
@@ -297,7 +301,18 @@ int glLoadTexture()
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	}
 
-	texture[1] = ilutGLLoadImage(Building1Bitmap); // Load Image into OpenGL Texture
+	texture[1] = ilutGLLoadImage(PLives);	// Load Image into OpenGL Texture
+	error = ilGetError();
+	if (error == IL_NO_ERROR) {					// If the texture was successfully created
+		Status=TRUE;                            // Set The Status To TRUE
+		
+		// Setup Texture 1 (Lives)
+		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	}
+
+/*	texture[1] = ilutGLLoadImage(Building1Bitmap); // Load Image into OpenGL Texture
 	error = ilGetError();
 	if (error == IL_NO_ERROR) {
 		Status=TRUE;
@@ -310,7 +325,7 @@ int glLoadTexture()
 
 	Status = FALSE;
 
-/*	Unused, Set Aside for Future Development
+	Unused, Set Aside for Future Development
 	texture[2] = ilutGLLoadImage(Building2Bitmap); // Load Image into OpenGL Texture
 	error = ilGetError();
 	if (error == IL_NO_ERROR) {
@@ -322,7 +337,7 @@ int glLoadTexture()
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	}
 
-	Status = FALSE;*/
+	Status = FALSE;
 
 	texture[3] = ilutGLLoadImage(SkyBox1Bitmap); // Load Image into OpenGL Texture
 	error = ilGetError();
@@ -387,7 +402,7 @@ int glLoadTexture()
 		glBindTexture(GL_TEXTURE_2D, texture[7]);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	}
+	}*/
 
 	return Status;
 }
@@ -396,6 +411,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 
+	// Draw Interface
 	frameCount++;
 	// Calculate FPS
 	FILETIME temp = theTime;
@@ -410,29 +426,74 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	else {
 		theTime = temp;
 	}
-
+	
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glMatrixMode(GL_MODELVIEW);
 	// Draw FPS
+	glPushMatrix();
+	glLoadIdentity();
+	glDisable(GL_LIGHTING);
 	if(filter >= 1) {
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glDisable(GL_LIGHTING);
 		if(FPS <= 20)
 			glColor3f(1.0f,0.0f,0.0f);
 		else if(FPS <= 45)
 			glColor3f(1.0f,1.0f,0.0f);
 		else
 			glColor3f(0.0f,1.0f,0.0f);
-	
-		glRasterPos2f(-6.0f,4.5f);  // Set Position of FPS
+				glRasterPos2f(-6.0f,4.7f);  // Set Position of FPS
  		glPrint("FPS: %4.2f", FPS);	// Print GL Text To The Screen
-		glEnable(GL_LIGHTING);
-		glPopMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
 	}
+	// Draw Score
+	glColor3f(1.0f,1.0f,1.0f);
+	glRasterPos2f(-1.0f,4.5f);	// Set Position of Score
+	glPrint("Score: %d",currScore);	// Score
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
+	glPushMatrix();
+	// Draw Lives
+	glDisable(GL_LIGHTING);
+	glRasterPos2f(3.5f,4.7f);
+	glPrint("Lives");
+	glTranslatef(4.0f,4.5f,0.0f);
+	glRotatef(180.0f,0,1,0);
+	glRotatef(180.0f,1,0,0);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,texture[1]);
+	for(int i = currLives; i > 0; i--) {
+		glTranslatef(-0.4f,0.0f,0.0f);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f,0.0f);
+			glVertex3f(0.0f,0.0f,0.0f);
+			glTexCoord2f(1.0f,0.0f);
+			glVertex3f(0.4f,0.0f,0.0f);
+			glTexCoord2f(1.0f,1.0f);
+			glVertex3f(0.4f,0.4f,0.0f);
+			glTexCoord2f(0.0f,1.0f);
+			glVertex3f(0.0f,0.4f,0.0f);
+		glEnd();
+	}
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
+	// Draw Dots Remaining
+	glPushMatrix();
+	glDisable(GL_LIGHTING);
+	glRasterPos2f(-1.0f,3.5f);
+	glPrint("Dots Left: %d", dotsRemaining);
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
+	// Draw Current Level
+	glPushMatrix();
+	glDisable(GL_LIGHTING);
+	glRasterPos2f(-6.0f,4.0f);
+	glPrint("Level %d", currLevel);
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
 
 	glLoadIdentity();									// Reset The View
 
@@ -466,6 +527,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// Skybox
 	//DrawSkyBox();
 
+	//glTranslatef(-50.0f,0.0f,-50.0f);
+	
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
 
 	// Draw Plane

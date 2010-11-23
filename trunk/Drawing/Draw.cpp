@@ -484,6 +484,7 @@ void Draw::Dots(int place)
 	mx *= 5;*/
 	//if(place > int(worldLayout.size()/2))
 		//lctn[place].t += 5;
+	dotsRemaining++;
 	glPushMatrix();
 		//glTranslatef(-50.0f,0.0f,-50.0f);
 		glTranslatef(float(lctn[place].x)+2.5f,0.4f,float(lctn[place].t));
@@ -566,6 +567,7 @@ void Draw::LoadWorld(GLvoid)
 }
 void Draw::World(GLvoid)
 {
+	dotsRemaining = 0;
 	if(levelCom)
 		LoadWorld();
 	glPushMatrix();
