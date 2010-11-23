@@ -44,6 +44,8 @@ extern int	TPtimer;			// TP timer to prevent continuous teleportation
 extern vector<char> worldLayout;// World Layout Storage
 extern bool buffEx;				// If Buffers Exist
 extern GLuint verBO;			// Vertex Buffer Object
+extern GLuint verBI;			// Vertex Buffer Indices
+extern GLuint verBT;			// Vertex Buffer Texture
 extern ofstream gloLog;			// Global Log File
 
 extern vector<TLoc> lctn;		// Translation Locations
