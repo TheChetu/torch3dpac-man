@@ -40,6 +40,8 @@ static GLfloat	cnt1;				// 1st Counter Used To Move Text & For Coloring
 static GLfloat	cnt2;				// 2nd Counter Used To Move Text & For Coloring
 static bool buffEx = FALSE;			// Vertex Buffer Object State
 static GLuint	verBO = 0;			// Vertex Buffer Object
+static GLuint	verBI = 0;			// Vertex Buffer Indices
+static GLuint	verBT = 0;			// Vertex Buffer Texture
 
 static ofstream gloLog("data\\log.txt");	// Global Log
 

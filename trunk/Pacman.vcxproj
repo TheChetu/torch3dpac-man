@@ -63,11 +63,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Drawing\Draw.cpp" />
+    <ClCompile Include="Events\Event.cpp" />
     <ClCompile Include="glee\GLee.c" />
     <ClCompile Include="Pacman.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Drawing\Draw.h" />
+    <ClInclude Include="Events\Event.h" />
     <ClInclude Include="glee\GLee.h" />
     <ClInclude Include="global\globref.h" />
     <ClInclude Include="global\timer.h" />

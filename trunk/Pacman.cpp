@@ -18,6 +18,7 @@
  */
 
 #include <Drawing\Draw.h>
+#include <Events\Event.h>
 
 HDC			hDC=NULL;		// Private GDI Device Context
 HGLRC		hRC=NULL;		// Permanent Rendering Context
@@ -33,9 +34,10 @@ bool	blend = FALSE;		// Blending ON/OFF
 bool	bp;					// B Pressed?
 bool	fp;					// F Pressed?
 bool	rp;					// R Pressed?
-bool	dp;					// Right Arrow or D Pressed?
-bool	ap;					// Left Arrow or A Pressed?
-bool	sp;					// Down Arrow or S Pressed?
+bool	dp;					// D Pressed?
+bool	ap;					// A Pressed?
+bool	sp;					// S Pressed?
+bool	vp;					// V Pressed?
 bool	onep;				// 1 Pressed?
 bool	twop;				// 2 Pressed?
 bool	threep;				// 3 Pressed?
@@ -59,12 +61,14 @@ int		TPtimer = 0;		// TP timer to prevent continuous teleportation
 int		alcheck = 0;		// Check Current State of Audio Source
 int		currLives = 4;		// Current Lives
 int		dotsRemaining = 0;	// Number of dots still in play
+int		vsync = 1;			// Vertical Sync State 1 = True, 0 = False
 extern ofstream gloLog;		// Global Log
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
 
 vector<TLoc> lctn;				// Translation Locations
 vector<GLint> VBO;				// Vertex Buffer Objects
+vector<TLoc> dotpos;			// Positioning of Dots
 
 // PI Constants
 const double sPI = 3.1415926535897;
@@ -108,10 +112,11 @@ int ch;
 
 // Texture File Names
 //char *GroundBitmap = "Earth.bmp";
-char *Building1Bitmap = "textures\\brick.bmp";
+//char *Building1Bitmap = "textures\\brick.bmp";
 //char *Building2Bitmap = "stonetile.bmp";
+char *Wall1Bitmap = "textures\\Wall1.bmp";
 char *SkyBox1Bitmap = "textures\\neg_x.bmp";
-char *SkyBox2Bitmap = "textures\\neg_y.bmp";
+char *GroundBitmap = "textures\\neg_y.bmp";
 char *SkyBox3Bitmap = "textures\\neg_z.bmp";
 char *SkyBox4Bitmap = "textures\\pos_x.bmp";
 char *SkyBox5Bitmap = "textures\\pos_y.bmp";
@@ -290,7 +295,7 @@ int glLoadTexture()
 {
 	int Status=FALSE;
 
-	texture[0] = ilutGLLoadImage(SkyBox2Bitmap);	// Load Image into OpenGL Texture
+	texture[0] = ilutGLLoadImage(GroundBitmap);	// Load Image into OpenGL Texture
 	ILenum error = ilGetError();
 	if (error == IL_NO_ERROR) {							// If the texture was successfully created
 		Status=TRUE;                            // Set The Status To TRUE
@@ -300,6 +305,13 @@ int glLoadTexture()
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	}
+	if(Status == FALSE) {
+		string Prn = GroundBitmap;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
+	}
+
+	Status=FALSE;
 
 	texture[1] = ilutGLLoadImage(PLives);	// Load Image into OpenGL Texture
 	error = ilGetError();
@@ -311,101 +323,35 @@ int glLoadTexture()
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	}
-
-/*	texture[1] = ilutGLLoadImage(Building1Bitmap); // Load Image into OpenGL Texture
-	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 1 (Building1)
-		glBindTexture(GL_TEXTURE_2D, texture[1]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	
+	if(Status == FALSE) {
+		string Prn = PLives;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
 	}
 
-	Status = FALSE;
+	Status=FALSE;
 
-	Unused, Set Aside for Future Development
-	texture[2] = ilutGLLoadImage(Building2Bitmap); // Load Image into OpenGL Texture
+	texture[2] = ilutGLLoadImage(Wall1Bitmap);	// Load Image into OpenGL Texture
 	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 2 (Building2)
+	if (error == IL_NO_ERROR) {					// If the texture was successfully created
+		Status=TRUE;                            // Set The Status To TRUE
+		
+		// Setup Texture 2 (Wall)
 		glBindTexture(GL_TEXTURE_2D, texture[2]);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	}
-
-	Status = FALSE;
-
-	texture[3] = ilutGLLoadImage(SkyBox1Bitmap); // Load Image into OpenGL Texture
-	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 3 (SkyBox Negative-X)
-		glBindTexture(GL_TEXTURE_2D, texture[3]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	
+	if(Status == FALSE) {
+		string Prn = Wall1Bitmap;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
 	}
-
-
-	Status = FALSE;
-
-	texture[4] = ilutGLLoadImage(SkyBox4Bitmap); // Load Image into OpenGL Texture
-	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 4 (SkyBox Positive-X)
-		glBindTexture(GL_TEXTURE_2D, texture[4]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	}
-
-	Status = FALSE;
-
-	texture[5] = ilutGLLoadImage(SkyBox5Bitmap); // Load Image into OpenGL Texture
-	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 5 (SkyBox Positive-Y)
-		glBindTexture(GL_TEXTURE_2D, texture[5]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	}
-
-
-	Status = FALSE;
-
-	texture[6] = ilutGLLoadImage(SkyBox3Bitmap); // Load Image into OpenGL Texture
-	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 6 (SkyBox Negative-Z)
-		glBindTexture(GL_TEXTURE_2D, texture[6]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	}
-
-	Status = FALSE;
-
-	texture[7] = ilutGLLoadImage(SkyBox6Bitmap); // Load Image into OpenGL Texture
-	error = ilGetError();
-	if (error == IL_NO_ERROR) {
-		Status=TRUE;
-
-		// Setup Texture 7 (SkyBox Positive-Z)
-		glBindTexture(GL_TEXTURE_2D, texture[7]);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	}*/
 
 	return Status;
 }
+
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
@@ -429,6 +375,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
+	glTranslatef(0.0f,0.0f,-12.0f);
 	glMatrixMode(GL_MODELVIEW);
 	// Draw FPS
 	glPushMatrix();
@@ -512,7 +459,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// if near wall then translate closer than -15.0f
 		//glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
 	// else translate -15.0f
-		glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
+		//glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
+		glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
@@ -525,9 +473,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glRotatef(sceneroty,0,1.0f,0);					// Rotation around the Y-axis (looking around)
 
 	// Skybox
-	//DrawSkyBox();
-
-	//glTranslatef(-50.0f,0.0f,-50.0f);
+	//Draw::SkyBox();
 	
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
 
@@ -1028,6 +974,24 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				if (!keys['R'])
 				{
 					rp = FALSE;
+				}
+
+				if (keys['V'] && !vp)
+				{
+					vp = TRUE;
+					if(vsync == 1) {
+						vsync = 0;
+						wglSwapIntervalEXT(0);
+					}
+					else {
+						vsync = 1;
+						wglSwapIntervalEXT(1);
+					}
+				}
+
+				if (!keys['V'])
+				{
+					vp = FALSE;
 				}
 
 				if (keys['1'] && !onep)
