@@ -309,8 +309,7 @@ void Draw::Plane(GLvoid)
 	// draw plane using quads
 	glBegin(GL_QUADS);
 	// plane
-	//glColor3ub(255,255,255); //black
-	 glColor3f(0.0f, 0.0f, 0.0f);
+	glColor3ub(0,0,0); //black
 
 	//glTexCoord2f(50.0f,0.0f);
 	glVertex3f(-vPlane1x,0.0f,-vPlane1z);

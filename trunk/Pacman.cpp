@@ -478,7 +478,6 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 
 
 	// PacMan
-	//Draw::PacMan();
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glTranslatef(0.0, 1.1, 0.0 );
@@ -518,7 +517,6 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
 
 	// Draw Plane
-	
 	Draw::Plane();
 	
 	// Draw World
@@ -820,6 +818,8 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 		case WM_KEYUP:								// Has A Key Been Released?
 		{
 			keys[wParam] = FALSE;					// If So, Mark It As FALSE
+			Cloud.SetAnim(1);
+			Weapon.SetAnim(1);
 			return 0;								// Jump Back
 		}
 
@@ -918,7 +918,9 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				if (keys[VK_UP] || keys['W'])
 				{	
 					//****play sound *** forward//
-									
+					//Cloud.SetAnim(16);
+			
+					
 					// Sprint, double movement
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
