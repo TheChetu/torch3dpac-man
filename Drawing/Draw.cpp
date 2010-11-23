@@ -304,19 +304,21 @@ void Draw::Plane(GLvoid)
 	glPushMatrix();
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	//glBindTexture(GL_TEXTURE_2D, texture[0]);
 	
 	// draw plane using quads
 	glBegin(GL_QUADS);
 	// plane
-	glColor3ub(175,175,175);
-	glTexCoord2f(50.0f,0.0f);
+	//glColor3ub(255,255,255); //black
+	 glColor3f(0.0f, 0.0f, 0.0f);
+
+	//glTexCoord2f(50.0f,0.0f);
 	glVertex3f(-vPlane1x,0.0f,-vPlane1z);
-	glTexCoord2f(50.0f,50.0f);
+//	glTexCoord2f(50.0f,50.0f);
 	glVertex3f(-vPlane1x,0.0f,-vPlane2z);
-	glTexCoord2f(0.0f,50.0f);
+//	glTexCoord2f(0.0f,50.0f);
 	glVertex3f(-vPlane2x,0.0f,-vPlane2z);
-	glTexCoord2f(0.0f,0.0f);
+//	glTexCoord2f(0.0f,0.0f);
 	glVertex3f(-vPlane2x,0.0f,-vPlane1z);
 	glEnd();
 	

@@ -62,17 +62,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bmp.cpp" />
     <ClCompile Include="Drawing\Draw.cpp" />
     <ClCompile Include="Events\Event.cpp" />
     <ClCompile Include="glee\GLee.c" />
+    <ClCompile Include="md2.cpp" />
     <ClCompile Include="Pacman.cpp" />
+    <ClCompile Include="pcx.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="tga.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="anorms.h" />
+    <ClInclude Include="anormtab.h" />
+    <ClInclude Include="bmp.h" />
     <ClInclude Include="Drawing\Draw.h" />
     <ClInclude Include="Events\Event.h" />
     <ClInclude Include="glee\GLee.h" />
     <ClInclude Include="global\globref.h" />
     <ClInclude Include="global\timer.h" />
+    <ClInclude Include="md2.h" />
+    <ClInclude Include="pcx.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="tga.h" />
+    <ClInclude Include="timer2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

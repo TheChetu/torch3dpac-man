@@ -18,6 +18,21 @@
  */
 
 #include <Drawing\Draw.h>
+#include	"texture.h"
+#include	"timer2.h"
+#include	"md2.h"
+
+/////////////////////////////////////////////////
+CMD2Model		Cloud;
+CMD2Model		Weapon;
+
+bool			bTextured	= true;
+bool			bLighGL		= false;
+bool			bAnimated	= true;
+float			angle		= 0.0;
+extern float	g_angle;
+/////////////////////////////////////////////////
+
 
 HDC			hDC=NULL;		// Private GDI Device Context
 HGLRC		hRC=NULL;		// Permanent Rendering Context
@@ -156,6 +171,9 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
+	
+
+
 	// Initialize Timer
 	initTime();
 
@@ -286,7 +304,19 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	gluQuadricTexture(quadratic, GL_TRUE);		// Create Texture Coords
 
 	//********************************** End Lighting and GL Initialization *************************
-
+	CTimer::GetInstance()->Initialize();
+	CTextureManager::GetInstance()->Initialize();
+	// load and initialize the Ogros model
+	Cloud.LoadModel( "models/tris.md2" );
+	Cloud.LoadSkin( "models/cloud.pcx" );
+	Cloud.SetAnim( 0 );
+	Cloud.ScaleModel( 0.05 );
+	
+	// load and initialize Ogros' weapon model
+	Weapon.LoadModel( "models/Weapon.md2" );
+	Weapon.LoadSkin( "models/Weapon.pcx" );
+	Weapon.SetAnim( STAND );
+	Weapon.ScaleModel( 0.05 );
 	return TRUE;								// Initialization Went OK
 }
 
@@ -353,9 +383,10 @@ int glLoadTexture()
 
 int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 {
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
-
+	
 	// Draw Interface
 	frameCount++;
 	// Calculate FPS
@@ -442,13 +473,23 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 
 
 	glLoadIdentity();									// Reset The View
-
 	// Enable and Disable Lighting
 	Draw::Lighting();
 
-	// PacMan
-	Draw::PacMan();
 
+	// PacMan
+	//Draw::PacMan();
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTranslatef(0.0, 1.1, 0.0 );
+	glRotatef(180, 0.0, 1.0, 0.0 );
+
+	CTimer::GetInstance()->Update();
+	float timesec = CTimer::GetInstance()->GetTimeMSec() / 1000.0;
+	// draw models
+	Cloud.DrawModel( bAnimated ? timesec : 0.0 );
+	Weapon.DrawModel( bAnimated ? timesec : 0.0 );
+	glPopMatrix();
 	// Reset Camera Prior to Movement
 	
 	glMatrixMode(GL_PROJECTION);
@@ -459,7 +500,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		//glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
 	// else translate -15.0f
 		//glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
-		glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
+		glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
@@ -477,6 +518,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
 
 	// Draw Plane
+	
 	Draw::Plane();
 	
 	// Draw World
@@ -489,7 +531,10 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	while(alcheck != AL_STOPPED) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 		// Keep World and PacMan Drawn at Initial State
-		Draw::PacMan();
+		CTimer::GetInstance()->Update();
+		float timesec = CTimer::GetInstance()->GetTimeMSec() / 1000.0;
+		Cloud.DrawModel( bAnimated ? timesec : 0.0 );
+		Weapon.DrawModel( bAnimated ? timesec : 0.0 );
 		Draw::World();
 		SwapBuffers(hDC);
 		alGetSourcei(source[0],AL_SOURCE_STATE,&alcheck);
