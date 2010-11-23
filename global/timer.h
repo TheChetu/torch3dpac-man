@@ -1,7 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <global\globref.h>
+#include <Events\Event.h>
 #include <windows.h>
 #include <cstdlib>
 #include <stdio.h>
