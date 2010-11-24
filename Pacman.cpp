@@ -513,6 +513,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// Detect Collision
 	Event::CheckCollideDot();
 
+	// Check Rewards
+	Event::Reward();
+
 	// Do Nothing Until Start Music Finished
 	while(alcheck != AL_STOPPED) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer

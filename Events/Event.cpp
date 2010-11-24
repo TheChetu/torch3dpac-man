@@ -42,3 +42,17 @@ bool Event::CheckCollideDot()
 	}
 	return TRUE;
 }
+
+bool Event::Reward()
+{
+	if((currScore == 10000) && (Rewards[0] == FALSE)) {
+		currLives++;
+		Rewards[0] = TRUE;
+	}
+	if((currScore == 30000) && (Rewards[1] == FALSE)) {
+		currLives++;
+		Rewards[1] = TRUE;
+	}
+
+	return TRUE;
+}
