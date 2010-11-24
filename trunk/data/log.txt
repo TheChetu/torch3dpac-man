@@ -1,3 +1,0 @@
-11/23/2010 11:49:15:058	 	Begin Initialization
-11/23/2010 11:49:15:190	 	Created buffers
-11/23/2010 11:49:27:945	 	Exiting Program

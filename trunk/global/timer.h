@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <fstream>
+#include <GL\glut.h>
 
 using namespace std;
 
@@ -50,7 +51,7 @@ static long elapsed()
 	tElapsed.dwHighDateTime = tCurr.dwHighDateTime - tStart.dwHighDateTime;
 	tElapsed.dwLowDateTime = tCurr.dwLowDateTime - tStart.dwLowDateTime;
 
-	return tElapsed.dwLowDateTime;
+	return glutGet( GLUT_ELAPSED_TIME );//tElapsed.dwLowDateTime;
 }
 
 

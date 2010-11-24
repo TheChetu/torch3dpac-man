@@ -18,14 +18,13 @@
  */
 
 #include <Drawing\Draw.h>
-#include	"texture.h"
-#include	"timer2.h"
-#include	"md2.h"
 
 /////////////////////////////////////////////////
 CMD2Model		Cloud;
 CMD2Model		Weapon;
 
+int				AniNum		=	0;
+long			AniElapsed	=	0;
 bool			bTextured	= true;
 bool			bLighGL		= false;
 bool			bAnimated	= true;
@@ -51,6 +50,7 @@ bool	rp;					// R Pressed?
 bool	dp;					// D Pressed?
 bool	ap;					// A Pressed?
 bool	sp;					// S Pressed?
+bool	wp;					// W Pressed?
 bool	vp;					// V Pressed?
 bool	onep;				// 1 Pressed?
 bool	twop;				// 2 Pressed?
@@ -117,7 +117,7 @@ ALfloat sourceVel[]={ 0.0, 0.0, 0.0};
 ALuint buffers[NUM_BUFFERS];
 ALuint source[NUM_SOURCES];
 
-int GLwin ;
+int GLwin;
 
 ALsizei size,freq;
 ALenum format;
@@ -171,9 +171,6 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
-	
-
-
 	// Initialize Timer
 	initTime();
 
@@ -304,19 +301,20 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	gluQuadricTexture(quadratic, GL_TRUE);		// Create Texture Coords
 
 	//********************************** End Lighting and GL Initialization *************************
-	CTimer::GetInstance()->Initialize();
+	
+
 	CTextureManager::GetInstance()->Initialize();
-	// load and initialize the Ogros model
+	// load and initialize the Cloud model
 	Cloud.LoadModel( "models/tris.md2" );
 	Cloud.LoadSkin( "models/cloud.pcx" );
-	Cloud.SetAnim( 0 );
-	Cloud.ScaleModel( 0.05 );
+	Cloud.SetAnim(AniNum);
+	Cloud.ScaleModel( 0.05f );
 	
-	// load and initialize Ogros' weapon model
+	// load and initialize Cloud weapon model
 	Weapon.LoadModel( "models/Weapon.md2" );
 	Weapon.LoadSkin( "models/Weapon.pcx" );
 	Weapon.SetAnim( STAND );
-	Weapon.ScaleModel( 0.05 );
+	Weapon.ScaleModel( 0.05f );
 	return TRUE;								// Initialization Went OK
 }
 
@@ -478,19 +476,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 
 
 	// PacMan
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTranslatef(0.0, 1.1, 0.0 );
-	glRotatef(180, 0.0, 1.0, 0.0 );
-
-	CTimer::GetInstance()->Update();
-	float timesec = CTimer::GetInstance()->GetTimeMSec() / 1000.0;
-	// draw models
-	Cloud.DrawModel( bAnimated ? timesec : 0.0 );
-	Weapon.DrawModel( bAnimated ? timesec : 0.0 );
-	glPopMatrix();
-	// Reset Camera Prior to Movement
+	Draw::PacMan();
 	
+	// Reset Camera Prior to Movement
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(35.0f,(GLfloat)globwidth/(GLfloat)globheight,0.1f,200.0f);
@@ -499,7 +487,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		//glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
 	// else translate -15.0f
 		//glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
-		glTranslatef(0.0f,-3.0f,-15.0f);					// Increase Height of Camera Position
+		glTranslatef(0.0f,-3.0f,-3.0f);					// Increase Height of Camera Position
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
@@ -529,10 +517,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	while(alcheck != AL_STOPPED) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 		// Keep World and PacMan Drawn at Initial State
-		CTimer::GetInstance()->Update();
-		float timesec = CTimer::GetInstance()->GetTimeMSec() / 1000.0;
-		Cloud.DrawModel( bAnimated ? timesec : 0.0 );
-		Weapon.DrawModel( bAnimated ? timesec : 0.0 );
+		Draw::PacMan();
+		Draw::Plane();
 		Draw::World();
 		SwapBuffers(hDC);
 		alGetSourcei(source[0],AL_SOURCE_STATE,&alcheck);
@@ -818,8 +804,6 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 		case WM_KEYUP:								// Has A Key Been Released?
 		{
 			keys[wParam] = FALSE;					// If So, Mark It As FALSE
-			Cloud.SetAnim(1);
-			Weapon.SetAnim(1);
 			return 0;								// Jump Back
 		}
 
@@ -914,13 +898,28 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					fp=FALSE;
 				}
 
+				// Change Walk Animation After Swing
+				if(AniNum == 2) {
+					if((AniElapsed - elapsed()) >= 100) {
+						AniNum = 1;
+						Cloud.SetAnim(AniNum);
+						Weapon.SetAnim(AniNum);
+						AniElapsed = 0;
+					}
+				}
+
+
 				// Walk Forward
 				if (keys[VK_UP] || keys['W'])
 				{	
 					//****play sound *** forward//
-					//Cloud.SetAnim(16);
-			
-					
+					if(wp == FALSE) {
+						AniNum = 1;
+						Cloud.SetAnim(AniNum);
+						Weapon.SetAnim(AniNum);
+						wp = TRUE;
+					}
+									
 					// Sprint, double movement
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
@@ -933,6 +932,16 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					{
 						xpos -= (float)sin(heading*piover180) * 0.05f;
 						zpos -= (float)cos(heading*piover180) * 0.05f;
+					}
+				}
+
+				if(!keys['W'] && !keys[VK_UP])
+				{
+					if((wp) && (AniNum != 0)) {
+						AniNum = 0;
+						Cloud.SetAnim(AniNum);
+						Weapon.SetAnim(AniNum);
+						wp = FALSE;
 					}
 				}
 

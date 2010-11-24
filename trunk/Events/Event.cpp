@@ -27,11 +27,16 @@ bool Event::CheckCollideDot()
 	for(unsigned int i = 0; i < dotpos.size(); i++) {
 		float checkZ = dotpos[i].z - zpos;
 		float checkX = dotpos[i].x - xpos;
-		if( (checkZ < 0.5f) && (checkZ > 0.5f) ) {
-			if( (checkX < 0.5f) && (checkX > 0.5f) ) {
+		if( (checkZ < 3.0f) && (checkZ > -3.0f) ) {
+			if( (checkX < 3.0f) && (checkX > -3.0f) ) {
+				AniNum = 2;
+				AniElapsed = glutGet(GLUT_ELAPSED_TIME);
+				Cloud.SetAnim(AniNum);
+				Weapon.SetAnim(AniNum);
 				// Collision Detected
 				currScore += 100;	// Increase Score
 				worldLayout[dotpos[i].num] = 'Y'; // Erase Dot
+				dotpos.erase(dotpos.begin()+i);
 			}
 		}
 	}

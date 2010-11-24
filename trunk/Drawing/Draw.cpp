@@ -99,13 +99,23 @@ GLfloat s_vertices[] = {
 	// Sphere Points
 	1.0f
 };
+
 // Texture Coordinates
-GLfloat w_texcoords[] = {
+	// Top and Bottom
+GLfloat tb_texcoords[] = {
 	0.0f, 0.0f,
 	5.0f, 0.0f,
 	5.0f, 3.0f,
 	0.0f, 3.0f
 };
+	// Left and Right
+GLfloat lr_texcoords[] = {
+	0.0f, 0.0f,
+	0.0f, -5.0f,
+	3.0f, -5.0f,
+	3.0f, 0.0f,
+};
+
 void Draw::Lighting(GLvoid)
 {
 	// Flash Light
@@ -135,13 +145,27 @@ void Draw::Lighting(GLvoid)
 }
 void Draw::PacMan(GLvoid)
 {
-	glPushMatrix();
-		//glScalef(0.5f,0.5f,0.5f);
-		glTranslatef(0.0f,1.0f,0.0f);
+	glPushMatrix();	
+		glEnable(GL_TEXTURE_2D);
 		glDisable(GL_LIGHTING);
-		glColor3ub(255,255,0);
-		gluSphere(quadratic,1.0,100,100);
+		glTranslatef(0.0f, 1.1f, 0.0f);
+		glRotatef(180, 0.0, 1.0, 0.0);
+
+		float timesec = float(elapsed()) / 1000.0f;//CTimer::GetInstance()->GetTimeMSec() / 1000.0;
+		// draw models
+		Cloud.DrawModel( bAnimated ? timesec : 0.0f );
+		Weapon.DrawModel( bAnimated ? timesec : 0.0f );
+		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_LIGHTING);
+	glPopMatrix();
+	glPushMatrix();
+		glTranslatef(0.0f, 1.1f, 0.0f );
+		//glScalef(0.5f,0.5f,0.5f);
+		//glTranslatef(0.0f,1.0f,0.0f);
+		//glDisable(GL_LIGHTING);
+		//glColor3ub(255,255,0);
+		//gluSphere(quadratic,1.0,100,100);
+		//glEnable(GL_LIGHTING);
 		// Fixed Light
 			glClearColor (0.0, 0.0, 0.0, 0.0);								// Clear Color to Black
 			// Set Light Components
@@ -304,20 +328,21 @@ void Draw::Plane(GLvoid)
 	glPushMatrix();
 
 	glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	
 	// draw plane using quads
 	glBegin(GL_QUADS);
 	// plane
-	glColor3ub(0,0,0); //black
+	//glColor3ub(255,255,255); //black
+	 glColor3f(0.0f, 0.0f, 0.0f);
 
-	//glTexCoord2f(50.0f,0.0f);
+	glTexCoord2f(50.0f,50.0f);
 	glVertex3f(-vPlane1x,0.0f,-vPlane1z);
-//	glTexCoord2f(50.0f,50.0f);
+	glTexCoord2f(50.0f,-50.0f);
 	glVertex3f(-vPlane1x,0.0f,-vPlane2z);
-//	glTexCoord2f(0.0f,50.0f);
+	glTexCoord2f(-50.0f,-50.0f);
 	glVertex3f(-vPlane2x,0.0f,-vPlane2z);
-//	glTexCoord2f(0.0f,0.0f);
+	glTexCoord2f(-50.0f,50.0f);
 	glVertex3f(-vPlane2x,0.0f,-vPlane1z);
 	glEnd();
 	
@@ -344,6 +369,8 @@ void Draw::Top(int place)
 		glEnd();
 */
 	// bind VBOs for vertex array and index array
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI); // for indices
 
@@ -353,12 +380,12 @@ void Draw::Top(int place)
 	
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
 
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBT);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBbt);
 	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
-	glDrawArrays(GL_QUADS,0,4);
+	//glDrawArrays(GL_QUADS,0,4);
 	// draw 1 quads using offset of index array
-	//glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+0);
+	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+0);
 	//glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);            // Disable Vertex Coords Array
@@ -367,6 +394,8 @@ void Draw::Top(int place)
 	// bind with 0, so, switch back to normal pointer operation
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
@@ -386,65 +415,74 @@ void Draw::Bottom(int place)
 			glVertex3f(0.0f,3.0f,0.0f);
 		glEnd();
 */
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
+
 	// bind VBOs for vertex array and index array
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI); // for indices
 
 	// do same as vertex array except pointer
 	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
+
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBbt);
+	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
 	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+0);
 	//glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, 0);
 
 	glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);	// Disable Texture Coords Array
 
 	// bind with 0, so, switch back to normal pointer operation
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+	
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
 void Draw::Left(int place)
 {
-/*	int t = place/20;
-	if(place > int(worldLayout.size()/2))
-		t++;
-	t *= 5;
-	int mx = place%20;
-	mx *= 5;*/
 	glPushMatrix();
 	int t = lctn[place].t;
 	if(place > int(worldLayout.size()/2))
 		t += 5;
-		//glTranslatef(-50.0f,0.0f,-50.0f);
-		glTranslatef(float(lctn[place].x),0.0f,float(t));
-		glRotatef(90,0,1,0);
-/*		glBegin(GL_QUADS);
-			glVertex3f(0.0f,0.0f,0.0f);
-			glVertex3f(0.0f,0.0f,-5.0f);
-			glVertex3f(0.0f,3.0f,-5.0f);
-			glVertex3f(0.0f,3.0f,0.0f);
-		glEnd();
-*/
+	
+	glTranslatef(float(lctn[place].x),0.0f,float(t));
+	glRotatef(90,0,1,0);
+	
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, texture[2]);
+
 	// bind VBOs for vertex array and index array
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI); // for indices
 
 	// do same as vertex array except pointer
 	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
+
+	//glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
+	//glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
 	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+12);
-	//glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, 0);
-
+	
 	glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	// bind with 0, so, switch back to normal pointer operation
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+
+	//glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
@@ -488,11 +526,6 @@ void Draw::Right(int place)
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
-	//glEnableClientState(GL_VERTEX_ARRAY);
-		//glVertexPointer(3, GL_FLOAT, 0, w_vertices);
-		//glDrawArrays(GL_QUADS, 12, 1);
-		//glDrawElements(GL_QUADS, 12, GL_UNSIGNED_SHORT, (GLushort*)0+12);
-	//glDisableClientState(GL_VERTEX_ARRAY);
 	glPopMatrix();
 
 }
@@ -654,7 +687,8 @@ void Draw::LoadWorld(GLvoid)
 	if(buffEx) {
 		glDeleteBuffers(1,&verBO);
 		glDeleteBuffers(1,&verBI);
-		glDeleteBuffers(1,&verBT);
+		glDeleteBuffers(1,&verBbt);
+		glDeleteBuffers(1,&verBlr);
 	}
 	else
 		buffEx = TRUE;
@@ -666,9 +700,14 @@ void Draw::LoadWorld(GLvoid)
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI);
 	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(w_indices), w_indices, GL_STATIC_DRAW_ARB);
 
-	glGenBuffersARB(1, &verBT);
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBT);
-	glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(w_texcoords), w_texcoords, GL_STATIC_DRAW_ARB);
+	glGenBuffersARB(1, &verBbt);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBbt);
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(tb_texcoords), tb_texcoords, GL_STATIC_DRAW_ARB);
+
+	glGenBuffersARB(1, &verBlr);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(lr_texcoords), lr_texcoords, GL_STATIC_DRAW_ARB);
+
 	//glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(w_vertices), w_vertices);
 //	glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(w_vertices), sizeof(teapotNormals), teapotNormals);
 }
