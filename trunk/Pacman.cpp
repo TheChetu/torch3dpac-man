@@ -19,9 +19,12 @@
 
 #include <Drawing\Draw.h>
 
-/////////////////////////////////////////////////
+/**************** Animation Declarations *************/
 CMD2Model		Cloud;
-CMD2Model		Weapon;
+CMD2Model		ClWeapon;
+
+CMD2Model		Sephiroth;
+CMD2Model		SeWeapon;
 
 int				AniNum		=	0;
 long			AniElapsed	=	0;
@@ -30,8 +33,16 @@ bool			bLighGL		= false;
 bool			bAnimated	= true;
 float			angle		= 0.0;
 extern float	g_angle;
-/////////////////////////////////////////////////
 
+long gDeadAni1;				// Time Elapsed For Ghost Animation
+long gDeadAni2;				// Time Elapsed For Ghost Animation
+long gDeadAni3;				// Time Elapsed For Ghost Animation
+long gDeadAni4;				// Time Elapsed For Ghost Animation
+int GAniNum1;				// Ghost 1 Animation
+int GAniNum2;				// Ghost 2 Animation
+int GAniNum3;				// Ghost 3 Animation
+int GAniNum4;				// Ghost 4 Animation
+/**************** End Animation Declarations *************/
 
 HDC			hDC=NULL;		// Private GDI Device Context
 HGLRC		hRC=NULL;		// Permanent Rendering Context
@@ -61,10 +72,11 @@ bool	alight = TRUE;		// Ambient Light ON/OFF
 bool	glight = TRUE;		// Ghost Light ON/OFF
 bool	plight = TRUE;		// Pacman Light ON/OFF
 bool	pDead = FALSE;		// PacMan Dead?
-bool	gDead1 = FALSE;		// Ghost 1 Dead?
-bool	gDead2 = FALSE;		// Ghost 2 Dead?
-bool	gDead3 = FALSE;		// Ghost 3 Dead?
-bool	gDead4 = FALSE;		// Ghost 4 Dead?
+bool	gDead1 = TRUE;		// Ghost 1 Dead?
+bool	gDead2 = TRUE;		// Ghost 2 Dead?
+bool	gDead3 = TRUE;		// Ghost 3 Dead?
+bool	gDead4 = TRUE;		// Ghost 4 Dead?
+bool	gEdible = FALSE;	// Ghosts Edible?
 bool	levelCom = TRUE;	// Level Completion
 bool	levelStr = FALSE;	// Level Started
 int		currLevel =  1;		// The Level of Gameplay
@@ -83,6 +95,9 @@ vector<char> worldLayout;	// World Layout Storage
 vector<TLoc> lctn;				// Translation Locations
 vector<GLint> VBO;				// Vertex Buffer Objects
 vector<zLoc> dotpos;			// Positioning of Dots
+vector<GhP> gLocs;				// Ghost Positions
+
+GhP SpawnLoc;					// Ghost Spawn Location
 
 // PI Constants
 const double sPI = 3.1415926535897;
@@ -104,8 +119,8 @@ GLuint	filter;				// Which Filter To Use
 GLuint	texture[10];		// Storage For 10 Textures
 
 // Sound 
-#define NUM_BUFFERS 3
-#define NUM_SOURCES 3
+#define NUM_BUFFERS 5
+#define NUM_SOURCES 5
 
 ALfloat listenerPos[]={0.0,0.0,0.0};	
 ALfloat listenerVel[]={0.0,0.0,0.0};	
@@ -211,6 +226,11 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alBufferData(buffers[1],format,data,size,freq);
 	alutUnloadWAV(format,data,size,freq);
 	
+	// Slash Sound Load
+	alutLoadWAVFile("sounds//stroke.wav",&format,&data,&size,&freq, &al_bool);
+	alBufferData(buffers[2],format,data,size,freq);
+	alutUnloadWAV(format,data,size,freq);
+
 	alGetError(); /* clear error */
 	alGenSources(NUM_SOURCES, source);
 
@@ -235,6 +255,14 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alSourcefv(source[1],AL_VELOCITY,sourceVel);
 	alSourcei(source[1],AL_BUFFER,buffers[1]);
 	alSourcei(source[1],AL_LOOPING,AL_TRUE);
+
+	// Slash Sound
+	alSourcef(source[2],AL_PITCH,1.0f);
+	alSourcef(source[2],AL_GAIN,2.0f);
+	alSourcefv(source[2],AL_POSITION,sourcePos);
+	alSourcefv(source[2],AL_VELOCITY,sourceVel);
+	alSourcei(source[2],AL_BUFFER,buffers[2]);
+	alSourcei(source[2],AL_LOOPING,AL_FALSE);
 	//*************************** End AL Initialization ***************************************
 
 	//*************************** IL Initialization *******************************************
@@ -303,18 +331,35 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	//********************************** End Lighting and GL Initialization *************************
 	
 
+	//********************************** Model and Animation Initialization *************************
+
 	CTextureManager::GetInstance()->Initialize();
 	// load and initialize the Cloud model
-	Cloud.LoadModel( "models/tris.md2" );
-	Cloud.LoadSkin( "models/cloud.pcx" );
+	Cloud.LoadModel( "Models/Cloud/tris.md2" );
+	Cloud.LoadSkin( "Models/Cloud/cloud.pcx" );
 	Cloud.SetAnim(AniNum);
 	Cloud.ScaleModel( 0.05f );
 	
 	// load and initialize Cloud weapon model
-	Weapon.LoadModel( "models/Weapon.md2" );
-	Weapon.LoadSkin( "models/Weapon.pcx" );
-	Weapon.SetAnim( STAND );
-	Weapon.ScaleModel( 0.05f );
+	ClWeapon.LoadModel( "Models/Cloud/Weapon.md2" );
+	ClWeapon.LoadSkin( "Models/Cloud/Weapon.pcx" );
+	ClWeapon.SetAnim( STAND );
+	ClWeapon.ScaleModel( 0.05f );
+
+	// load and initialize the Cloud model
+	Sephiroth.LoadModel( "Models/Sephiroth/tris.md2" );
+	Sephiroth.LoadSkin( "Models/Sephiroth/sephiroth.pcx" );
+	Sephiroth.SetAnim(AniNum);
+	Sephiroth.ScaleModel( 0.05f );
+	
+	// load and initialize Cloud weapon model
+	SeWeapon.LoadModel( "Models/Sephiroth/Weapon.md2" );
+	SeWeapon.LoadSkin( "Models/Sephiroth/Weapon.pcx" );
+	SeWeapon.SetAnim( STAND );
+	SeWeapon.ScaleModel( 0.05f );
+
+	//**************************** End Model and Animation Initialization *************************
+
 	return TRUE;								// Initialization Went OK
 }
 
@@ -504,6 +549,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
 
+	// Ghosts
+	//Draw::Ghosts();
+
 	// Draw Plane
 	Draw::Plane();
 	
@@ -515,6 +563,9 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 
 	// Check Rewards
 	Event::Reward();
+
+	// Move Ghosts
+	Event::MoveGhosts();
 
 	// Do Nothing Until Start Music Finished
 	while(alcheck != AL_STOPPED) {
@@ -903,14 +954,13 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 				// Change Walk Animation After Swing
 				if(AniNum == 2) {
-					if((AniElapsed - elapsed()) >= 100) {
+					if((elapsed() - AniElapsed) >= 750) {
 						AniNum = 1;
 						Cloud.SetAnim(AniNum);
-						Weapon.SetAnim(AniNum);
+						ClWeapon.SetAnim(AniNum);
 						AniElapsed = 0;
 					}
 				}
-
 
 				// Walk Forward
 				if (keys[VK_UP] || keys['W'])
@@ -919,7 +969,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					if(wp == FALSE) {
 						AniNum = 1;
 						Cloud.SetAnim(AniNum);
-						Weapon.SetAnim(AniNum);
+						ClWeapon.SetAnim(AniNum);
 						wp = TRUE;
 					}
 									
@@ -943,7 +993,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					if((wp) && (AniNum != 0)) {
 						AniNum = 0;
 						Cloud.SetAnim(AniNum);
-						Weapon.SetAnim(AniNum);
+						ClWeapon.SetAnim(AniNum);
 						wp = FALSE;
 					}
 				}

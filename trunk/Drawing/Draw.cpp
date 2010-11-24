@@ -149,7 +149,7 @@ void Draw::PacMan(GLvoid)
 		float timesec = float(elapsed()) / 1000.0f;//CTimer::GetInstance()->GetTimeMSec() / 1000.0;
 		// draw models
 		Cloud.DrawModel( bAnimated ? timesec : 0.0f );
-		Weapon.DrawModel( bAnimated ? timesec : 0.0f );
+		ClWeapon.DrawModel( bAnimated ? timesec : 0.0f );
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_LIGHTING);
 	glPopMatrix();
@@ -460,7 +460,7 @@ void Draw::Left(int place)
 
 	// do same as vertex array except pointer
 	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
 
@@ -735,6 +735,9 @@ void Draw::World(GLvoid)
 				Dots(i);
 				break;
 			case 'X':
+				SpawnLoc.xp = lctn[i].x;
+				SpawnLoc.zp = lctn[i].t;
+				SpawnLoc.yp = 1.1f;
 				break;
 			case 'G':
 				GZone(i);
@@ -750,7 +753,91 @@ void Draw::World(GLvoid)
 				break;
 		}
 	}
+	Ghosts();
 	glPopMatrix();
+}
+void Draw::Ghosts(GLvoid)
+{
+	while(gLocs.size() < 4) {
+		GhP PushIt;
+		PushIt.xp = 0;
+		PushIt.yp = 0;
+		PushIt.zp = 0;
+		gLocs.push_back(PushIt);
+	}
+
+	glPushMatrix();
+		//glTranslatef(0.0f, 1.1f, 0.0f);
+		glRotatef(180, 0.0, 1.0, 0.0);
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_LIGHTING);
+		// draw ghosts
+		for(int i = 0; i < 4; i++) {
+			float timesec = float(elapsed()) / 1000.0f;
+			switch(i) {
+				case 0:
+					if(gDead1) {
+						gLocs[i].xp = SpawnLoc.xp;
+						gLocs[i].yp = SpawnLoc.yp;
+						gLocs[i].zp = SpawnLoc.zp;
+						gDead1 = FALSE;
+						Sephiroth.SetAnim(DEATH_FALLBACK);
+						SeWeapon.SetAnim(DEATH_FALLBACK);
+						GAniNum1 = 17;
+					}
+					// Change Walk Animation After Dead
+					if(GAniNum1 == 17) {
+						if((elapsed() - gDeadAni1) >= 750) {
+							GAniNum1 = 1;
+							Sephiroth.SetAnim(GAniNum1);
+							SeWeapon.SetAnim(GAniNum1);
+							gDeadAni1 = 0;
+						}
+					}
+					glPushMatrix();
+						glTranslatef(-gLocs[i].xp,gLocs[i].yp,-gLocs[i].zp);
+						// draw models
+						Sephiroth.DrawModel( bAnimated ? timesec : 0.0f );
+						SeWeapon.DrawModel( bAnimated ? timesec : 0.0f );
+					glPopMatrix();
+					break;
+				case 1:
+					if(gDead2) {
+						gLocs[i].xp = SpawnLoc.xp;
+						gLocs[i].yp = SpawnLoc.yp;
+						gLocs[i].zp = SpawnLoc.zp;
+						gDead2 = FALSE;
+						//Sephiroth.SetAnim(DEATH_FALLBACK);
+						//SeWeapon.SetAnim(DEATH_FALLBACK);
+					}
+					break;
+				case 2:
+					if(gDead3) {
+						gLocs[i].xp = SpawnLoc.xp;
+						gLocs[i].yp = SpawnLoc.yp;
+						gLocs[i].zp = SpawnLoc.zp;
+						gDead3 = FALSE;
+						//Sephiroth.SetAnim(DEATH_FALLBACK);
+						//SeWeapon.SetAnim(DEATH_FALLBACK);
+					}
+					break;
+				case 3:
+					if(gDead4) {
+						gLocs[i].xp = SpawnLoc.xp;
+						gLocs[i].yp = SpawnLoc.yp;
+						gLocs[i].zp = SpawnLoc.zp;
+						gDead4 = FALSE;
+						//Sephiroth.SetAnim(DEATH_FALLBACK);
+						//SeWeapon.SetAnim(DEATH_FALLBACK);
+					}
+					break;
+			}
+		}
+
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
+	glPopMatrix();
+
 }
 void Draw::RevOrder(int &tar, int first, int last)
 {

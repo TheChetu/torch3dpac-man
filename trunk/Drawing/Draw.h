@@ -3,8 +3,6 @@
 
 #include <global/timer.h>		// Global definitions
 
-
-
 extern HDC			hDC;		// Private GDI Device Context
 extern HGLRC		hRC;		// Permanent Rendering Context
 extern HWND			hWnd;		// Holds Our Window Handle
@@ -34,6 +32,7 @@ extern bool	gDead1;				// Ghost 1 Dead?
 extern bool	gDead2;				// Ghost 2 Dead?
 extern bool	gDead3;				// Ghost 3 Dead?
 extern bool	gDead4;				// Ghost 4 Dead?
+extern bool gEdible;			// Ghosts Edible?
 extern bool	levelCom;			// Level Completion
 extern bool levelStr;			// Level Started
 extern int	currLevel;			// The Level of Gameplay
@@ -52,6 +51,9 @@ extern ofstream gloLog;			// Global Log File
 
 extern vector<TLoc> lctn;		// Translation Locations
 extern vector<GLint> VBO;		// Vertex Buffer Objects
+extern vector<GhP> gLocs;		// Ghost Positions
+
+extern GhP SpawnLoc;			// Ghost Spawn Location
 
 // PI Constants
 extern const double sPI;
@@ -88,7 +90,9 @@ extern GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
 
 extern CMD2Model		Cloud;
-extern CMD2Model		Weapon;
+extern CMD2Model		ClWeapon;
+extern CMD2Model		Sephiroth;
+extern CMD2Model		SeWeapon;
 
 extern int		AniNum;
 extern bool		bTextured;
@@ -118,6 +122,7 @@ class Draw {
 		static void Start(int place);
 		static void LoadWorld(GLvoid);
 		static void World(GLvoid);
+		static void Ghosts(GLvoid);
 };
 
 #endif
