@@ -51,7 +51,7 @@
       </DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)\lib\EFX-Util.lib;$(SolutionDir)\lib\OpenAL32.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\lib\glut32.lib;$(SolutionDir)\lib\glut.lib;$(SolutionDir)\lib\EFX-Util.lib;$(SolutionDir)\lib\OpenAL32.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -62,30 +62,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bmp.cpp" />
     <ClCompile Include="Drawing\Draw.cpp" />
     <ClCompile Include="Events\Event.cpp" />
     <ClCompile Include="glee\GLee.c" />
-    <ClCompile Include="md2.cpp" />
+    <ClCompile Include="Modelling\bmp.cpp" />
+    <ClCompile Include="Modelling\md2.cpp" />
+    <ClCompile Include="Modelling\pcx.cpp" />
+    <ClCompile Include="Modelling\texture.cpp" />
+    <ClCompile Include="Modelling\tga.cpp" />
     <ClCompile Include="Pacman.cpp" />
-    <ClCompile Include="pcx.cpp" />
-    <ClCompile Include="texture.cpp" />
-    <ClCompile Include="tga.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="anorms.h" />
-    <ClInclude Include="anormtab.h" />
-    <ClInclude Include="bmp.h" />
     <ClInclude Include="Drawing\Draw.h" />
     <ClInclude Include="Events\Event.h" />
     <ClInclude Include="glee\GLee.h" />
     <ClInclude Include="global\globref.h" />
     <ClInclude Include="global\timer.h" />
-    <ClInclude Include="md2.h" />
-    <ClInclude Include="pcx.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="tga.h" />
-    <ClInclude Include="timer2.h" />
+    <ClInclude Include="Modelling\anorms.h" />
+    <ClInclude Include="Modelling\anormtab.h" />
+    <ClInclude Include="Modelling\bmp.h" />
+    <ClInclude Include="Modelling\md2.h" />
+    <ClInclude Include="Modelling\pcx.h" />
+    <ClInclude Include="Modelling\texture.h" />
+    <ClInclude Include="Modelling\tga.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

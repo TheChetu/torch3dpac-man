@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Pacman.cpp" />
+    <ClCompile Include="glee\GLee.c">
+      <Filter>glee</Filter>
+    </ClCompile>
+    <ClCompile Include="Drawing\Draw.cpp">
+      <Filter>Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\Event.cpp">
+      <Filter>Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Modelling\bmp.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
+    <ClCompile Include="Modelling\md2.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
+    <ClCompile Include="Modelling\pcx.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
+    <ClCompile Include="Modelling\texture.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
+    <ClCompile Include="Modelling\tga.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="global\globref.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="global\timer.h">
+      <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="glee\GLee.h">
+      <Filter>glee</Filter>
+    </ClInclude>
+    <ClInclude Include="Drawing\Draw.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\Event.h">
+      <Filter>Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\anormtab.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\bmp.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\md2.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\pcx.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\texture.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\tga.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\anorms.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="global">
+      <UniqueIdentifier>{6f882b04-5f9f-4dee-8201-d9d5b4898dfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="glee">
+      <UniqueIdentifier>{f55429fe-3cdf-4d22-9cee-7aeee980289b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawing">
+      <UniqueIdentifier>{41eb7fb4-316a-4cc3-acfc-87df424d304d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{700220be-86bb-4eec-a683-a9cad1965f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modelling">
+      <UniqueIdentifier>{28c35252-0879-49f5-af61-fd65280f8e66}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -4,6 +4,7 @@
 #include <global/timer.h>		// Global definitions
 
 
+
 extern HDC			hDC;		// Private GDI Device Context
 extern HGLRC		hRC;		// Permanent Rendering Context
 extern HWND			hWnd;		// Holds Our Window Handle
@@ -45,7 +46,8 @@ extern vector<char> worldLayout;// World Layout Storage
 extern bool buffEx;				// If Buffers Exist
 extern GLuint verBO;			// Vertex Buffer Object
 extern GLuint verBI;			// Vertex Buffer Indices
-extern GLuint verBT;			// Vertex Buffer Texture
+extern GLuint verBbt;			// Vertex Buffer Texture Bottom and Top
+extern GLuint verBlr;			// Vertex Buffer Texture Left and Right
 extern ofstream gloLog;			// Global Log File
 
 extern vector<TLoc> lctn;		// Translation Locations
@@ -84,6 +86,16 @@ extern char *SkyBox6Bitmap;
 
 extern GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
+
+extern CMD2Model		Cloud;
+extern CMD2Model		Weapon;
+
+extern int		AniNum;
+extern bool		bTextured;
+extern bool		bLighGL;
+extern bool		bAnimated;
+extern float	angle;
+extern float	g_angle;
 
 
 class Draw {

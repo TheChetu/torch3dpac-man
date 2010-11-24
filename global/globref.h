@@ -22,6 +22,8 @@
 #include <AL\al.h>			// Header File For The OpenAL Library
 #include <AL\alc.h>			// Header File For The OpenAL Components
 #include <AL\alut.h>		// Header File For The OpenAL Utilities
+#include <Modelling\texture.h>
+#include <Modelling\md2.h>
 //#include <global\timer.h>	// Header File For The Program Timer
 //#include <options\Config.h>	// Header File For External Options Resource
 
@@ -41,7 +43,8 @@ static GLfloat	cnt2;				// 2nd Counter Used To Move Text & For Coloring
 static bool buffEx = FALSE;			// Vertex Buffer Object State
 static GLuint	verBO = 0;			// Vertex Buffer Object
 static GLuint	verBI = 0;			// Vertex Buffer Indices
-static GLuint	verBT = 0;			// Vertex Buffer Texture
+static GLuint	verBbt;				// Vertex Buffer Texture Bottom and Top
+static GLuint	verBlr;				// Vertex Buffer Texture Left and Right
 
 static ofstream gloLog("data\\log.txt");	// Global Log
 
