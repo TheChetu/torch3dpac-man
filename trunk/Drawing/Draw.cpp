@@ -95,11 +95,6 @@ GLushort w_indices[] = {
 	116, 117, 118, 119
 };
 
-GLfloat s_vertices[] = {
-	// Sphere Points
-	1.0f
-};
-
 // Texture Coordinates
 	// Top and Bottom
 GLfloat tb_texcoords[] = {
@@ -456,8 +451,8 @@ void Draw::Left(int place)
 	glTranslatef(float(lctn[place].x),0.0f,float(t));
 	glRotatef(90,0,1,0);
 	
-	//glEnable(GL_TEXTURE_2D);
-	//glBindTexture(GL_TEXTURE_2D, texture[2]);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
 
 	// bind VBOs for vertex array and index array
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
@@ -469,20 +464,20 @@ void Draw::Left(int place)
 
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
 
-	//glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
-	//glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
+	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
 	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+12);
 	
 	glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-	//glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	// bind with 0, so, switch back to normal pointer operation
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
-	//glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
 }
