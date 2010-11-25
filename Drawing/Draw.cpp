@@ -795,6 +795,7 @@ void Draw::Ghosts(GLvoid)
 						}
 					}
 					glPushMatrix();
+						glRotatef((360.0f - gHeading1),0,1.0f,0);
 						glTranslatef(-gLocs[i].xp,gLocs[i].yp,-gLocs[i].zp);
 						// draw models
 						Sephiroth.DrawModel( bAnimated ? timesec : 0.0f );
