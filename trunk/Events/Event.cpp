@@ -16,6 +16,49 @@ bool Event::EInit()
 				break;
 		}
 	}
+	// Get Ghost Pathing
+	char* ghomap = NULL;
+	ghomap = (char*)malloc(sizeof("data\\GMap100.txt")+1);
+	sprintf(ghomap,"data\\GMap%d.txt",currLevel);
+	ifstream gmapIn;
+	gmapIn.open(ghomap);
+	string header;
+	int next;
+	gMap *P;
+	getline(gmapIn,header,'\n');
+	while(!gmapIn.eof()) {
+		// Read File Format of 
+		// (integers) x-position z-position 
+		// (boolean integers) left, right, up, down
+		P = new gMap;
+		gmapIn >> next;
+		P->xp = next;
+		gmapIn >> next;
+		P->zp = next;
+		gmapIn >> next;
+		P->left = next;
+		gmapIn >> next;
+		P->right = next;
+		gmapIn >> next;
+		P->up = next;
+		gmapIn >> next;
+		P->down = next;
+		P->link = NULL;
+		
+		GhostMapSize++;
+		
+		if(GhostMapSize != 1) {
+			Rear->link = P;
+			Rear = Rear->link;
+		}
+
+		if(GhostMapSize == 1) {
+			Front = P;
+			Rear = P;
+		}
+		P = NULL;
+	}
+	// Seed Random
 	srand(time(0));
 	EveInit = TRUE;
 	return EveInit;
@@ -86,18 +129,28 @@ bool Event::CheckCollideGhosts()
 
 void Event::MoveGhosts()
 {
+	gMap *P;
+	P = Front;
 	for(int i = 0; i < 4; i++) {
 		if((gLocs[i].xp - 50 - xpos) < 20.0f) {
 			if((gLocs[i].zp - 50 - zpos) < 20.0f) {
 				// Move Toward Pacman
 				// Set Animations to 1 (GAniNum1 - GAniNum4)
+				// Find Pathing from Position
+				// move ghost toward pacman by pathing
 			}
 			else {
 				// Move Randomly
+				// Find Pathing from Position
+				// choose random direction unless xposition/zposition has decimal
+				// if ghost xposition/zposition has a decimal move it forward (the heading it is currently going unless pathing is unavailable
 			}
 		}
 		else {
 			// Move Randomly
+			// Find Pathing from Position
+			// choose random direction unless xposition/zposition has decimal
+			// if ghost xposition/zposition has a decimal move it forward (the heading it is currently going unless pathing is unavailable
 		}
 	}
 }

@@ -76,6 +76,10 @@ bool	gDead1 = TRUE;		// Ghost 1 Dead?
 bool	gDead2 = TRUE;		// Ghost 2 Dead?
 bool	gDead3 = TRUE;		// Ghost 3 Dead?
 bool	gDead4 = TRUE;		// Ghost 4 Dead?
+float	gHeading1;			// Direction Ghost 1 is Facing
+float	gHeading2;			// Direction Ghost 2 is Facing
+float	gHeading3;			// Direction Ghost 3 is Facing
+float	gHeading4;			// Direction Ghost 4 is Facing
 bool	gEdible = FALSE;	// Ghosts Edible?
 bool	levelCom = TRUE;	// Level Completion
 bool	levelStr = FALSE;	// Level Started
@@ -1060,8 +1064,8 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					yrot = heading;
 				}
 
-				// Reset
-				if (keys['R'] && !rp)
+				// Disable Reset
+				/*if (keys['R'] && !rp)
 				{
 					rp = TRUE;
 					// reset all positioning
@@ -1080,7 +1084,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					levelCom = true;
 					
 					DrawGLScene();
-				}
+				}*/
 
 				if (!keys['R'])
 				{
