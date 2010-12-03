@@ -778,25 +778,27 @@ void Draw::Ghosts(GLvoid)
 							gDeadAni1 = 0;
 						}
 					}
-					glPushMatrix();
-					glRotatef((360.0f - gLocs[i].gheading),0,1.0f,0);
-						glTranslatef(-gLocs[i].xp,gLocs[i].yp,-gLocs[i].zp);
-						// draw models
-						Sephiroth.DrawModel( bAnimated ? timesec : 0.0f );
-						SeWeapon.DrawModel( bAnimated ? timesec : 0.0f );
+					if(!g1Wait) {
+						glPushMatrix();
+						glRotatef((360.0f - gLocs[i].gheading),0,1.0f,0);
+							glTranslatef(-gLocs[i].xp,gLocs[i].yp,-gLocs[i].zp);
+							// draw models
+							Sephiroth.DrawModel( bAnimated ? timesec : 0.0f );
+							SeWeapon.DrawModel( bAnimated ? timesec : 0.0f );
 						
-						// Set Light Components
-						glLightfv(GL_LIGHT2, GL_POSITION, g_lightpos);					// Position Light
-						glLightfv(GL_LIGHT2, GL_DIFFUSE, g1_lcolor);						// Diffuse Light Component
-						glLightfv(GL_LIGHT2, GL_SPECULAR, g1_lcolor);					// Specular Light Component
-						glLightfv(GL_LIGHT2, GL_AMBIENT, g1_lcolor);						// Ambient Light Component
-						//Attuned to allow specular lighting component
-						glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
-						glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation
-						glLightf (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.2f);			// Quadratic Light Attenuation
-						glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, g1_lcolor);		// Specular Lighting Affects Front and Back-Facing Materials
+							// Set Light Components
+							glLightfv(GL_LIGHT2, GL_POSITION, g_lightpos);					// Position Light
+							glLightfv(GL_LIGHT2, GL_DIFFUSE, g1_lcolor);						// Diffuse Light Component
+							glLightfv(GL_LIGHT2, GL_SPECULAR, g1_lcolor);					// Specular Light Component
+							glLightfv(GL_LIGHT2, GL_AMBIENT, g1_lcolor);						// Ambient Light Component
+							//Attuned to allow specular lighting component
+							glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
+							glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation
+							glLightf (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.2f);			// Quadratic Light Attenuation
+							glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, g1_lcolor);		// Specular Lighting Affects Front and Back-Facing Materials
 	
-					glPopMatrix();
+						glPopMatrix();
+					}
 					break;
 				case 1:
 					if(gDead2) {
@@ -804,8 +806,39 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
 						gDead2 = FALSE;
-						//Sephiroth.SetAnim(DEATH_FALLBACK);
-						//SeWeapon.SetAnim(DEATH_FALLBACK);
+						Zero.SetAnim(DEATH_FALLBACK);
+						ZeWeapon.SetAnim(DEATH_FALLBACK);
+						GAniNum2 = 17;
+					}
+					// Change Walk Animation After Dead
+					if(GAniNum2 == 17) {
+						if((elapsed() - gDeadAni2) >= 750) {
+							GAniNum2 = 1;
+							Zero.SetAnim(GAniNum2);
+							ZeWeapon.SetAnim(GAniNum2);
+							gDeadAni2 = 0;
+						}
+					}
+					if(!g2Wait) {
+						glPushMatrix();
+						glRotatef((360.0f - gLocs[i].gheading),0,1.0f,0);
+							glTranslatef(-gLocs[i].xp,gLocs[i].yp,-gLocs[i].zp);
+							// draw models
+							Zero.DrawModel( bAnimated ? timesec : 0.0f );
+							ZeWeapon.DrawModel( bAnimated ? timesec : 0.0f );
+						
+							// Set Light Components
+							glLightfv(GL_LIGHT3, GL_POSITION, g_lightpos);					// Position Light
+							glLightfv(GL_LIGHT3, GL_DIFFUSE, g2_lcolor);						// Diffuse Light Component
+							glLightfv(GL_LIGHT3, GL_SPECULAR, g2_lcolor);					// Specular Light Component
+							glLightfv(GL_LIGHT3, GL_AMBIENT, g2_lcolor);						// Ambient Light Component
+							//Attuned to allow specular lighting component
+							glLightf (GL_LIGHT3, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
+							glLightf (GL_LIGHT3, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation
+							glLightf (GL_LIGHT3, GL_QUADRATIC_ATTENUATION, 0.2f);			// Quadratic Light Attenuation
+							glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, g2_lcolor);		// Specular Lighting Affects Front and Back-Facing Materials
+	
+						glPopMatrix();
 					}
 					break;
 				case 2:
@@ -814,8 +847,20 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
 						gDead3 = FALSE;
-						//Sephiroth.SetAnim(DEATH_FALLBACK);
-						//SeWeapon.SetAnim(DEATH_FALLBACK);
+						Sephiroth.SetAnim(DEATH_FALLBACK);
+						SeWeapon.SetAnim(DEATH_FALLBACK);
+						GAniNum3 = 17;
+					}
+					// Change Walk Animation After Dead
+					if(GAniNum3 == 17) {
+						if((elapsed() - gDeadAni3) >= 750) {
+							GAniNum3 = 1;
+							Sephiroth.SetAnim(GAniNum3);
+							SeWeapon.SetAnim(GAniNum3);
+							gDeadAni3 = 0;
+						}
+					}
+					if(!g3Wait) {
 					}
 					break;
 				case 3:
@@ -824,8 +869,20 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
 						gDead4 = FALSE;
-						//Sephiroth.SetAnim(DEATH_FALLBACK);
-						//SeWeapon.SetAnim(DEATH_FALLBACK);
+						Sephiroth.SetAnim(DEATH_FALLBACK);
+						SeWeapon.SetAnim(DEATH_FALLBACK);
+						GAniNum4 = 17;
+					}
+					// Change Walk Animation After Dead
+					if(GAniNum4 == 17) {
+						if((elapsed() - gDeadAni4) >= 750) {
+							GAniNum4 = 1;
+							Sephiroth.SetAnim(GAniNum4);
+							SeWeapon.SetAnim(GAniNum4);
+							gDeadAni4 = 0;
+						}
+					}
+					if(!g4Wait) {
 					}
 					break;
 			}

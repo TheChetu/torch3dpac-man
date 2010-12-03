@@ -96,6 +96,8 @@ extern CMD2Model		Cloud;
 extern CMD2Model		ClWeapon;
 extern CMD2Model		Sephiroth;
 extern CMD2Model		SeWeapon;
+extern CMD2Model		Zero;
+extern CMD2Model		ZeWeapon;
 
 extern int		AniNum;
 extern bool		bTextured;
@@ -104,6 +106,12 @@ extern bool		bAnimated;
 extern float	angle;
 extern float	g_angle;
 
+// Ghost Waiting For Respawn
+extern bool g1Wait;
+extern bool g2Wait;
+extern bool g3Wait;
+extern bool g4Wait;
+extern bool g1Wait;
 
 class Draw {
 	public:

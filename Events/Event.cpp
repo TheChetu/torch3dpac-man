@@ -141,23 +141,30 @@ int Event::CheckCollideGhosts()
 		if( ((gLocs[i].xp - 50 - xpos) < 3.0f) && ((gLocs[i].xp - 50 - xpos) > -3.0f) ) {
 			if( ((gLocs[i].zp - 50 - zpos) < 3.0f) && ((gLocs[i].zp - 50 - zpos) > -3.0f) ) {
 				if(gEdible) {
-					if(i == 0) {
+					if(i == 0 && !g1Wait) {
+						g1Wait = TRUE;
 						gDead1 = TRUE;
 						gDeadAni1 = glutGet(GLUT_ELAPSED_TIME);
+						retvalue = 400;
 					}
 					if(i == 1) {
+						g2Wait = TRUE;
 						gDead2 = TRUE;
 						gDeadAni2 = glutGet(GLUT_ELAPSED_TIME);
+						retvalue = 400;
 					}
 					if(i == 2) {
+						g3Wait = TRUE;
 						gDead3 = TRUE;
 						gDeadAni3 = glutGet(GLUT_ELAPSED_TIME);
+						retvalue = 400;
 					}
 					if(i == 3) {
+						g4Wait = TRUE;
 						gDead4 = TRUE;
 						gDeadAni4 = glutGet(GLUT_ELAPSED_TIME);
+						retvalue = 400;
 					}
-					retvalue = 400;
 				}
 				else {
 					pDead = TRUE;
@@ -179,7 +186,7 @@ void Event::MoveGhosts()
 		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * 0.04f;
 		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * 0.04f;
 		//if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
-			directions = 0;
+/*			directions = 0;
 			l = r = u = d = locf = FALSE;
 			for(P = Front; (P != NULL) && (locf == FALSE); P = P->link) {
 				// Check current location
@@ -261,7 +268,7 @@ void Event::MoveGhosts()
 						P = NULL;
 					}
 				}
-			}
+			}*/
 		//}
 	}
 }
