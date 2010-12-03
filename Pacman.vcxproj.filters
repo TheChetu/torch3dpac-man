@@ -2,9 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Pacman.cpp" />
-    <ClCompile Include="glee\GLee.c">
-      <Filter>glee</Filter>
-    </ClCompile>
     <ClCompile Include="Drawing\Draw.cpp">
       <Filter>Drawing</Filter>
     </ClCompile>
@@ -29,6 +26,12 @@
     <ClCompile Include="textfile\textfile.cpp">
       <Filter>textfile</Filter>
     </ClCompile>
+    <ClCompile Include="Modelling\targa.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
+    <ClCompile Include="Modelling\md2model.cpp">
+      <Filter>Modelling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global\globref.h">
@@ -36,9 +39,6 @@
     </ClInclude>
     <ClInclude Include="global\timer.h">
       <Filter>global</Filter>
-    </ClInclude>
-    <ClInclude Include="glee\GLee.h">
-      <Filter>glee</Filter>
     </ClInclude>
     <ClInclude Include="Drawing\Draw.h">
       <Filter>Drawing</Filter>
@@ -70,13 +70,25 @@
     <ClInclude Include="textfile\textfile.h">
       <Filter>textfile</Filter>
     </ClInclude>
+    <ClInclude Include="Modelling\md2model.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\monster.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\targa.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\geom.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
+    <ClInclude Include="Modelling\glslshader.h">
+      <Filter>Modelling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="global">
       <UniqueIdentifier>{6f882b04-5f9f-4dee-8201-d9d5b4898dfc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="glee">
-      <UniqueIdentifier>{f55429fe-3cdf-4d22-9cee-7aeee980289b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Drawing">
       <UniqueIdentifier>{41eb7fb4-316a-4cc3-acfc-87df424d304d}</UniqueIdentifier>
