@@ -26,6 +26,9 @@
     <ClCompile Include="Modelling\tga.cpp">
       <Filter>Modelling</Filter>
     </ClCompile>
+    <ClCompile Include="textfile\textfile.cpp">
+      <Filter>textfile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global\globref.h">
@@ -64,6 +67,9 @@
     <ClInclude Include="Modelling\anorms.h">
       <Filter>Modelling</Filter>
     </ClInclude>
+    <ClInclude Include="textfile\textfile.h">
+      <Filter>textfile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="global">
@@ -80,6 +86,9 @@
     </Filter>
     <Filter Include="Modelling">
       <UniqueIdentifier>{28c35252-0879-49f5-af61-fd65280f8e66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="textfile">
+      <UniqueIdentifier>{29acdbd5-a102-466e-8702-6c018ddb3544}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
