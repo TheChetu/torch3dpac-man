@@ -146,7 +146,7 @@ void Draw::PacMan(GLvoid)
 		glTranslatef(0.0f, 1.1f, 0.0f);
 		glRotatef(180, 0.0, 1.0, 0.0);
 
-		float timesec = float(elapsed()) / 1000.0f;//CTimer::GetInstance()->GetTimeMSec() / 1000.0;
+		float timesec = float(elapsed()) / 1000.0f;
 		// draw models
 		Cloud.DrawModel( bAnimated ? timesec : 0.0f );
 		ClWeapon.DrawModel( bAnimated ? timesec : 0.0f );
@@ -155,12 +155,6 @@ void Draw::PacMan(GLvoid)
 	glPopMatrix();
 	glPushMatrix();
 		glTranslatef(0.0f, 1.1f, 0.0f );
-		//glScalef(0.5f,0.5f,0.5f);
-		//glTranslatef(0.0f,1.0f,0.0f);
-		//glDisable(GL_LIGHTING);
-		//glColor3ub(255,255,0);
-		//gluSphere(quadratic,1.0,100,100);
-		//glEnable(GL_LIGHTING);
 		// Fixed Light
 			glClearColor (0.0, 0.0, 0.0, 0.0);								// Clear Color to Black
 			// Set Light Components

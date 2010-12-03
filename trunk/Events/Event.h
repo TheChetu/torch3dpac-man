@@ -33,6 +33,7 @@ extern bool	levelStr;				// Level Started
 extern bool blend;					// Blending Enabled
 extern long reElapsed;				// Reward Elapsed Time
 extern GLfloat sGauge;				// Sprint Gauge
+extern double FPS;					// Frames Per Second
 
 extern const float piover180;		// PI/180 for angle calculations
 

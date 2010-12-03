@@ -22,8 +22,22 @@
 
 
 /***************** Shader Declarations ***************/
-GLint loc;
-GLhandleARB v,f,f2,p;
+GLint	loc;
+// Color Shaders
+GLuint	c_v,
+		c_f,
+		c_f2,
+		cShaders,
+		// Model Shaders
+		m_v,
+		m_f,
+		m_f2,
+		mShaders,
+		// Terrain Shaders
+		t_v,
+		t_f,
+		t_f2,
+		tShaders;
 
 /**************** Animation Declarations *************/
 CMD2Model		Cloud;
@@ -204,59 +218,83 @@ void setShaders() {
 
 	char *vs = NULL,*fs = NULL;
 
-	v = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	f = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	f2 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	c_v = glCreateShader(GL_VERTEX_SHADER);
+	c_f = glCreateShader(GL_FRAGMENT_SHADER);
+	c_f2 = glCreateShader(GL_FRAGMENT_SHADER);
 
 
-	vs = textFileRead("colorShader\\color.vert");
-	fs = textFileRead("colorShader\\color.frag");
+	vs = textFileRead("shaders\\color.vert");
+	fs = textFileRead("shaders\\color.frag");
+
+	if (sizeof(vs) == 0 || sizeof(fs) == 0)
+    {
+		PrintToLog("Shaders do not exist");
+	}
 
 	const char * vv = vs;
 	const char * ff = fs;
 
-	glShaderSourceARB(v, 1, &vv,NULL);
-	glShaderSourceARB(f, 1, &ff,NULL);
+	glShaderSource(c_v, 1, &vv,NULL);
+	glShaderSource(c_f, 1, &ff,NULL);
 
 	free(vs);free(fs);
 
-	glCompileShaderARB(v);
-	glCompileShaderARB(f);
+	glCompileShader(c_v);
+	glCompileShader(c_f);
 	//glCompileShader(f2);
+	GLint result = 0;
 
-	p = glCreateProgramObjectARB();
-	glAttachObjectARB(p,f);
-	glAttachObjectARB(p,f2);
-	glAttachObjectARB(p,v);
+	glGetShaderiv(c_v, GL_COMPILE_STATUS, &result);
+	if(!result) {
+		string prn = "Could not compile shader " + c_v;
+		PrintToLog(prn.c_str());
+	}
+	glGetShaderiv(c_f, GL_COMPILE_STATUS, &result);
+	if(!result) {
+		string prn = "Could not compile shader " + c_f;
+		PrintToLog(prn.c_str());
+	}
 
-	glLinkProgramARB(p);
+	printShaderInfoLog(c_v);
+	printShaderInfoLog(c_f);
+	//printShaderInfoLog(c_f2);
+
+
+	cShaders = glCreateProgram();
+	glAttachShader(cShaders,c_v);
+	glAttachShader(cShaders,c_f);
+	//glAttachShader(p,f2);
+
+	glLinkProgram(cShaders);
+	printProgramInfoLog(cShaders);
 	
-	glUseProgramObjectARB(p);
+	glUseProgram(cShaders);
 
-	loc = glGetUniformLocationARB(p,"time");
+	//loc = glGetUniformLocation(cShaders,"time");
+
 }
 
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
 
-   //glClearColor(1.0,1.0,1.0,1.0);
-  //glEnable(GL_CULL_FACE);
+	//glClearColor(1.0,1.0,1.0,1.0);
+	//glEnable(GL_CULL_FACE);
 
 	//****************************** GLEW Initialization *********************************
 	glewInit();
 	if (glewIsSupported("GL_VERSION_2_0"))
-		PrintToLog("Ready for OpenGL 2.0\n");
+		PrintToLog("Ready for OpenGL 2.0");
 	else {
-		PrintToLog("OpenGL 2.0 not supported\n");
+		PrintToLog("OpenGL 2.0 not supported");
 		exit(1);
 	}
-	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
-		PrintToLog("Ready for GLSL\n");
+	/*if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+		PrintToLog("Ready for GLSL");
 	else {
-		PrintToLog("No GLSL support\n");
+		PrintToLog("No GLSL support");
 		exit(1);
-	}
+	}*/
 	//****************************** End GLEW Initialization *****************************
 	//Set the shaders
 	setShaders();
@@ -416,7 +454,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	Cloud.LoadSkin( "Models/Cloud/cloud.pcx" );
 	Cloud.SetAnim(AniNum);
 	Cloud.ScaleModel( 0.05f );
-	
+
 	// load and initialize Cloud weapon model
 	ClWeapon.LoadModel( "Models/Cloud/Weapon.md2" );
 	ClWeapon.LoadSkin( "Models/Cloud/Weapon.pcx" );
@@ -744,7 +782,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glPushMatrix();
 				glLoadIdentity();
 				glDisable(GL_LIGHTING);
-				glRasterPos2f(-2.0f,3.0f);
+				glRasterPos2f(-2.0f,3.5f);
 				glColor3f(1.0f,0.0f,0.0f);
 				glPrint("Welcome to TorchMan");
 				glEnable(GL_LIGHTING);
@@ -1126,12 +1164,18 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					glPushMatrix();
 						glLoadIdentity();
 						glDisable(GL_LIGHTING);
-						glRasterPos2f(3.0f,3.0f);
-						glColor3f(float(sin(double(rand()))),float(cos(double(rand()))),float(sin(double(rand()))));
-						if(currLives == 0)
-							glPrint("GAME OVER \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));
-						if(gameOver)
-							glPrint("CONGRATULATIONS YOU WON! \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));
+						glRasterPos2f(-0.5f,3.0f);
+						glColor3f(1.0,0.0,0.0);
+						if(currLives == 0) {
+							glPrint("GAME OVER");
+							glRasterPos2f(-0.5f,2.5f);
+							glPrint("Exiting in %d",(10-((elapsed()-exitTime)/1000)));
+						}
+						else {
+							glPrint("CONGRATULATIONS YOU WON!");
+							glRasterPos2f(-0.5f,2.5f);
+							glPrint("Exiting in %d",(10-((elapsed()-exitTime)/1000)));
+						}
 						glEnable(GL_LIGHTING);
 					glPopMatrix();
 					glMatrixMode(GL_PROJECTION);
@@ -1371,8 +1415,10 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					keys[VK_F1]=FALSE;					// If So Make Key FALSE
 					KillGLWindow();						// Kill Our Current Window
 					fullscreen=!fullscreen;				// Toggle Fullscreen / Windowed Mode
+					DWORD dwWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+					DWORD dwHeight = GetSystemMetrics(SM_CYFULLSCREEN);
 					// Recreate Our OpenGL Window
-					if (!CreateGLWindow("TorchMan",800,600,16,fullscreen))
+					if (!CreateGLWindow("TorchMan",dwWidth,dwHeight,16,fullscreen))
 					{
 						return 0;						// Quit If Window Was Not Created
 					}

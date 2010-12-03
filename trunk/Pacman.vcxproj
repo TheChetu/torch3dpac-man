@@ -64,10 +64,11 @@
   <ItemGroup>
     <ClCompile Include="Drawing\Draw.cpp" />
     <ClCompile Include="Events\Event.cpp" />
-    <ClCompile Include="glee\GLee.c" />
     <ClCompile Include="Modelling\bmp.cpp" />
     <ClCompile Include="Modelling\md2.cpp" />
+    <ClCompile Include="Modelling\md2model.cpp" />
     <ClCompile Include="Modelling\pcx.cpp" />
+    <ClCompile Include="Modelling\targa.cpp" />
     <ClCompile Include="Modelling\texture.cpp" />
     <ClCompile Include="Modelling\tga.cpp" />
     <ClCompile Include="Pacman.cpp" />
@@ -76,14 +77,18 @@
   <ItemGroup>
     <ClInclude Include="Drawing\Draw.h" />
     <ClInclude Include="Events\Event.h" />
-    <ClInclude Include="glee\GLee.h" />
     <ClInclude Include="global\globref.h" />
     <ClInclude Include="global\timer.h" />
     <ClInclude Include="Modelling\anorms.h" />
     <ClInclude Include="Modelling\anormtab.h" />
     <ClInclude Include="Modelling\bmp.h" />
+    <ClInclude Include="Modelling\geom.h" />
+    <ClInclude Include="Modelling\glslshader.h" />
     <ClInclude Include="Modelling\md2.h" />
+    <ClInclude Include="Modelling\md2model.h" />
+    <ClInclude Include="Modelling\monster.h" />
     <ClInclude Include="Modelling\pcx.h" />
+    <ClInclude Include="Modelling\targa.h" />
     <ClInclude Include="Modelling\texture.h" />
     <ClInclude Include="Modelling\tga.h" />
     <ClInclude Include="textfile\textfile.h" />

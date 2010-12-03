@@ -51,6 +51,8 @@ static GLuint	verBlr;				// Vertex Buffer Texture Left and Right
 
 static ofstream gloLog("data\\log.txt");	// Global Log
 
+extern void PrintToLog(const char* prnErr);
+
 typedef struct TransLoc TLoc;
 typedef struct GhostPos GhP;
 typedef struct Vertex Ver;
@@ -80,7 +82,7 @@ struct TransLoc {
 
 
 // Vertex Structure
-struct Vertex 
+/*struct Vertex 
 {
     float x, y, z;
     Vertex() 
@@ -108,18 +110,56 @@ struct Vertex
 
         return *this;
     }
-};
+};*/
 
 /* Vertex Normalization */
-static Vertex* normalize(Vertex* in) 
+/*static Vertex* normalize(Vertex* in) 
 {
     float l = sqrtf(in->x * in->x + in->y * in->y + in->z * in->z);
     in->x = in->x / l;
     in->y = in->y / l;
     in->z = in->z / l;
     return in;
+}*/
+
+
+// Shader Info Printing
+static void printProgramInfoLog(GLuint obj)
+{
+    int infologLength = 0;
+    int charsWritten  = 0;
+    char *infoLog;
+
+	glGetProgramiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
+
+    if (infologLength > 0)
+    {
+        infoLog = (char *)malloc(infologLength);
+        glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+		string prn = infoLog;
+		PrintToLog(prn.c_str());
+        free(infoLog);
+    }
 }
 
+
+static void printShaderInfoLog(GLuint obj)
+{
+    int infologLength = 0;
+    int charsWritten  = 0;
+    char *infoLog;
+
+	glGetShaderiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
+
+    if (infologLength > 0)
+    {
+        infoLog = (char *)malloc(infologLength);
+        glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
+		string prn = infoLog;
+		PrintToLog(prn.c_str());
+        free(infoLog);
+    }
+}
 
 // For Moving Initialization from Pacman.cpp
 /* MOVE INITIALIZATION IN FUTURE

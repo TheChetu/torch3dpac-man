@@ -60,8 +60,8 @@ bool Event::EInit()
 
 		GhostMapSize++;
 		
-		P.xp = i % 20;
-		P.zp = i / 20;
+		P.xp = i % 20 * 5;
+		P.zp = i / 20 * 5;
 
 		gMapSet.push_back(P);
 	}
@@ -173,20 +173,20 @@ void Event::MoveGhosts()
 	bool l,r,u,d,locf;
 		
 	for(int i = 0; i < int(gLocs.size()); i++) {
-		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * 0.04f;
-		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * 0.04f;
-		if((floor(gLocs[i].xp)+0.3) > gLocs[i].xp)
-			gLocs[i].xp = floor(gLocs[i].xp);
-		if((floor(gLocs[i].zp)+0.3) > gLocs[i].zp)
-			gLocs[i].zp = floor(gLocs[i].zp);
-		gLocs[i].zp = floor(gLocs[i].zp);
-		if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
+		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * (2.5/FPS);
+		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * (2.5/FPS);
+		//if((floor(gLocs[i].xp)+0.3) > gLocs[i].xp)
+			//gLocs[i].xp = floor(gLocs[i].xp);
+		//if((floor(gLocs[i].zp)+0.3) > gLocs[i].zp)
+			//gLocs[i].zp = floor(gLocs[i].zp);
+		//gLocs[i].zp = floor(gLocs[i].zp);
+		//if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
 			directions = 0;
 			l = r = u = d = locf = FALSE;
 			for(int j = 0; (j < int(gMapSet.size())) && (locf == FALSE); j++) {
 				// Check current location
-				if(gMapSet[j].xp == (floor(gLocs[i].xp / 5))) {
-					if(gMapSet[j].zp == (floor(gLocs[i].zp / 5))) {
+				if(gMapSet[j].xp == (gLocs[i].xp / 5)) {
+					if(gMapSet[j].zp == (gLocs[i].zp / 5)) {
 						locf = TRUE;
 						// Choose random path
 						if(gMapSet[j].left) {
@@ -262,7 +262,7 @@ void Event::MoveGhosts()
 						}
 					}
 				}
-			}
+			//}
 		}
 	}
 }
