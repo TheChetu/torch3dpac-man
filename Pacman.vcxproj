@@ -51,7 +51,7 @@
       </DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)\lib\glut32.lib;$(SolutionDir)\lib\glut.lib;$(SolutionDir)\lib\EFX-Util.lib;$(SolutionDir)\lib\OpenAL32.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\lib\glew32s.lib;$(SolutionDir)\lib\glew32.lib;$(SolutionDir)\lib\glut32.lib;$(SolutionDir)\lib\glut.lib;$(SolutionDir)\lib\EFX-Util.lib;$(SolutionDir)\lib\OpenAL32.lib;$(SolutionDir)\lib\alut.lib;$(SolutionDir)\lib\DevIL.lib;$(SolutionDir)\lib\ILU.lib;$(SolutionDir)\lib\ILUT.lib;glu32.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

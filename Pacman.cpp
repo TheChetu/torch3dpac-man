@@ -17,14 +17,13 @@
 		Escape: Exit.		
  */
 
-#include <GL/glew.h>
 #include <Drawing\Draw.h>
 #include <textfile\textfile.h>
 
 
 /***************** Shader Declarations ***************/
 GLint loc;
-GLuint v,f,f2,p;
+GLhandleARB v,f,f2,p;
 
 /**************** Animation Declarations *************/
 CMD2Model		Cloud;
@@ -201,33 +200,13 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	
 }
 
-#define printOpenGLError() printOglError(__FILE__, __LINE__)
-
-int printOglError(char *file, int line)
-{
-    //
-    // Returns 1 if an OpenGL error occurred, 0 otherwise.
-    //
-    GLenum glErr;
-    int    retCode = 0;
-
-    glErr = glGetError();
-    while (glErr != GL_NO_ERROR)
-    {
-        printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
-        retCode = 1;
-        glErr = glGetError();
-    }
-    return retCode;
-}
-
 void setShaders() {
 
 	char *vs = NULL,*fs = NULL;
 
-	v = glCreateShader(GL_VERTEX_SHADER);
-	f = glCreateShader(GL_FRAGMENT_SHADER);
-	f2 = glCreateShader(GL_FRAGMENT_SHADER);
+	v = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	f = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	f2 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 
 
 	vs = textFileRead("colorShader\\color.vert");
@@ -236,24 +215,25 @@ void setShaders() {
 	const char * vv = vs;
 	const char * ff = fs;
 
-	glShaderSource(v, 1, &vv,NULL);
-	glShaderSource(f, 1, &ff,NULL);
+	glShaderSourceARB(v, 1, &vv,NULL);
+	glShaderSourceARB(f, 1, &ff,NULL);
 
 	free(vs);free(fs);
 
-	glCompileShader(v);
-	glCompileShader(f);
-	glCompileShader(f2);
+	glCompileShaderARB(v);
+	glCompileShaderARB(f);
+	//glCompileShader(f2);
 
-	p = glCreateProgram();
-	glAttachShader(p,f);
-	glAttachShader(p,f2);
-	glAttachShader(p,v);
+	p = glCreateProgramObjectARB();
+	glAttachObjectARB(p,f);
+	glAttachObjectARB(p,f2);
+	glAttachObjectARB(p,v);
 
-	glLinkProgram(p);
-	glUseProgram(p);
+	glLinkProgramARB(p);
+	
+	glUseProgramObjectARB(p);
 
-	loc = glGetUniformLocation(p,"time");
+	loc = glGetUniformLocationARB(p,"time");
 }
 
 
@@ -263,16 +243,21 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
    //glClearColor(1.0,1.0,1.0,1.0);
   //glEnable(GL_CULL_FACE);
 
-    //*************************** Glew Initialization *******************************************
-    glewInit();
+	//****************************** GLEW Initialization *********************************
+	glewInit();
 	if (glewIsSupported("GL_VERSION_2_0"))
-		printf("Ready for OpenGL 2.0\n");
+		PrintToLog("Ready for OpenGL 2.0\n");
 	else {
-		printf("OpenGL 2.0 not supported\n");
+		PrintToLog("OpenGL 2.0 not supported\n");
 		exit(1);
 	}
-	//*************************** End Glew Initialization ***************************************
-
+	if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
+		PrintToLog("Ready for GLSL\n");
+	else {
+		PrintToLog("No GLSL support\n");
+		exit(1);
+	}
+	//****************************** End GLEW Initialization *****************************
 	//Set the shaders
 	setShaders();
 	
@@ -567,7 +552,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glColor3f(1.0f,1.0f,0.0f);
 		else
 			glColor3f(0.0f,1.0f,0.0f);
-				glRasterPos2f(-6.0f,4.7f);  // Set Position of FPS
+		glRasterPos2f(-6.0f,4.7f);  // Set Position of FPS
  		glPrint("FPS: %4.2f", FPS);	// Print GL Text To The Screen
 	}
 	// Draw Score
@@ -1161,27 +1146,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				}		
 			}
 
-				/*if (keys['B'] && !bp)
-				{
-					bp=TRUE;
-					if (blend)
-					{
-						blend = FALSE;
-						glDisable(GL_BLEND);
-						glEnable(GL_DEPTH_TEST);
-					}
-					else
-					{
-						blend = TRUE;
-						glEnable(GL_BLEND);
-						glDisable(GL_DEPTH_TEST);
-					}
-				}
-				if (!keys['B'])
-				{
-					bp=FALSE;
-				}*/
-
 				if(blend) {
 					glEnable(GL_BLEND);
 					if((elapsed() - reElapsed) >= 20000) { // 20 seconds
@@ -1318,28 +1282,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					heading += 1.0f;
 					yrot = heading;
 				}
-
-				// Disable Reset
-				/*if (keys['R'] && !rp)
-				{
-					rp = TRUE;
-					// reset all positioning
-					yrot = 0.0f;
-					xpos = 0.0f;
-					zpos = 0.0f;
-					sGauge = 20.0f;
-					heading = 0.0f;
-					filter = 0;
-					if(blend) {
-						blend = FALSE;
-						glDisable(GL_BLEND);
-						glEnable(GL_DEPTH_TEST);
-					}
-					levelStr = false;
-					levelCom = true;
-					
-					DrawGLScene();
-				}*/
 
 				if (!keys['R'])
 				{

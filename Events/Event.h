@@ -2,7 +2,6 @@
 #define EVENT_H
 
 #include <global\globref.h>
-#include <GL\glut.h>
 
 extern vector<TLoc> lctn;			// Location Vector
 extern vector<char> worldLayout;	// World Layout Storage
