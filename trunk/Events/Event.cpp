@@ -128,8 +128,8 @@ int Event::CheckCollideGhosts()
 {
 	int retvalue = 0;
 	for(int i = 0; i < int(gLocs.size()); i++) {
-		if( ((gLocs[i].xp - 50 - xpos) < 3.0f) && ((gLocs[i].xp - 50 - xpos) > -3.0f) ) {
-			if( ((gLocs[i].zp - 50 - zpos) < 3.0f) && ((gLocs[i].zp - 50 - zpos) > -3.0f) ) {
+		if( ((gLocs[i].xp - 50 - xpos) < 4.0f) && ((gLocs[i].xp - 50 - xpos) > -4.0f) ) {
+			if( ((gLocs[i].zp - 50 - zpos) < 4.0f) && ((gLocs[i].zp - 50 - zpos) > -4.0f) ) {
 				if(gEdible) {
 					if(i == 0 && !g1Wait) {
 						g1Wait = TRUE;
@@ -171,22 +171,27 @@ void Event::MoveGhosts()
 	//gMap *P = NULL;
 	int directions;
 	bool l,r,u,d,locf;
-		
+	
+	if(((elapsed() - lastMove) / 1000) >= 2) {
+		lastMove = elapsed();
 	for(int i = 0; i < int(gLocs.size()); i++) {
-		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * (2.5/FPS);
-		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * (2.5/FPS);
-		//if((floor(gLocs[i].xp)+0.3) > gLocs[i].xp)
-			//gLocs[i].xp = floor(gLocs[i].xp);
-		//if((floor(gLocs[i].zp)+0.3) > gLocs[i].zp)
-			//gLocs[i].zp = floor(gLocs[i].zp);
-		//gLocs[i].zp = floor(gLocs[i].zp);
-		//if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
+		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+
+		/*char* prn = NULL;
+		prn = (char *)malloc(100);
+		sprintf(prn,"Num %d x %4.4f z %4.4f", i, gLocs[i].xp, gLocs[i].zp);
+		PrintToLog(prn);*/
+
+		gLocs[i].xp = floor(gLocs[i].xp);
+		gLocs[i].zp = floor(gLocs[i].zp);
+		
 			directions = 0;
 			l = r = u = d = locf = FALSE;
 			for(int j = 0; (j < int(gMapSet.size())) && (locf == FALSE); j++) {
 				// Check current location
-				if(gMapSet[j].xp == (gLocs[i].xp / 5)) {
-					if(gMapSet[j].zp == (gLocs[i].zp / 5)) {
+				if(gMapSet[j].xp == (gLocs[i].xp)) {
+					if(gMapSet[j].zp == (gLocs[i].zp)) {
 						locf = TRUE;
 						// Choose random path
 						if(gMapSet[j].left) {
@@ -262,7 +267,7 @@ void Event::MoveGhosts()
 						}
 					}
 				}
-			//}
+			}
 		}
 	}
 }

@@ -43,12 +43,15 @@ static bool EveInit = FALSE;		// Events Initialized Check
 static bool Rewards[10];			// Rewards
 static int DotsEaten = 0;			// Number of Dots Eaten
 extern ALuint source[5];			// Audio Sources
+static long lastMove = 0;				// Holds Ghosts Last Move Time;
 
 // Wait for Ghost Edible timer to end.
 static bool g1Wait = FALSE;
 static bool g2Wait = FALSE;
 static bool g3Wait = FALSE;
 static bool g4Wait = FALSE;
+
+//extern void PrintToLog(const char* prnErr);
 
 typedef struct {
 	int z;
@@ -71,6 +74,7 @@ typedef gMap gMap;
 //static gMap *Rear = NULL;
 static int GhostMapSize = 0;
 
+extern void PrintToLog(const char* prnErr);
 extern vector<zLoc> dotpos;				// Positioning of Dots
 extern vector<GhP> gLocs;				// Ghost Positions
 extern vector<gMap> gMapSet;			// Ghost Map
