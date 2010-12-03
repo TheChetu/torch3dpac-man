@@ -14,7 +14,6 @@
 #include <fstream>			// Header File For File Stream Library
 #include <iomanip>			// Header File For I/O Manipulation Library
 #include <windows.h>		// Header File For Windows Library
-//#include <glee\GLee.h>		// Header File For The GL Easy Extension Library
 #include <gl\glew.h>		// Header File For The GLEW Library
 #include <GL\glut.h>		// Header File For The GLUT Library
 #include <gl\gl.h>			// Header File For The OpenGL32 Library
@@ -36,6 +35,7 @@ extern HDC			hDC;				// Private GDI Device Context
 extern HGLRC		hRC;				// Permanent Rendering Context
 extern HWND			hWnd;				// Holds Our Window Handle
 extern HINSTANCE	hInstance;			// Holds The Instance Of The Application
+
 // Allocate Global Setting for Height and Width
 extern GLsizei globwidth;
 extern GLsizei globheight;
@@ -51,7 +51,13 @@ static GLuint	verBlr;				// Vertex Buffer Texture Left and Right
 
 static ofstream gloLog("data\\log.txt");	// Global Log
 
-extern void PrintToLog(const char* prnErr);
+static FILETIME tCurr;
+static FILETIME tElapsed;
+static FILETIME tStart;
+static SYSTEMTIME lt;
+
+static void FilePrintTimestamp();
+static void PrintToLog(const char* prnErr);
 
 typedef struct TransLoc TLoc;
 typedef struct GhostPos GhP;
@@ -81,8 +87,55 @@ struct TransLoc {
 };
 
 
+static void initTime()
+{
+	GetSystemTimeAsFileTime(&tStart);
+	PrintToLog("Begin Initialization");
+}
+
+static void FilePrintTimestamp()
+{
+	if(gloLog.is_open());
+	else
+		gloLog.open("data\\log.txt",ios_base::app);
+
+	char* localTime = NULL;
+	GetLocalTime(&lt);
+	localTime = (char *)malloc(sizeof("%02d/%02d/%04d %02d:%02d:%02d:%03d")+1);
+	// Copy Full Date in Format MM/DD/YYYY HH:MM:SS:mmm
+	sprintf(localTime,"%02d/%02d/%04d %02d:%02d:%02d:%03d",
+			lt.wMonth, lt.wDay, lt.wYear, 
+			lt.wHour, lt.wMinute,lt.wSecond, lt.wMilliseconds);
+	gloLog << localTime;
+	gloLog.close();
+	// Return Timestamp
+	return;
+}
+
+static long elapsed()
+{
+	GetSystemTimeAsFileTime(&tCurr);
+	tElapsed.dwHighDateTime = tCurr.dwHighDateTime - tStart.dwHighDateTime;
+	tElapsed.dwLowDateTime = tCurr.dwLowDateTime - tStart.dwLowDateTime;
+
+	return glutGet( GLUT_ELAPSED_TIME );//tElapsed.dwLowDateTime;
+}
+
+
+// Print Log
+static void PrintToLog(const char* prnErr)
+{
+		FilePrintTimestamp();
+		if(gloLog.is_open());
+		else
+			gloLog.open("data\\log.txt",ios_base::app);
+		gloLog << "\t \t" << prnErr << endl;
+		gloLog.close();
+		return;
+}
+
 // Vertex Structure
-/*struct Vertex 
+struct Vertex 
 {
     float x, y, z;
     Vertex() 
@@ -110,17 +163,17 @@ struct TransLoc {
 
         return *this;
     }
-};*/
+};
 
 /* Vertex Normalization */
-/*static Vertex* normalize(Vertex* in) 
+static Vertex* normalize(Vertex* in) 
 {
     float l = sqrtf(in->x * in->x + in->y * in->y + in->z * in->z);
     in->x = in->x / l;
     in->y = in->y / l;
     in->z = in->z / l;
     return in;
-}*/
+}
 
 
 // Shader Info Printing

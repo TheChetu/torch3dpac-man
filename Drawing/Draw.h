@@ -1,7 +1,7 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include <global/timer.h>		// Global definitions
+#include <Events/Event.h>		// Global definitions
 
 extern HDC			hDC;		// Private GDI Device Context
 extern HGLRC		hRC;		// Permanent Rendering Context
@@ -98,6 +98,10 @@ extern CMD2Model		Sephiroth;
 extern CMD2Model		SeWeapon;
 extern CMD2Model		Zero;
 extern CMD2Model		ZeWeapon;
+extern CMD2Model		MegaMan;
+extern CMD2Model		MeWeapon;
+extern CMD2Model		Wily;
+extern CMD2Model		WiWeapon;
 
 extern int		AniNum;
 extern bool		bTextured;

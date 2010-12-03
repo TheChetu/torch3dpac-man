@@ -26,18 +26,9 @@
     <ClCompile Include="textfile\textfile.cpp">
       <Filter>textfile</Filter>
     </ClCompile>
-    <ClCompile Include="Modelling\targa.cpp">
-      <Filter>Modelling</Filter>
-    </ClCompile>
-    <ClCompile Include="Modelling\md2model.cpp">
-      <Filter>Modelling</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global\globref.h">
-      <Filter>global</Filter>
-    </ClInclude>
-    <ClInclude Include="global\timer.h">
       <Filter>global</Filter>
     </ClInclude>
     <ClInclude Include="Drawing\Draw.h">
@@ -69,21 +60,6 @@
     </ClInclude>
     <ClInclude Include="textfile\textfile.h">
       <Filter>textfile</Filter>
-    </ClInclude>
-    <ClInclude Include="Modelling\md2model.h">
-      <Filter>Modelling</Filter>
-    </ClInclude>
-    <ClInclude Include="Modelling\monster.h">
-      <Filter>Modelling</Filter>
-    </ClInclude>
-    <ClInclude Include="Modelling\targa.h">
-      <Filter>Modelling</Filter>
-    </ClInclude>
-    <ClInclude Include="Modelling\geom.h">
-      <Filter>Modelling</Filter>
-    </ClInclude>
-    <ClInclude Include="Modelling\glslshader.h">
-      <Filter>Modelling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

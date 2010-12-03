@@ -49,6 +49,12 @@ CMD2Model		SeWeapon;
 CMD2Model		Zero;
 CMD2Model		ZeWeapon;
 
+CMD2Model		MegaMan;
+CMD2Model		MeWeapon;
+
+CMD2Model		Wily;
+CMD2Model		WiWeapon;
+
 int				AniNum		=	0;
 long			AniElapsed	=	0;
 bool			bTextured	= true;
@@ -188,6 +194,7 @@ GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 int glLoadTexture();
 LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	// Declaration For WndProc
 GLvoid KillGLWindow(GLvoid);							// Declaration For KillGLWindow
+extern void PrintToLog(const char* prnErr);				// Print To Log Definition
 
 GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize The GL Window
 {
@@ -465,25 +472,49 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	Sephiroth.LoadModel( "Models/Sephiroth/tris.md2" );
 	Sephiroth.LoadSkin( "Models/Sephiroth/sephiroth.pcx" );
 	Sephiroth.SetAnim(AniNum);
-	Sephiroth.ScaleModel( 0.05f );
+	Sephiroth.ScaleModel( 0.07f );
 	
 	// load and initialize Sephiroth weapon model
 	SeWeapon.LoadModel( "Models/Sephiroth/Weapon.md2" );
 	SeWeapon.LoadSkin( "Models/Sephiroth/Weapon.pcx" );
 	SeWeapon.SetAnim( STAND );
-	SeWeapon.ScaleModel( 0.05f );
+	SeWeapon.ScaleModel( 0.07f );
 
-	// load and initialize the Sephiroth model
+	// load and initialize the Zero model
 	Zero.LoadModel( "Models/Zero/TRIS.MD2" );
 	Zero.LoadSkin( "Models/Zero/ZERO.PCX" );
 	Zero.SetAnim(AniNum);
-	Zero.ScaleModel( 0.05f );
+	Zero.ScaleModel( 0.07f );
 	
-	// load and initialize Sephiroth weapon model
+	// load and initialize Zero weapon model
 	ZeWeapon.LoadModel( "Models/Zero/WEAPON.md2" );
 	ZeWeapon.LoadSkin( "Models/Zero/WEAPON.pcx" );
 	ZeWeapon.SetAnim( STAND );
-	ZeWeapon.ScaleModel( 0.05f );
+	ZeWeapon.ScaleModel( 0.07f );
+
+	// load and initialize the MegaMan model
+	MegaMan.LoadModel( "Models/Megaman/TRIS.MD2" );
+	MegaMan.LoadSkin( "Models/Megaman/YMEGAMAN.PCX" );
+	MegaMan.SetAnim(AniNum);
+	MegaMan.ScaleModel( 0.07f );
+	
+	// load and initialize Megaman weapon model
+	MeWeapon.LoadModel( "Models/Megaman/WEAPON.md2" );
+	MeWeapon.LoadSkin( "Models/Megaman/WEAPON.pcx" );
+	MeWeapon.SetAnim( STAND );
+	MeWeapon.ScaleModel( 0.07f );
+
+	// load and initialize the Wily model
+	Wily.LoadModel( "Models/Wily/TRIS.MD2" );
+	Wily.LoadSkin( "Models/Wily/Wily.PCX" );
+	Wily.SetAnim(AniNum);
+	Wily.ScaleModel( 0.07f );
+	
+	// load and initialize Wily weapon model
+	WiWeapon.LoadModel( "Models/Wily/WEAPON.md2" );
+	WiWeapon.LoadSkin( "Models/Wily/WEAPON.pcx" );
+	WiWeapon.SetAnim( STAND );
+	WiWeapon.ScaleModel( 0.07f );
 
 	//**************************** End Model and Animation Initialization *************************
 
@@ -762,7 +793,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	Event::Reward();
 
 	// Move Ghosts
-	if(alcheck == AL_STOPPED)
+	if(alcheck != AL_STOPPED);
+	else
 		Event::MoveGhosts();
 
 	// Do Nothing Until Start Music Finished
