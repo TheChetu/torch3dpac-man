@@ -7,6 +7,7 @@
 #include <ctime>			// Header File For C Time
 #include <cstdlib>			// Header File For C Standard Library
 #include <windows.h>		// Header File For Windows Library
+#include <cmath>			// Header File For C Math Library
 #include <math.h>			// Header File For Math Library 
 #include <string>			// Header File For C++ String Library
 #include <stdio.h>			// Header File For Standard Input/Output
@@ -54,17 +55,18 @@ typedef struct Vertex Ver;
 
 // Current Ghost Position Structure
 struct GhostPos {
-	float xp,yp,zp;
+	float xp,yp,zp, gheading;
 	GhostPos()
 	{
-		xp = yp = zp = 0.0f;
+		xp = yp = zp = gheading = 0.0f;
 	}
 
-	GhostPos(float xp,float yp, float zp)
+	GhostPos(float xp,float yp, float zp, float gheading)
 	{
 		this->xp = xp;
 		this->yp = yp;
 		this->zp = zp;
+		this->gheading = gheading;
 	}
 };
 

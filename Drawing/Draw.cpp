@@ -348,21 +348,9 @@ void Draw::Plane(GLvoid)
 }
 void Draw::Top(int place)
 {
-	//MessageBox(NULL,"T","Loading...",MB_OK | MB_ICONINFORMATION);
 	glPushMatrix();
-/*		int t = place/20;
-		t *= 5;
-		int mx = place%20;
-		mx *= 5;*/
-		//glTranslatef(-50.0f,0.0f,-50.0f);
 		glTranslatef(float(lctn[place].x),0.0f,float(lctn[place].t));
-/*		glBegin(GL_QUADS);
-			glVertex3f(0.0f,0.0f,0.0f);
-			glVertex3f(5.0f,0.0f,0.0f);
-			glVertex3f(5.0f,3.0f,0.0f);
-			glVertex3f(0.0f,3.0f,0.0f);
-		glEnd();
-*/
+
 	// bind VBOs for vertex array and index array
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture[2]);
@@ -397,19 +385,9 @@ void Draw::Top(int place)
 void Draw::Bottom(int place)
 {
 	glPushMatrix();
-/*	int b = place/20;
-	b *= 5;
-	int mx = place%20;
-	mx *= 5;*/
-		//glTranslatef(-50.0f,0.0f,-50.0f);
-		glTranslatef(float(lctn[place].x),0.0f,float(lctn[place].t));
-/*		glBegin(GL_QUADS);
-			glVertex3f(0.0f,0.0f,0.0f);
-			glVertex3f(5.0f,0.0f,0.0f);
-			glVertex3f(5.0f,3.0f,0.0f);
-			glVertex3f(0.0f,3.0f,0.0f);
-		glEnd();
-*/
+
+	glTranslatef(float(lctn[place].x),0.0f,float(lctn[place].t));
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture[2]);
 
@@ -450,9 +428,9 @@ void Draw::Left(int place)
 	
 	glTranslatef(float(lctn[place].x),0.0f,float(t));
 	glRotatef(90,0,1,0);
-	
+
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[2]);
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
 
 	// bind VBOs for vertex array and index array
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
@@ -483,46 +461,44 @@ void Draw::Left(int place)
 }
 void Draw::Right(int place)
 {
-/*	int t = place/20;
-	if(place > int(worldLayout.size()/2))
-		t++;
-	t *= 5;
-	int mx = (place%20) + 1;
-	mx *= 5;*/
 	glPushMatrix();
 	int t = lctn[place].t;
 	if(place > int(worldLayout.size()/2))
 		t += 5;
-		//glTranslatef(-50.0f,0.0f,-50.0f);
-		glTranslatef(float(lctn[place].x+5),0.0f,float(t));
-		glRotatef(90,0,1,0);
-/*		glBegin(GL_QUADS);
-			glVertex3f(0.0f,0.0f,0.0f);
-			glVertex3f(0.0f,0.0f,-5.0f);
-			glVertex3f(0.0f,3.0f,-5.0f);
-			glVertex3f(0.0f,3.0f,0.0f);
-		glEnd();
-*/
+
+	glTranslatef(float(lctn[place].x+5),0.0f,float(t));
+	glRotatef(90,0,1,0);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
+
 	// bind VBOs for vertex array and index array
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI); // for indices
 
 	// do same as vertex array except pointer
 	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
+
+
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBbt);
+	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
 	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+12);
-	//glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, 0);
-
+	
 	glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	// bind with 0, so, switch back to normal pointer operation
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
-	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 
+	glPopMatrix();
 }
 void Draw::Corner(int place)
 {
@@ -640,8 +616,8 @@ void Draw::Start(int place)
 	//MessageBox(NULL,"S","Loading...",MB_OK | MB_ICONINFORMATION);
 	if(!levelStr) {
 		levelStr = TRUE;
-		xpos = float(lctn[place].x / 20);
-		zpos = float((lctn[place].t / 20) + 12);
+		strLocx = xpos = float(lctn[place].x / 20);//float(-lctn[place].x);
+		strLocz = zpos = float((lctn[place].t / 20) + 12);//float(-lctn[place].t);
 	}
 }
 void Draw::TPWalls(int place)
@@ -740,34 +716,42 @@ void Draw::World(GLvoid)
 				SpawnLoc.yp = 1.1f;
 				break;
 			case 'G':
-				GZone(i);
+				//GZone(i);
 				break;
 			case 'Y':
-				Teleport(i);
+				//Teleport(i);
 				break;
 			case 'W':
-				TPWalls(i);
+				//TPWalls(i);
 				break;
 			case 'S':
 				Start(i);
 				break;
 		}
 	}
-	Ghosts();
+	if(levelStr)
+		Ghosts();
 	glPopMatrix();
 }
 void Draw::Ghosts(GLvoid)
 {
 	while(gLocs.size() < 4) {
 		GhP PushIt;
-		PushIt.xp = 0;
-		PushIt.yp = 0;
-		PushIt.zp = 0;
+		PushIt.xp = 0.0f;
+		PushIt.yp = 0.0f;
+		PushIt.zp = 0.0f;
+		PushIt.gheading = 0.0f;
 		gLocs.push_back(PushIt);
 	}
 
+	GLfloat g1_lcolor[]  = { 1.0f, 0.0f, 0.0f, 7.0f};				// Set Red Color
+	GLfloat g2_lcolor[]  = { 0.0f, 0.0f, 1.0f, 7.0f};				// Set Green Color
+	GLfloat g3_lcolor[]  = { 1.0f, 6.0f, 6.0f, 7.0f};				// Set Pink Color
+	GLfloat g4_lcolor[]  = { 0.0f, 1.0f, 0.0f, 7.0f};				// Set Blue Color
+	GLfloat g_lightpos[] = { 0.0f, 0.0f, 0.0f };					// Set Positioning of Light
+						
+
 	glPushMatrix();
-		//glTranslatef(0.0f, 1.1f, 0.0f);
 		glRotatef(180, 0.0, 1.0, 0.0);
 		glEnable(GL_TEXTURE_2D);
 		glDisable(GL_LIGHTING);
@@ -795,11 +779,23 @@ void Draw::Ghosts(GLvoid)
 						}
 					}
 					glPushMatrix();
-						glRotatef((360.0f - gHeading1),0,1.0f,0);
+					glRotatef((360.0f - gLocs[i].gheading),0,1.0f,0);
 						glTranslatef(-gLocs[i].xp,gLocs[i].yp,-gLocs[i].zp);
 						// draw models
 						Sephiroth.DrawModel( bAnimated ? timesec : 0.0f );
 						SeWeapon.DrawModel( bAnimated ? timesec : 0.0f );
+						
+						// Set Light Components
+						glLightfv(GL_LIGHT2, GL_POSITION, g_lightpos);					// Position Light
+						glLightfv(GL_LIGHT2, GL_DIFFUSE, g1_lcolor);						// Diffuse Light Component
+						glLightfv(GL_LIGHT2, GL_SPECULAR, g1_lcolor);					// Specular Light Component
+						glLightfv(GL_LIGHT2, GL_AMBIENT, g1_lcolor);						// Ambient Light Component
+						//Attuned to allow specular lighting component
+						glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
+						glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation
+						glLightf (GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.2f);			// Quadratic Light Attenuation
+						glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, g1_lcolor);		// Specular Lighting Affects Front and Back-Facing Materials
+	
 					glPopMatrix();
 					break;
 				case 1:
@@ -839,14 +835,4 @@ void Draw::Ghosts(GLvoid)
 		glEnable(GL_LIGHTING);
 	glPopMatrix();
 
-}
-void Draw::RevOrder(int &tar, int first, int last)
-{
-	bool done = false;
-	for(int i = first;( (i != last) && (!done) ); i++,last--) {
-		if(tar == i) {
-			tar = last;
-			done = true;
-		}
-	}
 }
