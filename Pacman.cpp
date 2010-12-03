@@ -17,7 +17,14 @@
 		Escape: Exit.		
  */
 
+#include <GL/glew.h>
 #include <Drawing\Draw.h>
+#include <textfile\textfile.h>
+
+
+/***************** Shader Declarations ***************/
+GLint loc;
+GLuint v,f,f2,p;
 
 /**************** Animation Declarations *************/
 CMD2Model		Cloud;
@@ -194,8 +201,81 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	
 }
 
+#define printOpenGLError() printOglError(__FILE__, __LINE__)
+
+int printOglError(char *file, int line)
+{
+    //
+    // Returns 1 if an OpenGL error occurred, 0 otherwise.
+    //
+    GLenum glErr;
+    int    retCode = 0;
+
+    glErr = glGetError();
+    while (glErr != GL_NO_ERROR)
+    {
+        printf("glError in file %s @ line %d: %s\n", file, line, gluErrorString(glErr));
+        retCode = 1;
+        glErr = glGetError();
+    }
+    return retCode;
+}
+
+void setShaders() {
+
+	char *vs = NULL,*fs = NULL;
+
+	v = glCreateShader(GL_VERTEX_SHADER);
+	f = glCreateShader(GL_FRAGMENT_SHADER);
+	f2 = glCreateShader(GL_FRAGMENT_SHADER);
+
+
+	vs = textFileRead("colorShader\\color.vert");
+	fs = textFileRead("colorShader\\color.frag");
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	glShaderSource(v, 1, &vv,NULL);
+	glShaderSource(f, 1, &ff,NULL);
+
+	free(vs);free(fs);
+
+	glCompileShader(v);
+	glCompileShader(f);
+	glCompileShader(f2);
+
+	p = glCreateProgram();
+	glAttachShader(p,f);
+	glAttachShader(p,f2);
+	glAttachShader(p,v);
+
+	glLinkProgram(p);
+	glUseProgram(p);
+
+	loc = glGetUniformLocation(p,"time");
+}
+
+
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
+
+   //glClearColor(1.0,1.0,1.0,1.0);
+  //glEnable(GL_CULL_FACE);
+
+    //*************************** Glew Initialization *******************************************
+    glewInit();
+	if (glewIsSupported("GL_VERSION_2_0"))
+		printf("Ready for OpenGL 2.0\n");
+	else {
+		printf("OpenGL 2.0 not supported\n");
+		exit(1);
+	}
+	//*************************** End Glew Initialization ***************************************
+
+	//Set the shaders
+	setShaders();
+	
 	// Initialize Timer
 	initTime();
 
