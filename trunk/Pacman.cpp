@@ -76,10 +76,6 @@ bool	gDead1 = TRUE;		// Ghost 1 Dead?
 bool	gDead2 = TRUE;		// Ghost 2 Dead?
 bool	gDead3 = TRUE;		// Ghost 3 Dead?
 bool	gDead4 = TRUE;		// Ghost 4 Dead?
-float	gHeading1;			// Direction Ghost 1 is Facing
-float	gHeading2;			// Direction Ghost 2 is Facing
-float	gHeading3;			// Direction Ghost 3 is Facing
-float	gHeading4;			// Direction Ghost 4 is Facing
 bool	gEdible = FALSE;	// Ghosts Edible?
 bool	levelCom = TRUE;	// Level Completion
 bool	levelStr = FALSE;	// Level Started
@@ -95,6 +91,7 @@ int		vsync = 1;			// Vertical Sync State 1 = True, 0 = False
 extern ofstream gloLog;		// Global Log
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
+long reElapsed = 0;			// Reward Elapsed Time
 
 vector<TLoc> lctn;				// Translation Locations
 vector<GLint> VBO;				// Vertex Buffer Objects
@@ -112,6 +109,9 @@ const float piover180 = 0.0174532925f;
 float heading;		// direction
 float xpos;			// x-position in 3D space
 float zpos;			// z-position in 3D space
+float strLocx;		// starting x-pos
+float strLocz;		// starting z-pos
+
 FILETIME theTime;	// time in milliseconds
 
 // Controls walking
@@ -162,6 +162,7 @@ GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 // Prototypes
 int glLoadTexture();
 LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	// Declaration For WndProc
+GLvoid KillGLWindow(GLvoid);							// Declaration For KillGLWindow
 
 GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize The GL Window
 {
@@ -283,8 +284,10 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	glEnable(GL_LIGHTING);								// Enable Lighting
 	glEnable(GL_LIGHT0);								// Flash Light
 	glEnable(GL_LIGHT1);								// Ambient Lightning
-	glEnable(GL_LIGHT2);								// Moon Lightning
-	glEnable(GL_LIGHT3);								// Sun Lighting
+	glEnable(GL_LIGHT2);								// Ghost 1 Lighting
+	glEnable(GL_LIGHT3);								// Ghost 2 Lighting
+	glEnable(GL_LIGHT5);								// Ghost 3 Lighting
+	glEnable(GL_LIGHT6);								// Ghost 4 Lighting
 	glEnable(GL_LIGHT4);								// Fixed Light
 	glEnable(GL_TEXTURE_2D);							// Allow Texture Mapping
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE);					// Set The Blending Function For Translucency
@@ -363,6 +366,8 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	SeWeapon.ScaleModel( 0.05f );
 
 	//**************************** End Model and Animation Initialization *************************
+
+	srand(time(0));		// Seed Random
 
 	return TRUE;								// Initialization Went OK
 }
@@ -484,6 +489,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glRotatef(180.0f,1,0,0);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,texture[1]);
+	if(currLives > 5)
+		glTranslatef(1.0f,0.0f,0.0f);
 	for(int i = currLives; i > 0; i--) {
 		glTranslatef(-0.4f,0.0f,0.0f);
 		glBegin(GL_QUADS);
@@ -514,6 +521,26 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glPrint("Level %d", currLevel);
 	glEnable(GL_LIGHTING);
 	glPopMatrix();
+	// Draw Sprint Gauge
+	glPushMatrix();
+	glDisable(GL_LIGHTING);
+	glRasterPos2f(-3.0f,4.0f);
+	glPrint("Sprint Meter: ");
+	glTranslatef(0.3f,4.3f,0.0f);
+	glRotatef(180.0f,0,1,0);
+	glRotatef(180.0f,1,0,0);
+	for(float i = sGauge; i > 0; i = i - 0.1f) {
+		glTranslatef(-0.01f,0.0f,0.0f);
+		glColor3f(0.0f,1.0f,0.0f);
+		glBegin(GL_QUADS);
+			glVertex3f(0.0f,0.0f,0.0f);
+			glVertex3f(0.01f,0.0f,0.0f);
+			glVertex3f(0.01f,0.4f,0.0f);
+			glVertex3f(0.0f,0.4f,0.0f);
+		glEnd();
+	}
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -524,8 +551,41 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	Draw::Lighting();
 
 
+	if(pDead) {
+		xpos = strLocx;
+		zpos = strLocz;
+		AniNum = 18;
+		Cloud.SetAnim(AniNum);
+		ClWeapon.SetAnim(AniNum);
+		AniElapsed = elapsed();
+		pDead = FALSE;
+	}
+
+	// Display Eat the Ghosts Message
+	if(gEdible) {
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glTranslatef(0.0f,0.0f,-1.0f);
+		glMatrixMode(GL_MODELVIEW);
+		// Draw Message
+		glPushMatrix();
+			glLoadIdentity();
+			glDisable(GL_LIGHTING);
+			glRasterPos2f(-0.5f,3.0f);
+			glColor3f(float(sin(double(rand()))),float(cos(double(rand()))),float(sin(double(rand()))));
+			glPrint("EAT THE GHOSTS!!!");
+			glEnable(GL_LIGHTING);
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+	}
+
 	// PacMan
-	Draw::PacMan();
+	glPushMatrix();
+		//glTranslatef(-50.0f,-50.0f,0.0f);
+		Draw::PacMan();
+	glPopMatrix();
 	
 	// Reset Camera Prior to Movement
 	glMatrixMode(GL_PROJECTION);
@@ -563,13 +623,23 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	Draw::World();
 
 	// Detect Collision
-	Event::CheckCollideDot();
+	if(Event::CheckCollideDot()) {
+		if(sGauge < 30.0f)
+			sGauge += 0.5f;
+	}
+
+	int colGho = 0;
+	colGho = Event::CheckCollideGhosts();
+	currScore += colGho;
+	if(colGho < 0)
+		currLives--;
 
 	// Check Rewards
 	Event::Reward();
 
 	// Move Ghosts
-	Event::MoveGhosts();
+	if(alcheck == AL_STOPPED);
+		//Event::MoveGhosts();
 
 	// Do Nothing Until Start Music Finished
 	while(alcheck != AL_STOPPED) {
@@ -578,6 +648,25 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		Draw::PacMan();
 		Draw::Plane();
 		Draw::World();
+
+		
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+			glTranslatef(0.0f,0.0f,-10.0f);
+			glMatrixMode(GL_MODELVIEW);
+			// Draw Message
+			glPushMatrix();
+				glLoadIdentity();
+				glDisable(GL_LIGHTING);
+				glRasterPos2f(-2.0f,3.0f);
+				glColor3f(1.0f,0.0f,0.0f);
+				glPrint("Welcome to TorchMan");
+				glEnable(GL_LIGHTING);
+			glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+
 		SwapBuffers(hDC);
 		alGetSourcei(source[0],AL_SOURCE_STATE,&alcheck);
 		// Start Looping Music
@@ -921,7 +1010,40 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			else									// Not Time To Quit, Update Screen
 			{
 				SwapBuffers(hDC);					// Swap Buffers (Double Buffering)
-				if (keys['B'] && !bp)
+
+
+			// Game Over
+			if(currLives == 0) {
+				long exitTime = elapsed();
+				bool exitIt = FALSE;
+				while(!exitIt) {
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
+					glMatrixMode(GL_PROJECTION);
+					glPushMatrix();
+					glTranslatef(0.0f,0.0f,-1.0f);
+					glMatrixMode(GL_MODELVIEW);
+					// Draw Message
+					glPushMatrix();
+						glLoadIdentity();
+						glDisable(GL_LIGHTING);
+						glRasterPos2f(0.0f,3.0f);
+						glColor3f(float(sin(double(rand()))),float(cos(double(rand()))),float(sin(double(rand()))));
+						glPrint("GAME OVER \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));
+						glEnable(GL_LIGHTING);
+					glPopMatrix();
+					glMatrixMode(GL_PROJECTION);
+					glPopMatrix();
+					glMatrixMode(GL_MODELVIEW);
+					SwapBuffers(hDC);
+					if((elapsed() - exitTime) >= 10000) {
+						exitIt = TRUE;
+						alSourceStop(source[0]);
+						done=TRUE;
+					}
+				}		
+			}
+
+				/*if (keys['B'] && !bp)
 				{
 					bp=TRUE;
 					if (blend)
@@ -940,6 +1062,21 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				if (!keys['B'])
 				{
 					bp=FALSE;
+				}*/
+
+				if(blend) {
+					glEnable(GL_BLEND);
+					if((elapsed() - reElapsed) >= 20000) { // 20 seconds
+						glDisable(GL_BLEND);
+						blend = FALSE;
+					}
+				}
+
+				if(gEdible) {
+					// Show Edible
+					if((elapsed() - reElapsed) >= 20000) { // 20 seconds
+						gEdible = FALSE;
+					}
 				}
 
 				if (keys['F'] && !fp)
@@ -957,7 +1094,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				}
 
 				// Change Walk Animation After Swing
-				if(AniNum == 2) {
+				if(AniNum == 2 || AniNum == 18) {
 					if((elapsed() - AniElapsed) >= 750) {
 						AniNum = 1;
 						Cloud.SetAnim(AniNum);

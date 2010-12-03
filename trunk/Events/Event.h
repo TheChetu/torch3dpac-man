@@ -27,14 +27,15 @@ extern bool	gDead1;					// Ghost 1 Dead?
 extern bool	gDead2;					// Ghost 2 Dead?
 extern bool	gDead3;					// Ghost 3 Dead?
 extern bool	gDead4;					// Ghost 4 Dead?
-extern float gHeading1;				// Direction Ghost 1 is Facing
-extern float gHeading2;				// Direction Ghost 2 is Facing
-extern float gHeading3;				// Direction Ghost 3 is Facing
-extern float gHeading4;				// Direction Ghost 4 is Facing
 extern bool	gEdible;				// Ghosts Edible?
 extern int currLevel;				// Current Level Number
 extern bool	levelCom;				// Level Completion
 extern bool	levelStr;				// Level Started
+extern bool blend;					// Blending Enabled
+extern long reElapsed;				// Reward Elapsed Time
+extern GLfloat sGauge;				// Sprint Gauge
+
+extern const float piover180;		// PI/180 for angle calculations
 
 extern bool gEdible;				// Ghosts Edible?
 
@@ -75,7 +76,7 @@ class Event {
 		static bool CheckCollideDot();
 		static bool CheckCollideWall();
 		static bool Reward();
-		static bool CheckCollideGhosts();
+		static int CheckCollideGhosts();
 		static void	MoveGhosts();
 };
 
