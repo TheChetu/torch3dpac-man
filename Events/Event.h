@@ -67,12 +67,13 @@ struct gMap {
 };
 
 typedef gMap gMap;
-static gMap *Front = NULL;
-static gMap *Rear = NULL;
+//static gMap *Front = NULL;
+//static gMap *Rear = NULL;
 static int GhostMapSize = 0;
 
 extern vector<zLoc> dotpos;				// Positioning of Dots
 extern vector<GhP> gLocs;				// Ghost Positions
+extern vector<gMap> gMapSet;			// Ghost Map
 
 class Event {
 	private:

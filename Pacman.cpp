@@ -101,6 +101,7 @@ vector<TLoc> lctn;				// Translation Locations
 vector<GLint> VBO;				// Vertex Buffer Objects
 vector<zLoc> dotpos;			// Positioning of Dots
 vector<GhP> gLocs;				// Ghost Positions
+vector<gMap> gMapSet;			// Ghost Map
 
 GhP SpawnLoc;					// Ghost Spawn Location
 
@@ -1060,7 +1061,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					glPushMatrix();
 						glLoadIdentity();
 						glDisable(GL_LIGHTING);
-						glRasterPos2f(-3.0f,3.0f);
+						glRasterPos2f(3.0f,3.0f);
 						glColor3f(float(sin(double(rand()))),float(cos(double(rand()))),float(sin(double(rand()))));
 						if(currLives == 0)
 							glPrint("GAME OVER \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));

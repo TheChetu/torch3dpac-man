@@ -17,63 +17,64 @@ bool Event::EInit()
 		}
 	}
 	// Get Ghost Pathing
-	gMap *P = NULL;
+	gMap P;
 	for(int i = 0; i < int(worldLayout.size()); i++) {
-		P = new gMap;
 		if(i >= 20) {
 			if(worldLayout[i-20] != 'Z' && worldLayout[i-20] != 'X')
-				P->up = 0;
+				P.up = 0;
 			else
-				P->up = 1;
+				P.up = 1;
 		}	
 		else {
-			P->up = 0;
+			P.up = 0;
 		}
 		if(i <= (int(worldLayout.size()) - 20)) {
 			if(worldLayout[i+20] != 'Z' && worldLayout[i+20] != 'X')
-				P->down = 0;
+				P.down = 0;
 			else
-				P->down = 1;
+				P.down = 1;
 		}
 		else {
-			P->down = 0;
+			P.down = 0;
 		}
 		if(i > 0) {
 			if(worldLayout[i-1] != 'Z' && worldLayout[i-1] != 'X')
-				P->left = 0;
+				P.left = 0;
 			else
-				P->left = 1;
+				P.left = 1;
 		}
 		else {
-			P->left = 0;
+			P.left = 0;
 		}
 		if(i <= (int(worldLayout.size()) - 1)) {
 			if(worldLayout[i+1] != 'Z' && worldLayout[i+1] != 'X')
-				P->right = 0;
+				P.right = 0;
 			else
-				P->right = 1;
+				P.right = 1;
 		}
 		else {
-			P->right = 1;
+			P.right = 1;
 		}
 
-		P->link = NULL;
+		P.link = NULL;
 
 		GhostMapSize++;
 		
-		if(GhostMapSize == 1) {
+/*		if(GhostMapSize == 1) {
 			Front = P;
 			Rear = P;
 		}
 		else {//(GhostMapSize != 1)
 			Rear->link = P;
 			Rear = Rear->link;
-		}
+		}*/
 
-		free(P);
+		//free(P);
 		
-		Rear->xp = i % 20;
-		Rear->zp = i / 20;
+		P.xp = i % 20;
+		P.zp = i / 20;
+
+		gMapSet.push_back(P);
 	}
 
 	// Seed Random
@@ -178,35 +179,36 @@ int Event::CheckCollideGhosts()
 
 void Event::MoveGhosts()
 {
-	gMap *P = NULL;
+	//gMap *P = NULL;
 	int directions;
 	bool l,r,u,d,locf;
 		
 	for(int i = 0; i < int(gLocs.size()); i++) {
 		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * 0.04f;
 		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * 0.04f;
-		//if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
-/*			directions = 0;
+		//gLocs[i].xp
+		if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
+			directions = 0;
 			l = r = u = d = locf = FALSE;
-			for(P = Front; (P != NULL) && (locf == FALSE); P = P->link) {
+			for(int j = 0; (j < int(gMapSet.size())) && (locf == FALSE); j++) {
 				// Check current location
-				if(P->xp == (floor(gLocs[i].xp / 5))) {
-					if(P->zp == (floor(gLocs[i].zp / 5))) {
+				if(gMapSet[j].xp == (floor(gLocs[i].xp / 5))) {
+					if(gMapSet[j].zp == (floor(gLocs[i].zp / 5))) {
 						locf = TRUE;
 						// Choose random path
-						if(P->left) {
+						if(gMapSet[j].left) {
 							directions++;
 							l = TRUE;
 						}
-						if(P->right) {
+						if(gMapSet[j].right) {
 							directions++;
 							r = TRUE;
 						}
-						if(P->up) {
+						if(gMapSet[j].up) {
 							directions++;
 							u = TRUE;
 						}
-						if(P->down) {
+						if(gMapSet[j].down) {
 							directions++;
 							d = TRUE;
 						}
@@ -265,11 +267,10 @@ void Event::MoveGhosts()
 								break;
 	
 						}
-						P = NULL;
 					}
 				}
-			}*/
-		//}
+			}
+		}
 	}
 }
 
