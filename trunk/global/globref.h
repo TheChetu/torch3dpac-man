@@ -6,7 +6,6 @@
 
 #include <ctime>			// Header File For C Time
 #include <cstdlib>			// Header File For C Standard Library
-#include <windows.h>		// Header File For Windows Library
 #include <cmath>			// Header File For C Math Library
 #include <math.h>			// Header File For Math Library 
 #include <string>			// Header File For C++ String Library
@@ -14,9 +13,14 @@
 #include <vector>			// Header File For Vector Library
 #include <fstream>			// Header File For File Stream Library
 #include <iomanip>			// Header File For I/O Manipulation Library
-#include <glee\GLee.h>		// Header File For The GL Easy Extension Library
+#include <windows.h>		// Header File For Windows Library
+//#include <glee\GLee.h>		// Header File For The GL Easy Extension Library
+#include <gl\glew.h>		// Header File For The GLEW Library
+#include <GL\glut.h>		// Header File For The GLUT Library
 #include <gl\gl.h>			// Header File For The OpenGL32 Library
 #include <gl\glu.h>			// Header File For The GLu32 Library
+#include <glx\glext.h>		// Header File For The GL Extension Library
+#include <GL\wglew.h>		// Header File For The GLEW Wrapper Library
 #include <IL\il.h>			// Header File For The Developer's Image Library
 #include <IL\ilu.h>			// Header File For The DevIL Utilities
 #include <IL\ilut.h>		// Header File For The DevIL Tools
@@ -25,8 +29,6 @@
 #include <AL\alut.h>		// Header File For The OpenAL Utilities
 #include <Modelling\texture.h>
 #include <Modelling\md2.h>
-//#include <global\timer.h>	// Header File For The Program Timer
-//#include <options\Config.h>	// Header File For External Options Resource
 
 using namespace std;
 

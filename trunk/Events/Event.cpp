@@ -20,7 +20,7 @@ bool Event::EInit()
 	gMap P;
 	for(int i = 0; i < int(worldLayout.size()); i++) {
 		if(i >= 20) {
-			if(worldLayout[i-20] != 'Z' && worldLayout[i-20] != 'X')
+			if((worldLayout[i-20] != 'Z') && (worldLayout[i-20] != 'X'))
 				P.up = 0;
 			else
 				P.up = 1;
@@ -38,7 +38,7 @@ bool Event::EInit()
 			P.down = 0;
 		}
 		if(i > 0) {
-			if(worldLayout[i-1] != 'Z' && worldLayout[i-1] != 'X')
+			if((worldLayout[i-1] != 'Z') && (worldLayout[i-1] != 'X'))
 				P.left = 0;
 			else
 				P.left = 1;
@@ -47,7 +47,7 @@ bool Event::EInit()
 			P.left = 0;
 		}
 		if(i <= (int(worldLayout.size()) - 1)) {
-			if(worldLayout[i+1] != 'Z' && worldLayout[i+1] != 'X')
+			if((worldLayout[i+1] != 'Z') && (worldLayout[i+1] != 'X'))
 				P.right = 0;
 			else
 				P.right = 1;
@@ -59,17 +59,6 @@ bool Event::EInit()
 		P.link = NULL;
 
 		GhostMapSize++;
-		
-/*		if(GhostMapSize == 1) {
-			Front = P;
-			Rear = P;
-		}
-		else {//(GhostMapSize != 1)
-			Rear->link = P;
-			Rear = Rear->link;
-		}*/
-
-		//free(P);
 		
 		P.xp = i % 20;
 		P.zp = i / 20;
@@ -186,7 +175,11 @@ void Event::MoveGhosts()
 	for(int i = 0; i < int(gLocs.size()); i++) {
 		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * 0.04f;
 		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * 0.04f;
-		//gLocs[i].xp
+		if((floor(gLocs[i].xp)+0.3) > gLocs[i].xp)
+			gLocs[i].xp = floor(gLocs[i].xp);
+		if((floor(gLocs[i].zp)+0.3) > gLocs[i].zp)
+			gLocs[i].zp = floor(gLocs[i].zp);
+		gLocs[i].zp = floor(gLocs[i].zp);
 		if((floor(gLocs[i].xp) == gLocs[i].xp) && (floor(gLocs[i].zp) == gLocs[i].zp)) {
 			directions = 0;
 			l = r = u = d = locf = FALSE;
