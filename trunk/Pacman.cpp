@@ -26,6 +26,9 @@ CMD2Model		ClWeapon;
 CMD2Model		Sephiroth;
 CMD2Model		SeWeapon;
 
+CMD2Model		Zero;
+CMD2Model		ZeWeapon;
+
 int				AniNum		=	0;
 long			AniElapsed	=	0;
 bool			bTextured	= true;
@@ -88,6 +91,7 @@ int		alcheck = 0;		// Check Current State of Audio Source
 int		currLives = 4;		// Current Lives
 int		dotsRemaining = 0;	// Number of dots still in play
 int		vsync = 1;			// Vertical Sync State 1 = True, 0 = False
+bool gameOver = FALSE;		// Set the state of the game ending
 extern ofstream gloLog;		// Global Log
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
@@ -353,17 +357,29 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	ClWeapon.SetAnim( STAND );
 	ClWeapon.ScaleModel( 0.05f );
 
-	// load and initialize the Cloud model
+	// load and initialize the Sephiroth model
 	Sephiroth.LoadModel( "Models/Sephiroth/tris.md2" );
 	Sephiroth.LoadSkin( "Models/Sephiroth/sephiroth.pcx" );
 	Sephiroth.SetAnim(AniNum);
 	Sephiroth.ScaleModel( 0.05f );
 	
-	// load and initialize Cloud weapon model
+	// load and initialize Sephiroth weapon model
 	SeWeapon.LoadModel( "Models/Sephiroth/Weapon.md2" );
 	SeWeapon.LoadSkin( "Models/Sephiroth/Weapon.pcx" );
 	SeWeapon.SetAnim( STAND );
 	SeWeapon.ScaleModel( 0.05f );
+
+	// load and initialize the Sephiroth model
+	Zero.LoadModel( "Models/Zero/TRIS.MD2" );
+	Zero.LoadSkin( "Models/Zero/ZERO.PCX" );
+	Zero.SetAnim(AniNum);
+	Zero.ScaleModel( 0.05f );
+	
+	// load and initialize Sephiroth weapon model
+	ZeWeapon.LoadModel( "Models/Zero/WEAPON.md2" );
+	ZeWeapon.LoadSkin( "Models/Zero/WEAPON.pcx" );
+	ZeWeapon.SetAnim( STAND );
+	ZeWeapon.ScaleModel( 0.05f );
 
 	//**************************** End Model and Animation Initialization *************************
 
@@ -550,7 +566,6 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	// Enable and Disable Lighting
 	Draw::Lighting();
 
-
 	if(pDead) {
 		xpos = strLocx;
 		zpos = strLocz;
@@ -559,6 +574,11 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		ClWeapon.SetAnim(AniNum);
 		AniElapsed = elapsed();
 		pDead = FALSE;
+
+		gDead1 = TRUE;
+		gDead2 = TRUE;
+		gDead3 = TRUE;
+		gDead4 = TRUE;
 	}
 
 	// Display Eat the Ghosts Message
@@ -638,8 +658,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	Event::Reward();
 
 	// Move Ghosts
-	if(alcheck == AL_STOPPED);
-		//Event::MoveGhosts();
+	if(alcheck == AL_STOPPED)
+		Event::MoveGhosts();
 
 	// Do Nothing Until Start Music Finished
 	while(alcheck != AL_STOPPED) {
@@ -980,7 +1000,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	}
 
 	// Create Our OpenGL Window
-	if (!CreateGLWindow("Torch 3D Pacman",800,600,16,fullscreen))
+	if (!CreateGLWindow("TorchMan",800,600,16,fullscreen))
 	{
 		return 0;									// Quit If Window Was Not Created
 	}
@@ -1011,9 +1031,23 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			{
 				SwapBuffers(hDC);					// Swap Buffers (Double Buffering)
 
+				if(levelStr) {
+					if(dotsRemaining == 0) {
+						levelCom = TRUE;
+						levelStr = FALSE;
+						currLevel++;
+						ifstream checkFile;
+						char* openCheck = NULL;
+						openCheck = (char*)malloc(sizeof("data\\level100.txt"));
+						sprintf(openCheck,"data\\level%d.txt",currLevel);
+						checkFile.open(openCheck);
+						if(!checkFile.is_open())
+							gameOver = TRUE;
+					}
+				}
 
 			// Game Over
-			if(currLives == 0) {
+			if((currLives == 0) || gameOver) {
 				long exitTime = elapsed();
 				bool exitIt = FALSE;
 				while(!exitIt) {
@@ -1026,9 +1060,12 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					glPushMatrix();
 						glLoadIdentity();
 						glDisable(GL_LIGHTING);
-						glRasterPos2f(0.0f,3.0f);
+						glRasterPos2f(-3.0f,3.0f);
 						glColor3f(float(sin(double(rand()))),float(cos(double(rand()))),float(sin(double(rand()))));
-						glPrint("GAME OVER \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));
+						if(currLives == 0)
+							glPrint("GAME OVER \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));
+						if(gameOver)
+							glPrint("CONGRATULATIONS YOU WON! \n Exiting in %d",(10-((elapsed()-exitTime)/1000)));
 						glEnable(GL_LIGHTING);
 					glPopMatrix();
 					glMatrixMode(GL_PROJECTION);
@@ -1312,7 +1349,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					KillGLWindow();						// Kill Our Current Window
 					fullscreen=!fullscreen;				// Toggle Fullscreen / Windowed Mode
 					// Recreate Our OpenGL Window
-					if (!CreateGLWindow("Torch 3D Pacman",800,600,16,fullscreen))
+					if (!CreateGLWindow("TorchMan",800,600,16,fullscreen))
 					{
 						return 0;						// Quit If Window Was Not Created
 					}

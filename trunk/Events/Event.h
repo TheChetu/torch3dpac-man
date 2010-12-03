@@ -44,6 +44,11 @@ static bool Rewards[10];			// Rewards
 static int DotsEaten = 0;			// Number of Dots Eaten
 extern ALuint source[5];			// Audio Sources
 
+// Wait for Ghost Edible timer to end.
+static bool g1Wait = FALSE;
+static bool g2Wait = FALSE;
+static bool g3Wait = FALSE;
+static bool g4Wait = FALSE;
 
 typedef struct {
 	int z;
