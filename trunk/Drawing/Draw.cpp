@@ -760,16 +760,16 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
 						gDead1 = FALSE;
-						Sephiroth.SetAnim(DEATH_FALLBACK);
-						SeWeapon.SetAnim(DEATH_FALLBACK);
+						Bass.SetAnim(DEATH_FALLBACK);
+						BaWeapon.SetAnim(DEATH_FALLBACK);
 						GAniNum1 = 17;
 					}
 					// Change Walk Animation After Dead
 					if(GAniNum1 == 17) {
 						if((elapsed() - gDeadAni1) >= 750) {
 							GAniNum1 = 1;
-							Sephiroth.SetAnim(GAniNum1);
-							SeWeapon.SetAnim(GAniNum1);
+							Bass.SetAnim(GAniNum1);
+							BaWeapon.SetAnim(GAniNum1);
 							gDeadAni1 = 0;
 						}
 					}
@@ -779,14 +779,14 @@ void Draw::Ghosts(GLvoid)
 							glPushMatrix();
 								glRotatef((360.0f - gLocs[i].gheading),0,1.0f,0);
 							// draw models
-							Sephiroth.DrawModel( bAnimated ? timesec : 0.0f );
-							SeWeapon.DrawModel( bAnimated ? timesec : 0.0f );
+							Bass.DrawModel( bAnimated ? timesec : 0.0f );
+							BaWeapon.DrawModel( bAnimated ? timesec : 0.0f );
 						
 							// Set Light Components
 							glLightfv(GL_LIGHT2, GL_POSITION, g_lightpos);					// Position Light
-							glLightfv(GL_LIGHT2, GL_DIFFUSE, g1_lcolor);						// Diffuse Light Component
+							glLightfv(GL_LIGHT2, GL_DIFFUSE, g1_lcolor);					// Diffuse Light Component
 							glLightfv(GL_LIGHT2, GL_SPECULAR, g1_lcolor);					// Specular Light Component
-							glLightfv(GL_LIGHT2, GL_AMBIENT, g1_lcolor);						// Ambient Light Component
+							glLightfv(GL_LIGHT2, GL_AMBIENT, g1_lcolor);					// Ambient Light Component
 							//Attuned to allow specular lighting component
 							glLightf (GL_LIGHT2, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
 							glLightf (GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation
@@ -827,9 +827,9 @@ void Draw::Ghosts(GLvoid)
 						
 							// Set Light Components
 							glLightfv(GL_LIGHT3, GL_POSITION, g_lightpos);					// Position Light
-							glLightfv(GL_LIGHT3, GL_DIFFUSE, g2_lcolor);						// Diffuse Light Component
+							glLightfv(GL_LIGHT3, GL_DIFFUSE, g2_lcolor);					// Diffuse Light Component
 							glLightfv(GL_LIGHT3, GL_SPECULAR, g2_lcolor);					// Specular Light Component
-							glLightfv(GL_LIGHT3, GL_AMBIENT, g2_lcolor);						// Ambient Light Component
+							glLightfv(GL_LIGHT3, GL_AMBIENT, g2_lcolor);					// Ambient Light Component
 							//Attuned to allow specular lighting component
 							glLightf (GL_LIGHT3, GL_CONSTANT_ATTENUATION, 0.1f);			// Constant Light Attenuation
 							glLightf (GL_LIGHT3, GL_LINEAR_ATTENUATION, 0.5f);				// Linear Light Attenuation

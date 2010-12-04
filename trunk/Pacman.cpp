@@ -43,8 +43,8 @@ GLuint	c_v,
 CMD2Model		Cloud;
 CMD2Model		ClWeapon;
 
-CMD2Model		Sephiroth;
-CMD2Model		SeWeapon;
+CMD2Model		Bass;
+CMD2Model		BaWeapon;
 
 CMD2Model		Zero;
 CMD2Model		ZeWeapon;
@@ -175,9 +175,6 @@ ALvoid *data;
 int ch;
 
 // Texture File Names
-//char *GroundBitmap = "Earth.bmp";
-//char *Building1Bitmap = "textures\\brick.bmp";
-//char *Building2Bitmap = "stonetile.bmp";
 char *Wall1Bitmap = "textures\\Wall1.bmp";
 char *SkyBox1Bitmap = "textures\\neg_x.bmp";
 char *GroundBitmap = "textures\\neg_y.bmp";
@@ -271,7 +268,6 @@ void setShaders() {
 	
 	glCompileShader(t_v);//texture
 	glCompileShader(t_f);//texture
-	//glCompileShader(f2);
 	GLint result = 0;
 
 	glGetShaderiv(c_v, GL_COMPILE_STATUS, &result);
@@ -287,7 +283,6 @@ void setShaders() {
 
 	printShaderInfoLog(c_v);
 	printShaderInfoLog(c_f);
-	//printShaderInfoLog(c_f2);
 
 	tShaders = glCreateProgram();//texture
 	glAttachShader(tShaders, t_v);//texture
@@ -296,7 +291,6 @@ void setShaders() {
 	cShaders = glCreateProgram();
 	glAttachShader(cShaders,c_v);
 	glAttachShader(cShaders,c_f);
-	//glAttachShader(p,f2);
 
 	glLinkProgram(cShaders);
 	printProgramInfoLog(cShaders);
@@ -314,10 +308,6 @@ void setShaders() {
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
-
-	glClearColor(1.0,1.0,1.0,1.0);
-	glEnable(GL_CULL_FACE);
-
 	//****************************** GLEW Initialization *********************************
 	glewInit();
 	if (glewIsSupported("GL_VERSION_2_0"))
@@ -326,12 +316,6 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 		PrintToLog("OpenGL 2.0 not supported");
 		exit(1);
 	}
-	/*if (GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader)
-		PrintToLog("Ready for GLSL");
-	else {
-		PrintToLog("No GLSL support");
-		exit(1);
-	}*/
 	//****************************** End GLEW Initialization *****************************
 	//Set the shaders
 	setShaders();
@@ -499,16 +483,16 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	ClWeapon.ScaleModel( 0.05f );
 
 	// load and initialize the Sephiroth model
-	Sephiroth.LoadModel( "Models/Sephiroth/tris.md2" );
-	Sephiroth.LoadSkin( "Models/Sephiroth/sephiroth.pcx" );
-	Sephiroth.SetAnim(AniNum);
-	Sephiroth.ScaleModel( 0.07f );
+	Bass.LoadModel( "Models/Bass/tris.md2" );
+	Bass.LoadSkin( "Models/Bass/bass.pcx" );
+	Bass.SetAnim(AniNum);
+	Bass.ScaleModel( 0.07f );
 	
 	// load and initialize Sephiroth weapon model
-	SeWeapon.LoadModel( "Models/Sephiroth/Weapon.md2" );
-	SeWeapon.LoadSkin( "Models/Sephiroth/Weapon.pcx" );
-	SeWeapon.SetAnim( STAND );
-	SeWeapon.ScaleModel( 0.07f );
+	BaWeapon.LoadModel( "Models/Bass/Weapon.md2" );
+	BaWeapon.LoadSkin( "Models/Bass/Weapon.pcx" );
+	BaWeapon.SetAnim( STAND );
+	BaWeapon.ScaleModel( 0.07f );
 
 	// load and initialize the Zero model
 	Zero.LoadModel( "Models/Zero/TRIS.MD2" );

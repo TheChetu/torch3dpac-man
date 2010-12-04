@@ -17,7 +17,7 @@ bool Event::EInit()
 				break;
 		}
 	}
-	/*
+
 	// Get Ghost Pathing
 	gMap P;
 	for(int i = 0; i < int(worldLayout.size()); i++) {
@@ -57,9 +57,7 @@ bool Event::EInit()
 		else {
 			P.right = 1;
 		}
-
-		P.link = NULL;
-
+		
 		GhostMapSize++;
 		
 		P.xp = i % 20 * 5;
@@ -67,7 +65,7 @@ bool Event::EInit()
 
 		gMapSet.push_back(P);
 	}
-	*/
+	
 	// Seed Random
 	srand(time(0));
 

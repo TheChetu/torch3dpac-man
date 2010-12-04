@@ -94,8 +94,8 @@ extern GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
 extern CMD2Model		Cloud;
 extern CMD2Model		ClWeapon;
-extern CMD2Model		Sephiroth;
-extern CMD2Model		SeWeapon;
+extern CMD2Model		Bass;
+extern CMD2Model		BaWeapon;
 extern CMD2Model		Zero;
 extern CMD2Model		ZeWeapon;
 extern CMD2Model		MegaMan;
