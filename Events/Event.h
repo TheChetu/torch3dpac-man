@@ -66,7 +66,6 @@ struct gMap {
 	int left;
 	int up;
 	int down;
-	gMap *link;
 };
 
 typedef gMap gMap;
