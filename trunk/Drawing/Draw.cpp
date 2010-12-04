@@ -431,19 +431,19 @@ void Draw::Left(int place)
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI); // for indices
 
 	// do same as vertex array except pointer
-	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);				// Activate Vertex Coords Array
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);		// Activate TexCoord Array
 
-	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
+	glVertexPointer(3, GL_FLOAT, 0, 0);					// Size/Number, Type, Distance between Objects, Offset
 
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
-	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
+	glTexCoordPointer(2, GL_FLOAT, 0, 0);				// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
 	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+12);
 	
-	glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);				// Deactivate Vertex Array
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);		// Deactivate TexCoord Array
 
 	// bind with 0, so, switch back to normal pointer operation
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -477,7 +477,7 @@ void Draw::Right(int place)
 	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
 
 
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBbt);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
 	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
@@ -496,40 +496,52 @@ void Draw::Right(int place)
 }
 void Draw::Corner(int place)
 {
-
-/*	int t = place/20;
-	t *= 5;
-	int mx = place%20;
-	mx *= 5;*/
 	glPushMatrix();
-	//glTranslatef(-50.0f,0.0f,-50.0f);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
 	glTranslatef(float(lctn[place].x),0.0f,float(lctn[place].t));
 	if(worldLayout[place] == 'D') {
 		if(worldLayout[place+1] == 'Z' || worldLayout[place+1] == 'L') {
 			glBegin(GL_QUADS);
 				// Down
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,0.0);
 				glVertex3f(5.0f,0.0f,5.0f);
+				glTexCoord2f(5.0,3.0);
 				glVertex3f(5.0f,3.0f,5.0f);
+				glTexCoord2f(0.0,3.0);
 				glVertex3f(5.0f,3.0f,0.0f);
 				// Left
-				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(0.0f,0.0f,0.0f);
-				glVertex3f(0.0f,3.0f,0.0f);
+				glTexCoord2f(5.0,0.0);
+				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,3.0);
 				glVertex3f(5.0f,3.0f,0.0f);
+				glTexCoord2f(0.0,3.0);
+				glVertex3f(0.0f,3.0f,0.0f);
 			glEnd();
 		}
 		else {
 			glBegin(GL_QUADS);
 				// Down
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(0.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,0.0);
 				glVertex3f(0.0f,0.0f,5.0f);
+				glTexCoord2f(5.0,3.0);
 				glVertex3f(0.0f,3.0f,5.0f);
+				glTexCoord2f(0.0,3.0);
 				glVertex3f(0.0f,3.0f,0.0f);
 				// Right
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(0.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,0.0);
 				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,3.0);
 				glVertex3f(5.0f,3.0f,0.0f);
+				glTexCoord2f(0.0,3.0);
 				glVertex3f(0.0f,3.0f,0.0f);
 			glEnd();
 		}
@@ -538,72 +550,79 @@ void Draw::Corner(int place)
 		if(worldLayout[place+1] == 'Z' || worldLayout[place+1] == 'Y' || worldLayout[place+1] == 'L') {
 			glBegin(GL_QUADS);
 				// Up
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(-5.0,0.0);
 				glVertex3f(5.0f,0.0f,-5.0f);
+				glTexCoord2f(-5.0,3.0);
 				glVertex3f(5.0f,3.0f,-5.0f);
+				glTexCoord2f(0.0,3.0);
 				glVertex3f(5.0f,3.0f,0.0f);
 				// Left
-				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(0.0f,0.0f,0.0f);
-				glVertex3f(0.0f,3.0f,0.0f);
+				glTexCoord2f(5.0,0.0);
+				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,3.0);
 				glVertex3f(5.0f,3.0f,0.0f);
+				glTexCoord2f(0.0,3.0);
+				glVertex3f(0.0f,3.0f,0.0f);
 			glEnd();
 		}
 		else {
 			glBegin(GL_QUADS);
 				// Up
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(0.0f,0.0f,0.0f);
+				glTexCoord2f(-5.0,0.0);
 				glVertex3f(0.0f,0.0f,-5.0f);
+				glTexCoord2f(-5.0,3.0);
 				glVertex3f(0.0f,3.0f,-5.0f);
+				glTexCoord2f(0.0,3.0);
 				glVertex3f(0.0f,3.0f,0.0f);
 				// Right
+				glTexCoord2f(0.0,0.0);
 				glVertex3f(0.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,0.0);
 				glVertex3f(5.0f,0.0f,0.0f);
+				glTexCoord2f(5.0,3.0);
 				glVertex3f(5.0f,3.0f,0.0f);
+				glTexCoord2f(0.0,3.0);
 				glVertex3f(0.0f,3.0f,0.0f);
 			glEnd();		
 		}
 	}
-
+	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }
 void Draw::Dots(int place)
 {
 	//MessageBox(NULL,"Z","Loading...",MB_OK | MB_ICONINFORMATION);
-/*	int t = place/20;
-	if(place > int(worldLayout.size()/2))
-		t++;
-	t *= 5;
-	int mx = place%20;
-	mx *= 5;*/
-	//if(place > int(worldLayout.size()/2))
-		//lctn[place].t += 5;
 	dotsRemaining++;
 	glPushMatrix();
-		//glTranslatef(-50.0f,0.0f,-50.0f);
 		glTranslatef(float(lctn[place].x)+2.5f,0.4f,float(lctn[place].t));
 		glDisable(GL_LIGHTING);
 		glColor3ub(255,255,255);
 		gluSphere(quadratic,0.2,10,10);
-		/*glTranslatef(2.0f,0.0f,0.0f);
-		gluSphere(quadratic,0.2,10,10);*/
 		glEnable(GL_LIGHTING);
 	glPopMatrix();
 }
 void Draw::GZone(int place)
 {
+	// For reference only, no walls drawn.
 	//MessageBox(NULL,"G","Loading...",MB_OK | MB_ICONINFORMATION);
 }
 void Draw::Teleport(int place)
 {
+	// Not Implemented
 	//MessageBox(NULL,"Y","Loading...",MB_OK | MB_ICONINFORMATION);
-		if(zpos >= 0.0f && zpos <= 6.0f) {
+	/*	if(zpos >= 0.0f && zpos <= 6.0f) {
 			if((xpos <= -40.0f) || (xpos >= 40.0f)) {
 				xpos = -xpos;
 			}
 		}
 		else { } // Do Nothing
-		
+*/		
 }
 void Draw::Start(int place)
 {
@@ -616,6 +635,7 @@ void Draw::Start(int place)
 }
 void Draw::TPWalls(int place)
 {
+	// Not Implemented
 	//MessageBox(NULL,"W","Loading...",MB_OK | MB_ICONINFORMATION);
 }
 void Draw::LoadWorld(GLvoid)
@@ -672,9 +692,6 @@ void Draw::LoadWorld(GLvoid)
 	glGenBuffersARB(1, &verBlr);
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
 	glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(lr_texcoords), lr_texcoords, GL_STATIC_DRAW_ARB);
-
-	//glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(w_vertices), w_vertices);
-//	glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(w_vertices), sizeof(teapotNormals), teapotNormals);
 }
 void Draw::World(GLvoid)
 {
@@ -759,7 +776,10 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].xp = SpawnLoc.xp;
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
-						gDead1 = FALSE;
+						if(!gEdible) {
+							g1Wait = FALSE;
+							gDead1 = FALSE;
+						}
 						Bass.SetAnim(DEATH_FALLBACK);
 						BaWeapon.SetAnim(DEATH_FALLBACK);
 						GAniNum1 = 17;
@@ -802,7 +822,10 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].xp = SpawnLoc.xp;
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
-						gDead2 = FALSE;
+						if(!gEdible) {
+							g2Wait = FALSE;
+							gDead2 = FALSE;
+						}
 						Zero.SetAnim(DEATH_FALLBACK);
 						ZeWeapon.SetAnim(DEATH_FALLBACK);
 						GAniNum2 = 17;
@@ -845,7 +868,10 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].xp = SpawnLoc.xp;
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
-						gDead3 = FALSE;
+						if(!gEdible) {
+							g3Wait = FALSE;
+							gDead3 = FALSE;
+						}
 						MegaMan.SetAnim(DEATH_FALLBACK);
 						MeWeapon.SetAnim(DEATH_FALLBACK);
 						GAniNum3 = 17;
@@ -888,7 +914,10 @@ void Draw::Ghosts(GLvoid)
 						gLocs[i].xp = SpawnLoc.xp;
 						gLocs[i].yp = SpawnLoc.yp;
 						gLocs[i].zp = SpawnLoc.zp;
-						gDead4 = FALSE;
+						if(!gEdible) {
+							g4Wait = FALSE;
+							gDead4 = FALSE;
+						}
 						Wily.SetAnim(DEATH_FALLBACK);
 						WiWeapon.SetAnim(DEATH_FALLBACK);
 						GAniNum4 = 17;

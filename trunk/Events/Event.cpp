@@ -139,19 +139,19 @@ int Event::CheckCollideGhosts()
 						gDeadAni1 = glutGet(GLUT_ELAPSED_TIME);
 						retvalue = 400;
 					}
-					if(i == 1) {
+					if(i == 1 && !g2Wait) {
 						g2Wait = TRUE;
 						gDead2 = TRUE;
 						gDeadAni2 = glutGet(GLUT_ELAPSED_TIME);
 						retvalue = 400;
 					}
-					if(i == 2) {
+					if(i == 2 && !g3Wait) {
 						g3Wait = TRUE;
 						gDead3 = TRUE;
 						gDeadAni3 = glutGet(GLUT_ELAPSED_TIME);
 						retvalue = 400;
 					}
-					if(i == 3) {
+					if(i == 3 && !g4Wait) {
 						g4Wait = TRUE;
 						gDead4 = TRUE;
 						gDeadAni4 = glutGet(GLUT_ELAPSED_TIME);
@@ -177,10 +177,42 @@ void Event::MoveGhosts()
 	if(((elapsed() - lastMove) / 1000) >= 2) {
 		lastMove = elapsed();
 	for(int i = 0; i < int(gLocs.size()); i++) {
-		gLocs[i].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
-		gLocs[i].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+		// Change gWait States
+		if(g1Wait && !gEdible)
+			g1Wait = FALSE;
+		if(g2Wait && !gEdible)
+			g2Wait = FALSE;
+		if(g3Wait && !gEdible)
+			g3Wait = FALSE;
+		if(g4Wait && !gEdible)
+			g4Wait = FALSE;
 
-		/*char* prn = NULL;
+		// Move only if not waiting for respawn
+		if(i == 0 && !g1Wait) {
+			gLocs[0].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+			gLocs[0].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+		}
+		if(i == 1 && !g2Wait) {
+			gLocs[1].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+			gLocs[1].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+		}
+		if(i == 2 && !g3Wait) {
+			gLocs[2].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+			gLocs[2].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+		}
+		if(i == 3 && !g4Wait) {
+			gLocs[3].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+			gLocs[3].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+		}
+		
+		// Check Position Outside Range of Stage
+		if(gLocs[i].xp > 100.0f)
+			gLocs[i].xp = 0.0f;
+		if(gLocs[i].zp > 100.0f)
+			gLocs[i].zp = 0.0f;
+
+		/* Print For Debugging
+		char* prn = NULL;
 		prn = (char *)malloc(100);
 		sprintf(prn,"Num %d x %4.4f z %4.4f", i, gLocs[i].xp, gLocs[i].zp);
 		PrintToLog(prn);*/
@@ -213,7 +245,7 @@ void Event::MoveGhosts()
 							d = TRUE;
 						}
 						
-						directions = rand() % directions;
+						directions = rand() % 4;
 						switch(directions) {
 							case 0:
 								if(d)
@@ -250,13 +282,13 @@ void Event::MoveGhosts()
 									gLocs[i].gheading -= 90.0f;
 								else if(d)
 									gLocs[i].gheading += 180.0f;
-							else if(u)
+								else if(u)
 									gLocs[i].gheading += 0.0f;
 								else if(l)
 									gLocs[i].gheading += 90.0f;
 								break;
 							default:
-									if(d)
+								if(d)
 									gLocs[i].gheading += 180.0f;
 								else if(u)
 									gLocs[i].gheading += 0.0f;
@@ -265,7 +297,6 @@ void Event::MoveGhosts()
 								else if(r)
 									gLocs[i].gheading -= 90.0f;
 								break;
-	
 						}
 					}
 				}

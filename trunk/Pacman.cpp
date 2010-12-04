@@ -1,16 +1,17 @@
 /*
-	Pac-man 3D
+	TorchMan
 	Uses modified Lesson 10 code from nehe.gamedev.net for window creation, OpenGL initialization, and key handling.
 	Usage: 
 		WASD & Arrow keys to move:
 		W/Up Arrow: Move Forward.
-		A/Left Arrow: Turn Left.
-		S/Down Arrow: Move Backward.
-		D/Right Arrow: Turn Right.
-		Shift + W/Up: "Sprint", moves double speed.
-		R: Reset.
-		B: Enable Blending, changes Blending of Primitives.
-		F: Enable Filtering between Textures and Primitives.
+		A: Look Left.
+		Left Arrow: Turn Left.
+		S: Look Behind.
+		Down Arrow: Move Backward.
+		D: Look Right.
+		Right Arrow: Turn Right.
+		Shift + W/Up: "Sprint", moves double speed while sprint gauge is not empty.
+		F: Shows FPS.
 		PageUp: Look Up.
 		PageDown: Look Down.
 		Control: Crouch.
@@ -220,56 +221,55 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 
 void setShaders() {
 
-	char *vs = NULL,*fs = NULL;
-	char *ts = NULL, *fts = NULL; //texture
+	char *vs = NULL,*fs = NULL;	  // color
+	char *ts = NULL, *fts = NULL; // texture
 
-	c_v = glCreateShader(GL_VERTEX_SHADER);
-	c_f = glCreateShader(GL_FRAGMENT_SHADER);
-	c_f2 = glCreateShader(GL_FRAGMENT_SHADER);
+	c_v = glCreateShader(GL_VERTEX_SHADER);   // color
+	c_f = glCreateShader(GL_FRAGMENT_SHADER); // color
 
-	t_v = glCreateShader(GL_VERTEX_SHADER);//texture
-	t_f = glCreateShader(GL_FRAGMENT_SHADER);//texture
-	t_f2 = glCreateShader(GL_FRAGMENT_SHADER);//texture
+	t_v = glCreateShader(GL_VERTEX_SHADER);   // texture
+	t_f = glCreateShader(GL_FRAGMENT_SHADER); // texture
 
-	vs = textFileRead("shaders\\color.vert");
-	fs = textFileRead("shaders\\color.frag");
+	vs = textFileRead("shaders\\color.vert"); // color
+	fs = textFileRead("shaders\\color.frag"); // color
 
-	ts = textFileRead("shaders\\textureSimple.vert");//texture
-	fts = textFileRead("shaders\\textureSimple.frag");//texture
+	ts = textFileRead("shaders\\textureSimple.vert"); // texture
+	fts = textFileRead("shaders\\textureSimple.frag");// texture
 
 	if (sizeof(ts) == 0 || sizeof(fts) == 0)
 	{
-		PrintToLog("Texture Shadres do not exist");
+		PrintToLog("Texture Shaders do not exist");
 	}
 
 	if (sizeof(vs) == 0 || sizeof(fs) == 0)
     {
-		PrintToLog("Shaders do not exist");
+		PrintToLog("Color Shaders do not exist");
 	}
 
-	const char * tt = ts;			//texture
-	const char * tff = fts;			//texutre
+	const char * tt = ts;			// texture
+	const char * tff = fts;			// texutre
 
-	const char * vv = vs;
-	const char * ff = fs;
+	const char * vv = vs;			// color
+	const char * ff = fs;			// color
 
-	glShaderSource(c_v, 1, &vv,NULL);
-	glShaderSource(c_f, 1, &ff,NULL);
+	glShaderSource(c_v, 1, &vv,NULL);// color
+	glShaderSource(c_f, 1, &ff,NULL);// color
 
-	glShaderSource(t_v, 1, &tt,NULL);//texture
-	glShaderSource(t_v, 1, &tt,NULL);//texture
+	glShaderSource(t_v, 1, &tt,NULL);// texture
+	glShaderSource(t_v, 1, &tt,NULL);// texture
 
-	free(vs);free(fs);
+	free(vs);free(fs); // color
 
-	free(ts);free(fts);//texture
+	free(ts);free(fts); // texture
 
-	glCompileShader(c_v);
-	glCompileShader(c_f);
+	glCompileShader(c_v); // color
+	glCompileShader(c_f); // color
 	
-	glCompileShader(t_v);//texture
-	glCompileShader(t_f);//texture
+	glCompileShader(t_v); // texture
+	glCompileShader(t_f); // texture
 	GLint result = 0;
 
+	// Check Compilation Status
 	glGetShaderiv(c_v, GL_COMPILE_STATUS, &result);
 	if(!result) {
 		string prn = "Could not compile shader " + c_v;
@@ -280,28 +280,33 @@ void setShaders() {
 		string prn = "Could not compile shader " + c_f;
 		PrintToLog(prn.c_str());
 	}
+	glGetShaderiv(t_v, GL_COMPILE_STATUS, &result);
+	if(!result) {
+		string prn = "Could not compile shader " + t_v;
+		PrintToLog(prn.c_str());
+	}
+	glGetShaderiv(t_f, GL_COMPILE_STATUS, &result);
+	if(!result) {
+		string prn = "Could not compile shader " + t_f;
+		PrintToLog(prn.c_str());
+	}
 
-	printShaderInfoLog(c_v);
-	printShaderInfoLog(c_f);
+	printShaderInfoLog(c_v);	  // color
+	printShaderInfoLog(c_f);	  // texture
 
-	tShaders = glCreateProgram();//texture
-	glAttachShader(tShaders, t_v);//texture
-    glAttachShader(tShaders, t_f);//texture
+	tShaders = glCreateProgram(); // texture
+	glAttachShader(tShaders,t_v); // texture
+    glAttachShader(tShaders,t_f); // texture
 
-	cShaders = glCreateProgram();
-	glAttachShader(cShaders,c_v);
-	glAttachShader(cShaders,c_f);
+	cShaders = glCreateProgram(); // color
+	glAttachShader(cShaders,c_v); // color
+	glAttachShader(cShaders,c_f); // color
 
-	glLinkProgram(cShaders);
-	printProgramInfoLog(cShaders);
+	glLinkProgram(cShaders);	  // color
+	printProgramInfoLog(cShaders);// color
 	
-	glLinkProgram(tShaders);//texture
-	printProgramInfoLog(tShaders);//texture
-
-
-	//glUseProgram(cShaders);
-
-	//loc = glGetUniformLocation(cShaders,"time");
+	glLinkProgram(tShaders);	  // texture
+	printProgramInfoLog(tShaders);// texture
 
 }
 
@@ -1143,14 +1148,19 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	MSG		msg;									// Windows Message Structure
 	BOOL	done=FALSE;								// Bool Variable To Exit Loop
 
+	DWORD dwWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+	DWORD dwHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+
 	// Ask The User Which Screen Mode They Prefer
 	if (MessageBox(NULL,"Would You Like To Run In Fullscreen Mode?", "Start FullScreen?",MB_YESNO|MB_ICONQUESTION)==IDNO)
 	{
 		fullscreen=FALSE;							// Windowed Mode
+		dwWidth = 800;
+		dwHeight = 600;
 	}
 
 	// Create Our OpenGL Window
-	if (!CreateGLWindow("TorchMan",800,600,16,fullscreen))
+	if (!CreateGLWindow("TorchMan",dwWidth,dwHeight,16,fullscreen))
 	{
 		return 0;									// Quit If Window Was Not Created
 	}
@@ -1456,6 +1466,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					fourp = FALSE;
 				}
 
+			/* Disable Fullscreen Switching
 				if (keys[VK_F1])						// Is F1 Being Pressed?
 				{
 					keys[VK_F1]=FALSE;					// If So Make Key FALSE
@@ -1468,7 +1479,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					{
 						return 0;						// Quit If Window Was Not Created
 					}
-				}
+				}*/
 			}
 		}
 	}
