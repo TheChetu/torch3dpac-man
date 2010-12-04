@@ -224,19 +224,34 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 void setShaders() {
 
 	char *vs = NULL,*fs = NULL;
+	char *ts = NULL, *fts = NULL; //texture
 
 	c_v = glCreateShader(GL_VERTEX_SHADER);
 	c_f = glCreateShader(GL_FRAGMENT_SHADER);
 	c_f2 = glCreateShader(GL_FRAGMENT_SHADER);
 
+	t_v = glCreateShader(GL_VERTEX_SHADER);//texture
+	t_f = glCreateShader(GL_FRAGMENT_SHADER);//texture
+	t_f2 = glCreateShader(GL_FRAGMENT_SHADER);//texture
 
 	vs = textFileRead("shaders\\color.vert");
 	fs = textFileRead("shaders\\color.frag");
+
+	ts = textFileRead("shaders\\textureSimple.vert");//texture
+	fts = textFileRead("shaders\\textureSimple.frag");//texture
+
+	if (sizeof(ts) == 0 || sizeof(fts) == 0)
+	{
+		PrintToLog("Texture Shadres do not exist");
+	}
 
 	if (sizeof(vs) == 0 || sizeof(fs) == 0)
     {
 		PrintToLog("Shaders do not exist");
 	}
+
+	const char * tt = ts;			//texture
+	const char * tff = fts;			//texutre
 
 	const char * vv = vs;
 	const char * ff = fs;
@@ -244,10 +259,18 @@ void setShaders() {
 	glShaderSource(c_v, 1, &vv,NULL);
 	glShaderSource(c_f, 1, &ff,NULL);
 
+	glShaderSource(t_v, 1, &tt,NULL);//texture
+	glShaderSource(t_v, 1, &tt,NULL);//texture
+
 	free(vs);free(fs);
+
+	free(ts);free(fts);//texture
 
 	glCompileShader(c_v);
 	glCompileShader(c_f);
+	
+	glCompileShader(t_v);//texture
+	glCompileShader(t_f);//texture
 	//glCompileShader(f2);
 	GLint result = 0;
 
@@ -266,6 +289,9 @@ void setShaders() {
 	printShaderInfoLog(c_f);
 	//printShaderInfoLog(c_f2);
 
+	tShaders = glCreateProgram();//texture
+	glAttachShader(tShaders, t_v);//texture
+    glAttachShader(tShaders, t_f);//texture
 
 	cShaders = glCreateProgram();
 	glAttachShader(cShaders,c_v);
@@ -275,7 +301,11 @@ void setShaders() {
 	glLinkProgram(cShaders);
 	printProgramInfoLog(cShaders);
 	
-	glUseProgram(cShaders);
+	glLinkProgram(tShaders);//texture
+	printProgramInfoLog(tShaders);//texture
+
+
+	//glUseProgram(cShaders);
 
 	//loc = glGetUniformLocation(cShaders,"time");
 
@@ -285,8 +315,8 @@ void setShaders() {
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
 
-	//glClearColor(1.0,1.0,1.0,1.0);
-	//glEnable(GL_CULL_FACE);
+	glClearColor(1.0,1.0,1.0,1.0);
+	glEnable(GL_CULL_FACE);
 
 	//****************************** GLEW Initialization *********************************
 	glewInit();

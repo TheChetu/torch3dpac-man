@@ -2,6 +2,7 @@
 
 bool Event::EInit()
 {
+
 	// Calculate Dot Centers
 	zLoc theDots;
 	for(unsigned int i = 0; i < worldLayout.size(); i++) {
@@ -16,6 +17,7 @@ bool Event::EInit()
 				break;
 		}
 	}
+	/*
 	// Get Ghost Pathing
 	gMap P;
 	for(int i = 0; i < int(worldLayout.size()); i++) {
@@ -65,11 +67,13 @@ bool Event::EInit()
 
 		gMapSet.push_back(P);
 	}
-
+	*/
 	// Seed Random
 	srand(time(0));
+
 	EveInit = TRUE;
 	return EveInit;
+	
 }
 
 bool Event::CheckCollideDot()
