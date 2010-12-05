@@ -205,9 +205,9 @@ void Event::MoveGhosts()
 		}
 		
 		// Check Position Outside Range of Stage
-		if(gLocs[i].xp > 100.0f)
+		if(gLocs[i].xp > 100.0f || gLocs[i].xp < -100.0f)
 			gLocs[i].xp = 0.0f;
-		if(gLocs[i].zp > 100.0f)
+		if(gLocs[i].zp > 100.0f || gLocs[i].zp < -100.0f)
 			gLocs[i].zp = 0.0f;
 
 		/* Print For Debugging
