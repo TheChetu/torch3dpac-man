@@ -782,15 +782,15 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glEnable(GL_TEXTURE_2D);
 			glDisable(GL_LIGHTING);
 			glRasterPos2f(-0.5f,3.0f);
-			if((elapsed() - reElapsed)  > 10) {
-				glBindTexture(GL_TEXTURE_2D,texture[5]);
+			if(((elapsed() - reElapsed) / 1000)  > 15) {
+				glBindTexture(GL_TEXTURE_2D,texture[4]);
 				glColor3f(0.0f,1.0f,0.0f);
 			}
-			else if((elapsed() - reElapsed) < 5) {
-				glBindTexture(GL_TEXTURE_2D,texture[4]);
+			else if(((elapsed() - reElapsed) / 1000) < 5) {
+				glBindTexture(GL_TEXTURE_2D,texture[5]);
 				glColor3f(1.0f,0.0f,0.0f);
 			}
-			else if((elapsed() - reElapsed) < 10) {
+			else {
 				glBindTexture(GL_TEXTURE_2D,texture[6]);
 				glColor3f(1.0f,1.0f,0.0f);
 			}
