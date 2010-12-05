@@ -107,7 +107,7 @@ static void FilePrintTimestamp()
 			lt.wMonth, lt.wDay, lt.wYear, 
 			lt.wHour, lt.wMinute,lt.wSecond, lt.wMilliseconds);
 	gloLog << localTime;
-	gloLog.close();
+	//gloLog.close();
 	// Return Timestamp
 	return;
 }
@@ -130,7 +130,7 @@ static void PrintToLog(const char* prnErr)
 		else
 			gloLog.open("data\\log.txt",ios_base::app);
 		gloLog << "\t \t" << prnErr << endl;
-		gloLog.close();
+		//gloLog.close();
 		return;
 }
 

@@ -24,17 +24,7 @@
 
 /***************** Shader Declarations ***************/
 GLint	loc;
-// Color Shaders
-GLuint	c_v,
-		c_f,
-		c_f2,
-		cShaders,
-		// Model Shaders
-		m_v,
-		m_f,
-		m_f2,
-		mShaders,
-		// Terrain Shaders
+GLuint	// Texture Shaders
 		t_v,
 		t_f,
 		t_f2,
@@ -176,14 +166,13 @@ ALvoid *data;
 int ch;
 
 // Texture File Names
-char *Wall1Bitmap = "textures\\Wall1.bmp";
-char *SkyBox1Bitmap = "textures\\neg_x.bmp";
-char *GroundBitmap = "textures\\neg_y.bmp";
-char *SkyBox3Bitmap = "textures\\neg_z.bmp";
-char *SkyBox4Bitmap = "textures\\pos_x.bmp";
-char *SkyBox5Bitmap = "textures\\pos_y.bmp";
-char *SkyBox6Bitmap = "textures\\pos_z.bmp";
+char *Wall1Bitmap	= "textures\\Wall1.bmp";
+char *GroundBitmap	= "textures\\neg_y.bmp";
 char *PLives		= "textures\\life.bmp";
+char *White			= "textures\\white.bmp";
+char *Red			= "textures\\red.bmp";
+char *Green			= "textures\\green.bmp";
+char *Orange		= "textures\\orange.bmp";
 
 GLUquadricObj *quadratic;				// Storage For Quadratic Objects
 
@@ -219,19 +208,13 @@ GLvoid ReSizeGLScene(GLsizei width, GLsizei height)		// Resize And Initialize Th
 	
 }
 
-void setShaders() {
+void setShaders() 
+{
 
-	char *vs = NULL,*fs = NULL;	  // color
 	char *ts = NULL, *fts = NULL; // texture
-
-	c_v = glCreateShader(GL_VERTEX_SHADER);   // color
-	c_f = glCreateShader(GL_FRAGMENT_SHADER); // color
 
 	t_v = glCreateShader(GL_VERTEX_SHADER);   // texture
 	t_f = glCreateShader(GL_FRAGMENT_SHADER); // texture
-
-	vs = textFileRead("shaders\\color.vert"); // color
-	fs = textFileRead("shaders\\color.frag"); // color
 
 	ts = textFileRead("shaders\\textureSimple.vert"); // texture
 	fts = textFileRead("shaders\\textureSimple.frag");// texture
@@ -241,78 +224,55 @@ void setShaders() {
 		PrintToLog("Texture Shaders do not exist");
 	}
 
-	if (sizeof(vs) == 0 || sizeof(fs) == 0)
-    {
-		PrintToLog("Color Shaders do not exist");
-	}
-
 	const char * tt = ts;			// texture
 	const char * tff = fts;			// texutre
 
-	const char * vv = vs;			// color
-	const char * ff = fs;			// color
-
-	glShaderSource(c_v, 1, &vv,NULL);// color
-	glShaderSource(c_f, 1, &ff,NULL);// color
-
 	glShaderSource(t_v, 1, &tt,NULL);// texture
-	glShaderSource(t_v, 1, &tt,NULL);// texture
-
-	free(vs);free(fs); // color
+	glShaderSource(t_f, 1, &tff,NULL);// texture
 
 	free(ts);free(fts); // texture
-
-	glCompileShader(c_v); // color
-	glCompileShader(c_f); // color
 	
 	glCompileShader(t_v); // texture
 	glCompileShader(t_f); // texture
 	GLint result = 0;
 
 	// Check Compilation Status
-	glGetShaderiv(c_v, GL_COMPILE_STATUS, &result);
-	if(!result) {
-		string prn = "Could not compile shader " + c_v;
-		PrintToLog(prn.c_str());
-	}
-	glGetShaderiv(c_f, GL_COMPILE_STATUS, &result);
-	if(!result) {
-		string prn = "Could not compile shader " + c_f;
-		PrintToLog(prn.c_str());
-	}
 	glGetShaderiv(t_v, GL_COMPILE_STATUS, &result);
 	if(!result) {
-		string prn = "Could not compile shader " + t_v;
+		string prn = "Could not compile shader "; prn += t_v;
 		PrintToLog(prn.c_str());
 	}
 	glGetShaderiv(t_f, GL_COMPILE_STATUS, &result);
 	if(!result) {
-		string prn = "Could not compile shader " + t_f;
+		string prn = "Could not compile shader "; prn += t_f;
 		PrintToLog(prn.c_str());
 	}
 
-	printShaderInfoLog(c_v);	  // color
-	printShaderInfoLog(c_f);	  // texture
-
+	
+	PrintToLog("Shaders Set");
+	
 	tShaders = glCreateProgram(); // texture
 	glAttachShader(tShaders,t_v); // texture
     glAttachShader(tShaders,t_f); // texture
 
-	cShaders = glCreateProgram(); // color
-	glAttachShader(cShaders,c_v); // color
-	glAttachShader(cShaders,c_f); // color
-
-	glLinkProgram(cShaders);	  // color
-	printProgramInfoLog(cShaders);// color
-	
 	glLinkProgram(tShaders);	  // texture
 	printProgramInfoLog(tShaders);// texture
+
+	glUseProgram(tShaders);
 
 }
 
 
 int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 {
+	// Check if Log is Open
+	if(gloLog.is_open()); // do nothing
+	else // open log
+		gloLog.open("data\\log.txt",ios_base::out);
+
+	// Initialize Timer
+	initTime();
+
 	//****************************** GLEW Initialization *********************************
 	glewInit();
 	if (glewIsSupported("GL_VERSION_2_0"))
@@ -322,17 +282,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 		exit(1);
 	}
 	//****************************** End GLEW Initialization *****************************
-	//Set the shaders
-	setShaders();
 	
-	// Initialize Timer
-	initTime();
-
-	// Check if Log is Open
-	if(gloLog.is_open()); // do nothing
-	else // open log
-		gloLog.open("data\\log.txt",ios_base::out);
-
 	//******************************** AL Initialization **********************************
 	char al_bool;
 	ALfloat		listenerPos[]={0.0,0.0,0.0};				// At the origin
@@ -348,11 +298,11 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alGenBuffers(NUM_BUFFERS, buffers);
 
 	if(alGetError() != AL_NO_ERROR) {
-		PrintToLog("Error creating buffers !!");
+		PrintToLog("Error creating sound buffers !!");
 		exit(1);
 	}
 	else {
-		PrintToLog("Created buffers");
+		PrintToLog("Created sound buffers");
 	}
 
 	// Start Sound Load
@@ -374,7 +324,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 	alGenSources(NUM_SOURCES, source);
 
 	if(alGetError() != AL_NO_ERROR) {
-		PrintToLog("Error creating sources !!");
+		PrintToLog("Error creating sound sources !!");
 		exit(2);
 	}
 	
@@ -539,6 +489,9 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 
 	srand(time(0));		// Seed Random
 
+	//Set the shaders
+	setShaders();
+
 	return TRUE;								// Initialization Went OK
 }
 
@@ -600,6 +553,77 @@ int glLoadTexture()
 		PrintToLog(Prn.c_str());
 	}
 
+	Status=FALSE;
+
+	texture[3] = ilutGLLoadImage(White);	// Load Image into OpenGL Texture
+	error = ilGetError();
+	if (error == IL_NO_ERROR) {					// If the texture was successfully created
+		Status=TRUE;                            // Set The Status To TRUE
+		
+		// Setup Texture 3 (White)
+		glBindTexture(GL_TEXTURE_2D, texture[3]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	}
+	
+	if(Status == FALSE) {
+		string Prn = White;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
+	}
+
+	texture[4] = ilutGLLoadImage(Red);	// Load Image into OpenGL Texture
+	error = ilGetError();
+	if (error == IL_NO_ERROR) {					// If the texture was successfully created
+		Status=TRUE;                            // Set The Status To TRUE
+		
+		// Setup Texture 4 (Red)
+		glBindTexture(GL_TEXTURE_2D, texture[4]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	}
+	
+	if(Status == FALSE) {
+		string Prn = Red;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
+	}
+
+	texture[5] = ilutGLLoadImage(Green);	// Load Image into OpenGL Texture
+	error = ilGetError();
+	if (error == IL_NO_ERROR) {					// If the texture was successfully created
+		Status=TRUE;                            // Set The Status To TRUE
+		
+		// Setup Texture 5 (Green)
+		glBindTexture(GL_TEXTURE_2D, texture[5]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	}
+	
+	if(Status == FALSE) {
+		string Prn = Green;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
+	}
+
+	texture[6] = ilutGLLoadImage(Orange);	// Load Image into OpenGL Texture
+	error = ilGetError();
+	if (error == IL_NO_ERROR) {					// If the texture was successfully created
+		Status=TRUE;                            // Set The Status To TRUE
+		
+		// Setup Texture 6 (Orange)
+		glBindTexture(GL_TEXTURE_2D, texture[6]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	}
+	
+	if(Status == FALSE) {
+		string Prn = Orange;
+		Prn = "Error on texture load at " + Prn;
+		PrintToLog(Prn.c_str());
+	}
+
+
 	return Status;
 }
 
@@ -625,6 +649,8 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		theTime = temp;
 	}
 	
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glTranslatef(0.0f,0.0f,-12.0f);
@@ -634,14 +660,21 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glLoadIdentity();
 	glDisable(GL_LIGHTING);
 	if(filter >= 1) {
-		if(FPS <= 20)
+		if(FPS <= 20) {
+			glBindTexture(GL_TEXTURE_2D,texture[4]);
 			glColor3f(1.0f,0.0f,0.0f);
-		else if(FPS <= 45)
+		}
+		else if(FPS <= 45) {
+			glBindTexture(GL_TEXTURE_2D,texture[6]);
 			glColor3f(1.0f,1.0f,0.0f);
-		else
+		}
+		else {
+			glBindTexture(GL_TEXTURE_2D,texture[5]);
 			glColor3f(0.0f,1.0f,0.0f);
+		}
 		glRasterPos2f(-6.0f,4.7f);  // Set Position of FPS
  		glPrint("FPS: %4.2f", FPS);	// Print GL Text To The Screen
+		glBindTexture(GL_TEXTURE_2D,texture[3]);
 	}
 	// Draw Score
 	glColor3f(1.0f,1.0f,1.0f);
@@ -674,7 +707,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glVertex3f(0.0f,0.4f,0.0f);
 		glEnd();
 	}
-	glDisable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,texture[3]);
 	glEnable(GL_LIGHTING);
 	glPopMatrix();
 	// Draw Dots Remaining
@@ -699,6 +732,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	glTranslatef(0.3f,4.3f,0.0f);
 	glRotatef(180.0f,0,1,0);
 	glRotatef(180.0f,1,0,0);
+	glBindTexture(GL_TEXTURE_2D,texture[5]);
 	for(float i = sGauge; i > 0; i = i - 0.1f) {
 		glTranslatef(-0.01f,0.0f,0.0f);
 		glColor3f(0.0f,1.0f,0.0f);
@@ -709,12 +743,13 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glVertex3f(0.0f,0.4f,0.0f);
 		glEnd();
 	}
+	glBindTexture(GL_TEXTURE_2D,texture[3]);
 	glEnable(GL_LIGHTING);
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-
+	glDisable(GL_TEXTURE_2D);
 
 	glLoadIdentity();									// Reset The View
 	// Enable and Disable Lighting
@@ -744,11 +779,24 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		// Draw Message
 		glPushMatrix();
 			glLoadIdentity();
+			glEnable(GL_TEXTURE_2D);
 			glDisable(GL_LIGHTING);
 			glRasterPos2f(-0.5f,3.0f);
-			glColor3f(float(sin(double(rand()))),float(cos(double(rand()))),float(sin(double(rand()))));
+			if((elapsed() - reElapsed)  > 10) {
+				glBindTexture(GL_TEXTURE_2D,texture[5]);
+				glColor3f(0.0f,1.0f,0.0f);
+			}
+			else if((elapsed() - reElapsed) < 5) {
+				glBindTexture(GL_TEXTURE_2D,texture[4]);
+				glColor3f(1.0f,0.0f,0.0f);
+			}
+			else if((elapsed() - reElapsed) < 10) {
+				glBindTexture(GL_TEXTURE_2D,texture[6]);
+				glColor3f(1.0f,1.0f,0.0f);
+			}
 			glPrint("EAT THE GHOSTS!!!");
 			glEnable(GL_LIGHTING);
+			glDisable(GL_TEXTURE_2D);
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
@@ -786,9 +834,6 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 	//Draw::SkyBox();
 	
 	glTranslatef(xtrans, 0.0f, ztrans);		// Move in the X and Z directions the correct respective amounts
-
-	// Ghosts
-	//Draw::Ghosts();
 
 	// Draw Plane
 	Draw::Plane();
@@ -831,12 +876,15 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glMatrixMode(GL_MODELVIEW);
 			// Draw Message
 			glPushMatrix();
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, texture[3]);
 				glLoadIdentity();
 				glDisable(GL_LIGHTING);
 				glRasterPos2f(-2.0f,3.5f);
 				glColor3f(1.0f,0.0f,0.0f);
 				glPrint("Welcome to TorchMan");
 				glEnable(GL_LIGHTING);
+				glDisable(GL_TEXTURE_2D);
 			glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
@@ -1219,6 +1267,8 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					// Draw Message
 					glPushMatrix();
 						glLoadIdentity();
+						glEnable(GL_TEXTURE_2D);
+						glBindTexture(GL_TEXTURE_2D,texture[4]);
 						glDisable(GL_LIGHTING);
 						glRasterPos2f(-0.5f,3.0f);
 						glColor3f(1.0,0.0,0.0);
@@ -1228,10 +1278,12 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 							glPrint("Exiting in %d",(10-((elapsed()-exitTime)/1000)));
 						}
 						else {
+							glBindTexture(GL_TEXTURE_2D,texture[5]);
 							glPrint("CONGRATULATIONS YOU WON!");
 							glRasterPos2f(-0.5f,2.5f);
 							glPrint("Exiting in %d",(10-((elapsed()-exitTime)/1000)));
 						}
+						glDisable(GL_TEXTURE_2D);
 						glEnable(GL_LIGHTING);
 					glPopMatrix();
 					glMatrixMode(GL_PROJECTION);
