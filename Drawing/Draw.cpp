@@ -106,9 +106,9 @@ GLfloat tb_texcoords[] = {
 	// Left and Right
 GLfloat lr_texcoords[] = {
 	0.0f, 0.0f,
-	0.0f, -5.0f,
-	3.0f, -5.0f,
-	3.0f, 0.0f,
+	-5.0f, 0.0f,
+	-5.0f, 3.0f,
+	0.0f, 3.0f,
 };
 
 void Draw::Lighting(GLvoid)
@@ -441,7 +441,7 @@ void Draw::Left(int place)
 	glTexCoordPointer(2, GL_FLOAT, 0, 0);				// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
-	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+12);
+	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, 0);
 	
 	glDisableClientState(GL_VERTEX_ARRAY);				// Deactivate Vertex Array
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);		// Deactivate TexCoord Array
@@ -471,8 +471,7 @@ void Draw::Right(int place)
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, verBI); // for indices
 
-	// do same as vertex array except pointer
-	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+	glEnableClientState(GL_VERTEX_ARRAY);				// activate vertex coords array
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glVertexPointer(3, GL_FLOAT, 0, (GLfloat*)0+12);  // last param is offset, not ptr
@@ -482,7 +481,7 @@ void Draw::Right(int place)
 	glTexCoordPointer(2, GL_FLOAT, 0, 0);		// Set The TexCoord Pointer To The TexCoord Buffer
 
 	// draw 1 quads using offset of index array
-	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT, (GLushort*)0+12);
+	glDrawElements(GL_QUADS, 4, GL_UNSIGNED_SHORT,0);
 	
 	glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
