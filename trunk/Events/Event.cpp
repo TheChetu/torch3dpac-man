@@ -170,7 +170,6 @@ int Event::CheckCollideGhosts()
 
 void Event::MoveGhosts()
 {
-	//gMap *P = NULL;
 	int directions;
 	bool l,r,u,d,locf;
 	

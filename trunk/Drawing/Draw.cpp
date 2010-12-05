@@ -334,7 +334,7 @@ void Draw::Plane(GLvoid)
 	glTexCoord2f(-50.0f,50.0f);
 	glVertex3f(-vPlane2x,0.0f,-vPlane1z);
 	glEnd();
-	
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
@@ -372,6 +372,7 @@ void Draw::Top(int place)
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
@@ -409,6 +410,7 @@ void Draw::Bottom(int place)
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
@@ -421,10 +423,9 @@ void Draw::Left(int place)
 		t += 5;
 	
 	glTranslatef(float(lctn[place].x),0.0f,float(t));
-	glRotatef(90,0,1,0);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
 
 	// bind VBOs for vertex array and index array
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBO);         // for vertex coordinates
@@ -434,7 +435,7 @@ void Draw::Left(int place)
 	glEnableClientState(GL_VERTEX_ARRAY);				// Activate Vertex Coords Array
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);		// Activate TexCoord Array
 
-	glVertexPointer(3, GL_FLOAT, 0, 0);					// Size/Number, Type, Distance between Objects, Offset
+	glVertexPointer(3, GL_FLOAT, 0, (GLfloat*)0+12);	// Size/Number, Type, Distance between Objects, Offset
 
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
 	glTexCoordPointer(2, GL_FLOAT, 0, 0);				// Set The TexCoord Pointer To The TexCoord Buffer
@@ -449,6 +450,7 @@ void Draw::Left(int place)
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
@@ -461,7 +463,6 @@ void Draw::Right(int place)
 		t += 5;
 
 	glTranslatef(float(lctn[place].x+5),0.0f,float(t));
-	glRotatef(90,0,1,0);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture[2]);
@@ -474,7 +475,7 @@ void Draw::Right(int place)
 	glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glVertexPointer(3, GL_FLOAT, 0, 0);				  // last param is offset, not ptr
+	glVertexPointer(3, GL_FLOAT, 0, (GLfloat*)0+12);  // last param is offset, not ptr
 
 
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, verBlr);
@@ -490,6 +491,7 @@ void Draw::Right(int place)
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glDisable(GL_TEXTURE_2D);
 
 	glPopMatrix();
@@ -592,6 +594,7 @@ void Draw::Corner(int place)
 			glEnd();		
 		}
 	}
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 }
