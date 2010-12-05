@@ -68,7 +68,7 @@ For Running:
 			Contains level1.txt, log.txt created after running.
 
 		Models (Directory)
-			Contains Bass, Cloud, Extra Models, Megaman, Sephiroth, Wily, Zero Directories
+			Contains Bass, Cloud, Megaman, Sephiroth, Wily, Zero Directories
 
 		shaders (Directory)
 			textureSimple.frag, textureSimple.vert
