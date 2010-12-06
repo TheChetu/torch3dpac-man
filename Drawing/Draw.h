@@ -50,7 +50,6 @@ extern GLuint verBlr;			// Vertex Buffer Texture Left and Right
 extern ofstream gloLog;			// Global Log File
 
 extern vector<TLoc> lctn;		// Translation Locations
-extern vector<GLint> VBO;		// Vertex Buffer Objects
 extern vector<GhP> gLocs;		// Ghost Positions
 
 extern GhP SpawnLoc;			// Ghost Spawn Location

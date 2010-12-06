@@ -206,15 +206,17 @@ void Event::MoveGhosts()
 		
 		// Check Position Outside Range of Stage
 		if(gLocs[i].xp > 100.0f || gLocs[i].xp < 0.0f)
-			gLocs[i].xp = 0.0f;
+			gLocs[i].xp = 50.0f;
 		if(gLocs[i].zp > 100.0f || gLocs[i].zp < 0.0f)
-			gLocs[i].zp = 0.0f;
+			gLocs[i].zp = 50.0f;
 
-		/* Print For Debugging
-		char* prn = NULL;
-		prn = (char *)malloc(100);
-		sprintf(prn,"Num %d x %4.4f z %4.4f", i, gLocs[i].xp, gLocs[i].zp);
-		PrintToLog(prn);*/
+		/* Print For Debugging */
+		if(dbug) {
+			char* prn = NULL;
+			prn = (char *)malloc(100);
+			sprintf(prn,"Ghost %d at xpos %4.4f zpos %4.4f", i, gLocs[i].xp, gLocs[i].zp);
+			PrintToLog(prn);
+		}
 
 		gLocs[i].xp = floor(gLocs[i].xp);
 		gLocs[i].zp = floor(gLocs[i].zp);

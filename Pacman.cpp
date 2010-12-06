@@ -11,10 +11,8 @@
 		D: Look Right.
 		Right Arrow: Turn Right.
 		Shift + W/Up: "Sprint", moves double speed while sprint gauge is not empty.
-		F: Shows FPS.
-		PageUp: Look Up.
-		PageDown: Look Down.
-		Control: Crouch.
+		F: Toggle FPS.
+		X: Debug Logging Toggle.
 		Escape: Exit.		
  */
 
@@ -77,12 +75,11 @@ bool	fullscreen=TRUE;	// Fullscreen Flag Set To Fullscreen Mode By Default
 bool	blend = FALSE;		// Blending ON/OFF
 bool	bp;					// B Pressed?
 bool	fp;					// F Pressed?
-bool	rp;					// R Pressed?
 bool	dp;					// D Pressed?
 bool	ap;					// A Pressed?
 bool	sp;					// S Pressed?
-bool	wp;					// W Pressed?
 bool	vp;					// V Pressed?
+bool	wp;					// W Pressed?
 bool	onep;				// 1 Pressed?
 bool	twop;				// 2 Pressed?
 bool	threep;				// 3 Pressed?
@@ -108,14 +105,14 @@ int		alcheck = 0;		// Check Current State of Audio Source
 int		currLives = 4;		// Current Lives
 int		dotsRemaining = 0;	// Number of dots still in play
 int		vsync = 1;			// Vertical Sync State 1 = True, 0 = False
-bool gameOver = FALSE;		// Set the state of the game ending
+bool	gameOver = FALSE;	// Set the state of the game ending
 extern ofstream gloLog;		// Global Log
 GLsizei globwidth, globheight; // Allocate Global Setting for Height and Width
 vector<char> worldLayout;	// World Layout Storage
 long reElapsed = 0;			// Reward Elapsed Time
+bool dbug = FALSE;			// Debug Logging
 
 vector<TLoc> lctn;				// Translation Locations
-vector<GLint> VBO;				// Vertex Buffer Objects
 vector<zLoc> dotpos;			// Positioning of Dots
 vector<GhP> gLocs;				// Ghost Positions
 vector<gMap> gMapSet;			// Ghost Map
@@ -942,8 +939,16 @@ GLvoid KillGLWindow(GLvoid)								// Properly Kill The Window
 	}
 
 	PrintToLog("Exiting Program");
-	gloLog.close();
-	KillFont();						// Destroy The Font
+
+	//Garbage Cleanup
+	gloLog.close();			// Close the Log
+	KillFont();				// Destroy The Font
+	lctn.clear();			// Translation Locations
+	dotpos.clear();			// Positioning of Dots
+	gLocs.clear();			// Ghost Positions
+	gMapSet.clear();		// Ghost Map
+	worldLayout.clear();	// World Map
+
 }
 
 /*	This Code Creates Our OpenGL Window.  Parameters Are:					*
@@ -1352,14 +1357,14 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
 						sGauge -= 0.1f;
-						xpos -= (float)sin(heading*piover180) * 0.10f;
-						zpos -= (float)cos(heading*piover180) * 0.10f;
+						xpos -= (float)sin(heading*piover180) * (6.0f / FPS);
+						zpos -= (float)cos(heading*piover180) * (6.0f / FPS);
 					}
 					// Walk, normal movement
 					else
 					{
-						xpos -= (float)sin(heading*piover180) * 0.05f;
-						zpos -= (float)cos(heading*piover180) * 0.05f;
+						xpos -= (float)sin(heading*piover180) * (3.5f / FPS);
+						zpos -= (float)cos(heading*piover180) * (3.5f / FPS);
 					}
 				}
 
@@ -1390,11 +1395,11 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				if(keys[VK_DOWN])
 				{			
 					//****play sound *** backwards//
-					xpos += (float)sin(heading*piover180) * 0.05f;
-					zpos += (float)cos(heading*piover180) * 0.05f;
+					xpos += (float)sin(heading*piover180) * (3.0f / FPS);
+					zpos += (float)cos(heading*piover180) * (3.0f / FPS);
 				}
 
-				// Turn to the Right
+				// Turn Around
 				if (keys['D'] && !dp)
 				{
 					dp = TRUE;
@@ -1410,8 +1415,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				// Turn Right
 				if(keys[VK_RIGHT])
 				{
-					//****play sound *** right//
-					heading -= 1.0f;
+					heading -= (60.0f / FPS);
 					yrot = heading;
 				}
 
@@ -1431,15 +1435,23 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				// Turn Left
 				if(keys[VK_LEFT])
 				{
-					heading += 1.0f;
+					heading += (60.0f / FPS);
 					yrot = heading;
 				}
 
-				if (!keys['R'])
+				// Debug Logging
+				if (keys['B'] && !bp)
 				{
-					rp = FALSE;
+					bp = TRUE;
+					dbug = !dbug;
 				}
 
+				if (!keys['B'])
+				{
+					bp = FALSE;
+				}
+
+				// Vertical Sync
 				if (keys['V'] && !vp)
 				{
 					vp = TRUE;
@@ -1458,6 +1470,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					vp = FALSE;
 				}
 
+				// Flash Light
 				if (keys['1'] && !onep)
 				{
 					onep = TRUE;
@@ -1473,6 +1486,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					onep = FALSE;
 				}
 
+				// Ambient Light
 				if (keys['2'] && !twop)
 				{
 					twop = TRUE;
@@ -1488,6 +1502,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					twop = FALSE;
 				}
 
+				// Ghost 1 Light
 				if (keys['3'] && !threep)
 				{
 					threep = TRUE;
@@ -1503,6 +1518,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					threep = FALSE;
 				}
 
+				// Pacman Light
 				if (keys['4'] && !fourp)
 				{
 					fourp = TRUE;
