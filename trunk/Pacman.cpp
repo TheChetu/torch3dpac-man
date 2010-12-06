@@ -1357,14 +1357,34 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
 						sGauge -= 0.1f;
-						xpos -= (float)sin(heading*piover180) * (6.0f / FPS);
-						zpos -= (float)cos(heading*piover180) * (6.0f / FPS);
+						if(xpos < 50.0f && xpos > -50.0f) {
+							xpos -= (float)sin(heading*piover180) * (6.0f / FPS);
+						}
+						else {
+							xpos += 2.0f * ((float)sin(heading*piover180) * (6.0f / FPS));
+						}
+						if(zpos < 50.0f && zpos > -50.0f) {
+							zpos -= (float)cos(heading*piover180) * (6.0f / FPS);
+						}
+						else {
+							zpos += 2.0f * ((float)cos(heading*piover180) * (6.0f / FPS));
+						}
 					}
 					// Walk, normal movement
 					else
 					{
-						xpos -= (float)sin(heading*piover180) * (3.5f / FPS);
-						zpos -= (float)cos(heading*piover180) * (3.5f / FPS);
+						if(xpos < 50.0f && xpos > -50.0f) {
+							xpos -= (float)sin(heading*piover180) * (3.5f / FPS);
+						}
+						else {
+							xpos += 2.0f * ((float)sin(heading*piover180) * (3.5f / FPS));
+						}
+						if(zpos < 50.0f && zpos > -50.0f) {
+							zpos -= (float)cos(heading*piover180) * (3.5f / FPS);
+						}
+						else {
+							zpos += 2.0f * ((float)cos(heading*piover180) * (3.5f / FPS));
+						}
 					}
 				}
 
@@ -1394,9 +1414,12 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				// Walk Backward
 				if(keys[VK_DOWN])
 				{			
-					//****play sound *** backwards//
-					xpos += (float)sin(heading*piover180) * (3.0f / FPS);
-					zpos += (float)cos(heading*piover180) * (3.0f / FPS);
+					if(xpos < 50.0f && xpos > -50.0f) {
+						xpos += (float)sin(heading*piover180) * (3.0f / FPS);
+					}
+					if(zpos < 50.0f && zpos > -50.0f) {
+						zpos += (float)cos(heading*piover180) * (3.0f / FPS);
+					}
 				}
 
 				// Turn Around
