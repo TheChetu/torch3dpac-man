@@ -17,9 +17,9 @@ Torch 3D Pacman
 		D: Face Right
 		Right Arrow: Turns Right.
 		Shift + W/Up: "Sprint", moves faster while sprint gauge is not empty.
-		F: Enable FPS Display
-		2: Enable/Disable Ambient Light (Default Enabled)
-		4: Enable/Disable PacMan Light (Default Enabled)
+		F: Toggle FPS Display
+		B: Toggle Debug Logging.
+		V: Toggle Vertical Sync.
 		Escape: Exit.		
 
 For Compiling: 
