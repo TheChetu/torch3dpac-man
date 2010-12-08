@@ -18,15 +18,21 @@
 
 #include <Drawing\Draw.h>
 #include <textfile\textfile.h>
+#include "resource\resource.h"
 
+
+#define WS_NO_BORDER 0xFF7FFFFF		// Remove Window Borders
+#define P_ICON MAKEINTRESOURCE(IDI_ICON1)	// Create Icon Integer
 
 /***************** Shader Declarations ***************/
 GLint	loc;
 GLuint	// Texture Shaders
 		t_v,
 		t_f,
-		t_f2,
-		tShaders;
+		tShaders,
+		l_v,
+		l_f,
+		lShaders;
 
 /**************** Animation Declarations *************/
 CMD2Model		Cloud;
@@ -222,7 +228,7 @@ void setShaders()
 	}
 
 	const char * tt = ts;			// texture
-	const char * tff = fts;			// texutre
+	const char * tff = fts;			// texture
 
 	glShaderSource(t_v, 1, &tt,NULL);// texture
 	glShaderSource(t_f, 1, &tff,NULL);// texture
@@ -231,6 +237,7 @@ void setShaders()
 	
 	glCompileShader(t_v); // texture
 	glCompileShader(t_f); // texture
+
 	GLint result = 0;
 
 	// Check Compilation Status
@@ -244,7 +251,6 @@ void setShaders()
 		string prn = "Could not compile shader "; prn += t_f;
 		PrintToLog(prn.c_str());
 	}
-
 	
 	PrintToLog("Shaders Set");
 	
@@ -404,7 +410,7 @@ int InitGL(GLvoid)										// All Setup For OpenGL Goes Here
 
 	
 	// Ambient Light
-	GLfloat light_ambient[] = {1.0f, 50.0f, -50.0f, 1.0f};			// Position of Ambient Light
+	GLfloat light_ambient[] = {-50.0f, 50.0f, -50.0f, 1.0f};			// Position of Ambient Light
 	GLfloat ambientColor[4] = {0.6f, 0.7f, 0.9f, 0.7f};				// Color of Ambient Light
 	GLfloat ambientCoeff[] = {0.2f, 0.2f, 0.2f, 0.7f};				// Strength of Effect
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambientCoeff);				// Set Effect Strength
@@ -669,6 +675,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glBindTexture(GL_TEXTURE_2D,texture[5]);
 			glColor3f(0.0f,1.0f,0.0f);
 		}
+		glColor3f(0.0f,0.0f,0.0f);
 		glRasterPos2f(-6.0f,4.7f);  // Set Position of FPS
  		glPrint("FPS: %4.2f", FPS);	// Print GL Text To The Screen
 		glBindTexture(GL_TEXTURE_2D,texture[3]);
@@ -740,6 +747,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 			glVertex3f(0.0f,0.4f,0.0f);
 		glEnd();
 	}
+	glColor3f(0.0f,0.0f,0.0f);
 	glBindTexture(GL_TEXTURE_2D,texture[3]);
 	glEnable(GL_LIGHTING);
 	glPopMatrix();
@@ -961,7 +969,7 @@ GLvoid KillGLWindow(GLvoid)								// Properly Kill The Window
 BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscreenflag)
 {
 	GLuint		PixelFormat;			// Holds The Results After Searching For A Match
-	WNDCLASS	wc;						// Windows Class Structure
+	WNDCLASSEX	wc;						// Windows Class Structure
 	DWORD		dwExStyle;				// Window Extended Style
 	DWORD		dwStyle;				// Window Style
 	RECT		WindowRect;				// Grabs Rectangle Upper Left / Lower Right Values
@@ -973,18 +981,20 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 	fullscreen=fullscreenflag;			// Set The Global Fullscreen Flag
 
 	hInstance			= GetModuleHandle(NULL);				// Grab An Instance For Our Window
+	wc.cbSize			= sizeof(WNDCLASSEX);					// Set Size of Block
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// Redraw On Size, And Own DC For Window.
 	wc.lpfnWndProc		= (WNDPROC) WndProc;					// WndProc Handles Messages
 	wc.cbClsExtra		= 0;									// No Extra Window Data
 	wc.cbWndExtra		= 0;									// No Extra Window Data
 	wc.hInstance		= hInstance;							// Set The Instance
-	wc.hIcon			= LoadIcon(NULL, IDI_WINLOGO);			// Load The Default Icon
+	wc.hIcon			= LoadIcon(hInstance, P_ICON);				// Load The Default Icon
+	wc.hIconSm			= LoadIcon(hInstance, P_ICON);				// Load The Default Icon
 	wc.hCursor			= LoadCursor(NULL, IDC_ARROW);			// Load The Arrow Pointer
 	wc.hbrBackground	= NULL;									// No Background Required For GL
 	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
 	wc.lpszClassName	= "OpenGL";								// Set The Class Name
 
-	if (!RegisterClass(&wc))									// Attempt To Register The Window Class
+	if (!RegisterClassEx(&wc))									// Attempt To Register The Window Class
 	{
 		MessageBox(NULL,"Failed To Register The Window Class.","ERROR",MB_OK|MB_ICONEXCLAMATION);
 		PrintToLog("Failed to register the window class !!");
@@ -1002,7 +1012,7 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 		dmScreenSettings.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
 
 		// Try To Set Selected Mode And Get Results.  NOTE: CDS_FULLSCREEN Gets Rid Of Start Bar.
-		if (ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)
+/*		if (ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)
 		{
 			// If The Mode Fails, Offer Two Options.  Quit Or Use Windowed Mode.
 			if (MessageBox(NULL,"The Requested Fullscreen Mode Is Not Supported By\nYour Video Card. Use Windowed Mode Instead?","OpenGL",MB_YESNO|MB_ICONEXCLAMATION)==IDYES)
@@ -1016,19 +1026,19 @@ BOOL CreateGLWindow(char* title, int width, int height, int bits, bool fullscree
 				PrintToLog("Cannot display fullscreen !!");
 				return FALSE;									// Return FALSE
 			}
-		}
+		}*/
 	}
 
 	if (fullscreen)												// Are We Still In Fullscreen Mode?
 	{
-		dwExStyle=WS_EX_APPWINDOW;								// Window Extended Style
-		dwStyle=WS_POPUP;										// Windows Style
+		dwExStyle=WS_EX_APPWINDOW | WS_EX_TOPMOST;				// Window Extended Style
+		dwStyle=WS_POPUP | WS_MAXIMIZE;			// Windows Style
 		ShowCursor(FALSE);										// Hide Mouse Pointer
 	}
 	else
 	{
 		dwExStyle=WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-		dwStyle=WS_OVERLAPPEDWINDOW;							// Windows Style
+		dwStyle = WS_OVERLAPPEDWINDOW;							// Windows Style
 	}
 
 	AdjustWindowRectEx(&WindowRect, dwStyle, FALSE, dwExStyle);		// Adjust Window To True Requested Size
@@ -1356,7 +1366,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					// Sprint, double movement
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
-						sGauge -= 0.1f;
+						sGauge -= 6.0f / FPS;
 						if(xpos < 50.0f && xpos > -50.0f) {
 							xpos -= (float)sin(heading*piover180) * (6.0f / FPS);
 						}
