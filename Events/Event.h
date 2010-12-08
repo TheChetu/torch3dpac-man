@@ -70,24 +70,26 @@ struct gMap {
 };
 
 typedef gMap gMap;
-//static gMap *Front = NULL;
-//static gMap *Rear = NULL;
 static int GhostMapSize = 0;
 
 extern void PrintToLog(const char* prnErr);
 extern vector<zLoc> dotpos;				// Positioning of Dots
 extern vector<GhP> gLocs;				// Ghost Positions
 extern vector<gMap> gMapSet;			// Ghost Map
+extern float heading;					//direction
+extern qwall q1, q2, q3, q4;
 
 class Event {
 	private:
 		static bool EInit();
 	public:
 		static bool CheckCollideDot();
-		static bool CheckCollideWall();
+		static bool CheckCollideWall(qwall currentQ);
 		static bool Reward();
 		static int CheckCollideGhosts();
 		static void	MoveGhosts();
+		static void fileWalls(wall currentWall);
+		static qwall currentQ();
 };
 
 #endif

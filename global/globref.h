@@ -63,6 +63,18 @@ typedef struct TransLoc TLoc;
 typedef struct GhostPos GhP;
 typedef struct Vertex Ver;
 
+struct wall
+{
+	float minx, minz, maxx, maxz;
+	int type;
+};
+
+struct qwall
+{
+	vector<wall> xwalls;
+	vector<wall> zwalls;
+};
+
 // Current Ghost Position Structure
 struct GhostPos {
 	float xp,yp,zp, gheading;
