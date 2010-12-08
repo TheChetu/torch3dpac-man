@@ -83,7 +83,14 @@
     <ClInclude Include="Modelling\pcx.h" />
     <ClInclude Include="Modelling\texture.h" />
     <ClInclude Include="Modelling\tga.h" />
+    <ClInclude Include="resource\resource.h" />
     <ClInclude Include="textfile\textfile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Pacman.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

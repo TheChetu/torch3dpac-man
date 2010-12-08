@@ -61,6 +61,9 @@
     <ClInclude Include="textfile\textfile.h">
       <Filter>textfile</Filter>
     </ClInclude>
+    <ClInclude Include="resource\resource.h">
+      <Filter>resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="global">
@@ -78,5 +81,16 @@
     <Filter Include="textfile">
       <UniqueIdentifier>{29acdbd5-a102-466e-8702-6c018ddb3544}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{267de35d-9f1c-470d-9f2a-8108a9dc90e9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+      <Filter>resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Pacman.ico" />
   </ItemGroup>
 </Project>
