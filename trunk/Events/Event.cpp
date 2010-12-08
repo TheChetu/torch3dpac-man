@@ -5,6 +5,9 @@ bool Event::EInit()
 
 	// Calculate Dot Centers
 	zLoc theDots;
+
+	wall currentWall;
+
 	for(unsigned int i = 0; i < worldLayout.size(); i++) {
 		switch(worldLayout[i]) {
 			case 'Z':
@@ -13,6 +16,116 @@ bool Event::EInit()
 				theDots.num = i;
 				dotpos.push_back(theDots);
 				break;
+
+			case 'T':
+				currentWall.minx = lctn[i].x - 50.0f;
+				currentWall.maxx = currentWall.minx + 5.0f;
+				currentWall.minz = lctn[i].t - 50.0f;
+				currentWall.maxz = currentWall.minz;
+				currentWall.type = 0;
+				fileWalls(currentWall);
+				break;
+
+			case 'B':
+				currentWall.minx = lctn[i].x - 50.0f;
+				currentWall.maxx = currentWall.minx + 5.0f;
+				currentWall.minz = lctn[i].t - 50.0f;
+				currentWall.maxz = currentWall.minz;
+				currentWall.type = 0;
+				fileWalls(currentWall);
+				break;
+
+			case 'L':
+				currentWall.minx = lctn[i].x - 50.0f;
+				currentWall.maxx = currentWall.minx;
+				currentWall.minz = lctn[i].t - 50.0f;
+				currentWall.maxz = currentWall.minz + 5.0f;
+				currentWall.type = 1;
+				fileWalls(currentWall);
+				break;
+
+			case 'R':
+				currentWall.minx = lctn[i].x - 45.0f;
+				currentWall.maxx = currentWall.minx;
+				currentWall.minz = lctn[i].t - 50.0f;
+				currentWall.maxz = currentWall.minz + 5.0f;
+				currentWall.type = 1;
+				fileWalls(currentWall);
+				break;
+
+			case 'D':
+				if(worldLayout[i+1] == 'Z' || worldLayout[i+1] == 'L')
+				{
+					currentWall.minx = lctn[i].x - 45.0f;
+					currentWall.maxx = currentWall.minx;
+					currentWall.minz = lctn[i].t - 50.0f;
+					currentWall.maxz = currentWall.minz + 5.0f;
+					currentWall.type = 1;
+					fileWalls(currentWall);
+
+					currentWall.minx = lctn[i].x - 50.0f;
+					currentWall.maxx = currentWall.minx + 5.0f;
+					currentWall.minz = lctn[i].t - 50.0f;
+					currentWall.maxz = currentWall.minz;
+					currentWall.type = 0;
+					fileWalls(currentWall);
+				}
+
+				else
+				{
+					currentWall.minx = lctn[i].x - 50.0f;
+					currentWall.maxx = currentWall.minx;
+					currentWall.minz = lctn[i].t - 50.0f;
+					currentWall.maxz = currentWall.minz + 5.0f;
+					currentWall.type = 1;
+					fileWalls(currentWall);
+
+					currentWall.minx = lctn[i].x - 50.0f;
+					currentWall.maxx = currentWall.minx + 5.0f;
+					currentWall.minz = lctn[i].t - 50.0f;
+					currentWall.maxz = currentWall.minz;
+					currentWall.type = 0;
+					fileWalls(currentWall);
+				}
+				break;
+
+			case 'U':
+				if(worldLayout[i+1] == 'Z' || worldLayout[i+1] == 'Y' || worldLayout[i+1] == 'L')
+				{
+					currentWall.minx = lctn[i].x - 45.0f;
+					currentWall.maxx = currentWall.minx;
+					currentWall.minz = lctn[i].t - 55.0f;
+					currentWall.maxz = currentWall.minz + 5.0f;
+					currentWall.type = 1;
+					fileWalls(currentWall);
+
+					currentWall.minx = lctn[i].x - 50.0f;
+					currentWall.maxx = currentWall.minx + 5.0f;
+					currentWall.minz = lctn[i].t - 50.0f;
+					currentWall.maxz = currentWall.minz;
+					currentWall.type = 0;
+					fileWalls(currentWall);
+				}
+
+				else
+				{
+					currentWall.minx = lctn[i].x - 50.0f;
+					currentWall.maxx = currentWall.minx;
+					currentWall.minz = lctn[i].t - 55.0f;
+					currentWall.maxz = currentWall.minz + 5.0f;
+					currentWall.type = 1;
+					fileWalls(currentWall);
+
+					currentWall.minx = lctn[i].x - 50.0f;
+					currentWall.maxx = currentWall.minx + 5.0f;
+					currentWall.minz = lctn[i].t - 50.0f;
+					currentWall.maxz = currentWall.minz;
+					currentWall.type = 0;
+					fileWalls(currentWall);
+				}
+
+				break;
+
 			default:
 				break;
 		}
@@ -92,9 +205,68 @@ bool Event::CheckCollideDot()
 				ClWeapon.SetAnim(AniNum);
 				// Collision Detected
 				currScore += 100;	// Increase Score
-				worldLayout[dotpos[i].num] = 'O'; // Erase Dot
+				if(worldLayout[dotpos[i].num] == 'Z')
+					worldLayout[dotpos[i].num] = 'O'; // Erase Dot
 				dotpos.erase(dotpos.begin()+i);
 				alSourcePlay(source[2]);
+			}
+		}
+	}
+	return detected;
+}
+
+bool Event::CheckCollideWall(qwall currentQ)
+{
+	bool detected = false;
+	if(!EveInit)
+		EInit();
+
+	//check x walls
+	for(int i = 0; i < int(currentQ.xwalls.size()); i++)
+	{
+		if(xpos > currentQ.xwalls[i].minx && xpos < currentQ.xwalls[i].maxx)	//inside wall range
+		{
+			if(zpos > currentQ.xwalls[i].minz) //at the front of the wall
+			{
+				if (zpos - (float)cos(heading*piover180) < currentQ.xwalls[i].minz)
+				{
+					zpos += ((float)cos(heading*piover180) * (3.5f / FPS));
+					detected = true;
+				}
+			}
+
+			else if(zpos < currentQ.xwalls[i].minz) //at the back of the wall
+			{
+				if (zpos - (float)cos(heading*piover180) > currentQ.xwalls[i].minz)
+				{
+					zpos += ((float)cos(heading*piover180) * (3.5f / FPS));
+					detected = true;
+				}
+			}
+		}
+	}
+
+	//check z walls
+	for(int j = 0; j < int(currentQ.zwalls.size()); j++)
+	{
+		if(zpos > currentQ.zwalls[j].minz && zpos < currentQ.zwalls[j].maxz)	//inside wall range
+		{
+			if(xpos > currentQ.zwalls[j].minx) //at the front of the wall
+			{
+				if (xpos - (float)sin(heading*piover180) < currentQ.zwalls[j].minx)
+				{
+					xpos += ((float)sin(heading*piover180) * (3.5f / FPS));
+					detected = true;
+				}
+			}
+
+			else if(xpos < currentQ.zwalls[j].minx) //at the back of the wall
+			{
+				if (xpos - (float)sin(heading*piover180) > currentQ.zwalls[j].minx)
+				{
+					xpos += ((float)sin(heading*piover180) * (3.5f / FPS));
+					detected = true;
+				}
 			}
 		}
 	}
@@ -117,11 +289,30 @@ bool Event::Reward()
 	}
 	if((DotsEaten == 20) && (Rewards[3] == FALSE)) {
 		reElapsed = glutGet(GLUT_ELAPSED_TIME);
-		if((rand() % 2) == 0)
 			blend = TRUE;
-		else
 			gEdible = TRUE;
+			Rewards[3] = TRUE;
 	}
+	if((DotsEaten == 60) && (Rewards[4] == FALSE)) {
+		reElapsed = glutGet(GLUT_ELAPSED_TIME);
+			blend = TRUE;
+			gEdible = TRUE;
+			Rewards[4] = TRUE;
+	}
+	if((DotsEaten == 110) && (Rewards[5] == FALSE)) {
+		reElapsed = glutGet(GLUT_ELAPSED_TIME);
+			blend = TRUE;
+			gEdible = TRUE;
+			Rewards[5] = TRUE;
+	}
+	if((DotsEaten == 170) && (Rewards[6] == FALSE)) {
+		reElapsed = glutGet(GLUT_ELAPSED_TIME);
+			blend = TRUE;
+			gEdible = TRUE;
+			Rewards[6] = TRUE;
+	}
+
+
 
 	return gEdible;
 }
@@ -175,51 +366,25 @@ void Event::MoveGhosts()
 	
 	if(((elapsed() - lastMove) / 1000) >= 2) {
 		lastMove = elapsed();
-	for(int i = 0; i < int(gLocs.size()); i++) {
-		// Change gWait States
-		if(g1Wait && !gEdible)
-			g1Wait = FALSE;
-		if(g2Wait && !gEdible)
-			g2Wait = FALSE;
-		if(g3Wait && !gEdible)
-			g3Wait = FALSE;
-		if(g4Wait && !gEdible)
-			g4Wait = FALSE;
+		for(int i = 0; i < int(gLocs.size()); i++) {
+			// Change gWait States
+			if(g1Wait && !gEdible)
+				g1Wait = FALSE;
+			if(g2Wait && !gEdible)
+				g2Wait = FALSE;
+			if(g3Wait && !gEdible)
+				g3Wait = FALSE;
+			if(g4Wait && !gEdible)
+				g4Wait = FALSE;
 
-		// Move only if not waiting for respawn
-		if(i == 0 && !g1Wait) {
-			gLocs[0].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
-			gLocs[0].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
-		}
-		if(i == 1 && !g2Wait) {
-			gLocs[1].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
-			gLocs[1].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
-		}
-		if(i == 2 && !g3Wait) {
-			gLocs[2].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
-			gLocs[2].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
-		}
-		if(i == 3 && !g4Wait) {
-			gLocs[3].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
-			gLocs[3].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
-		}
-		
-		// Check Position Outside Range of Stage
-		if(gLocs[i].xp > 100.0f || gLocs[i].xp < 0.0f)
-			gLocs[i].xp = 50.0f;
-		if(gLocs[i].zp > 100.0f || gLocs[i].zp < 0.0f)
-			gLocs[i].zp = 50.0f;
+			/* Print For Debugging */
+			if(dbug) {
+				char* prn = NULL;
+				prn = (char *)malloc(100);
+				sprintf(prn,"Ghost %d at xpos %4.4f zpos %4.4f", i, gLocs[i].xp, gLocs[i].zp);
+				PrintToLog(prn);
+			}
 
-		/* Print For Debugging */
-		if(dbug) {
-			char* prn = NULL;
-			prn = (char *)malloc(100);
-			sprintf(prn,"Ghost %d at xpos %4.4f zpos %4.4f", i, gLocs[i].xp, gLocs[i].zp);
-			PrintToLog(prn);
-		}
-
-		gLocs[i].xp = floor(gLocs[i].xp);
-		gLocs[i].zp = floor(gLocs[i].zp);
 		
 			directions = 0;
 			l = r = u = d = locf = FALSE;
@@ -302,7 +467,107 @@ void Event::MoveGhosts()
 					}
 				}
 			}
+
+			// Move only if not waiting for respawn
+			if(i == 0 && !g1Wait) {
+				gLocs[0].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+				gLocs[0].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+			}
+			if(i == 1 && !g2Wait) {
+				gLocs[1].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+				gLocs[1].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+			}
+			if(i == 2 && !g3Wait) {
+				gLocs[2].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+				gLocs[2].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+			}
+			if(i == 3 && !g4Wait) {
+				gLocs[3].xp -= (float)sin(gLocs[i].gheading*piover180) * 5.0f;
+				gLocs[3].zp -= (float)cos(gLocs[i].gheading*piover180) * 5.0f;
+			}
+			// Check Position Outside Range of Stage
+			if(gLocs[i].xp > 100.0f || gLocs[i].xp < 0.0f)
+				gLocs[i].xp = 50.0f;
+			if(gLocs[i].zp > 100.0f || gLocs[i].zp < 0.0f)
+				gLocs[i].zp = 50.0f;
+
+			gLocs[i].xp = floor(gLocs[i].xp);
+			gLocs[i].zp = floor(gLocs[i].zp);
+
 		}
 	}
 }
 
+void Event::fileWalls(wall currentWall)
+{
+	if(currentWall.minz <= 0.0f)
+	{
+		if(currentWall.minx <= 0.0f)
+		{
+			if(currentWall.type == 0)
+				q1.xwalls.push_back(currentWall);
+
+			else if(currentWall.type == 1)
+				q1.zwalls.push_back(currentWall);
+		}
+
+		else
+		{
+			if(currentWall.type == 0)
+				q2.xwalls.push_back(currentWall);
+
+			else if(currentWall.type == 1)
+				q2.zwalls.push_back(currentWall);
+		}
+	}
+
+	else	//currentWall.minz > 0
+	{
+		if(currentWall.minx <= 0.0f)
+		{
+			if(currentWall.type == 0)
+				q3.xwalls.push_back(currentWall);
+
+			else if(currentWall.type == 1)
+				q3.zwalls.push_back(currentWall);
+		}
+
+		else
+		{
+			if(currentWall.type == 0)
+				q4.xwalls.push_back(currentWall);
+
+			else if(currentWall.type == 1)
+				q4.zwalls.push_back(currentWall);
+		}
+	}
+}
+
+qwall Event::currentQ()
+{
+		if(zpos <= 0.0f)
+	{
+		if(xpos <= 0.0f)
+		{
+			return q1;
+		}
+
+		else
+		{
+			return q2;
+		}
+	}
+
+	else	//zpos > 0
+	{
+		if(xpos <= 0.0f)
+		{
+			return q3;
+		}
+
+		else
+		{
+			return q4;
+		}
+	}
+}

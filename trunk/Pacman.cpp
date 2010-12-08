@@ -122,6 +122,7 @@ vector<TLoc> lctn;				// Translation Locations
 vector<zLoc> dotpos;			// Positioning of Dots
 vector<GhP> gLocs;				// Ghost Positions
 vector<gMap> gMapSet;			// Ghost Map
+qwall q1, q2, q3, q4;			//walls separated into 4 quadrants
 
 GhP SpawnLoc;					// Ghost Spawn Location
 
@@ -851,6 +852,7 @@ int DrawGLScene(GLvoid)									// Here's Where We Do All The Drawing
 		if(sGauge < 30.0f)
 			sGauge += 0.5f;
 	}
+	Event::CheckCollideWall(Event::currentQ());
 
 	int colGho = 0;
 	colGho = Event::CheckCollideGhosts();
@@ -1264,6 +1266,26 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 						openCheck = (char*)malloc(sizeof("data\\level100.txt"));
 						sprintf(openCheck,"data\\level%d.txt",currLevel);
 						checkFile.open(openCheck);
+						for(int i = 0; i < 10; i++) {
+							Rewards[i] = FALSE;
+						}
+						EveInit = FALSE;		// Allow for ReInitialization
+						lctn.clear();			// Translation Locations
+						dotpos.clear();			// Positioning of Dots
+						gLocs.clear();			// Ghost Positions
+						gMapSet.clear();		// Ghost Map
+						worldLayout.clear();	// World Map
+
+						// Clear Wall Locations for Collision
+						q1.xwalls.clear();
+						q1.zwalls.clear();
+						q2.xwalls.clear();
+						q2.zwalls.clear();
+						q3.xwalls.clear();
+						q3.zwalls.clear();
+						q4.xwalls.clear();
+						q4.zwalls.clear();
+
 						if(!checkFile.is_open())
 							gameOver = TRUE;
 					}
@@ -1367,34 +1389,14 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					if ((keys[VK_SHIFT]) && (sGauge > 0.0f))
 					{
 						sGauge -= 6.0f / FPS;
-						if(xpos < 50.0f && xpos > -50.0f) {
-							xpos -= (float)sin(heading*piover180) * (6.0f / FPS);
-						}
-						else {
-							xpos += 2.0f * ((float)sin(heading*piover180) * (6.0f / FPS));
-						}
-						if(zpos < 50.0f && zpos > -50.0f) {
-							zpos -= (float)cos(heading*piover180) * (6.0f / FPS);
-						}
-						else {
-							zpos += 2.0f * ((float)cos(heading*piover180) * (6.0f / FPS));
-						}
+						xpos -= (float)sin(heading*piover180) * (6.0f / FPS);
+						zpos -= (float)cos(heading*piover180) * (6.0f / FPS);
 					}
 					// Walk, normal movement
 					else
 					{
-						if(xpos < 50.0f && xpos > -50.0f) {
-							xpos -= (float)sin(heading*piover180) * (3.5f / FPS);
-						}
-						else {
-							xpos += 2.0f * ((float)sin(heading*piover180) * (3.5f / FPS));
-						}
-						if(zpos < 50.0f && zpos > -50.0f) {
-							zpos -= (float)cos(heading*piover180) * (3.5f / FPS);
-						}
-						else {
-							zpos += 2.0f * ((float)cos(heading*piover180) * (3.5f / FPS));
-						}
+						xpos -= (float)sin(heading*piover180) * (3.5f / FPS);
+						zpos -= (float)cos(heading*piover180) * (3.5f / FPS);
 					}
 				}
 
@@ -1422,7 +1424,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 				}
 
 				// Walk Backward
-				if(keys[VK_DOWN])
+/*				if(keys[VK_DOWN])
 				{			
 					if(xpos < 50.0f && xpos > -50.0f) {
 						xpos += (float)sin(heading*piover180) * (3.0f / FPS);
@@ -1431,7 +1433,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 						zpos += (float)cos(heading*piover180) * (3.0f / FPS);
 					}
 				}
-
+*/
 				// Turn Around
 				if (keys['D'] && !dp)
 				{
