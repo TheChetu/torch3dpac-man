@@ -13,7 +13,6 @@ Torch 3D Pacman
 		A: Face Left
 		Left Arrow: Turns Left.
 		S: Turn Around
-		Down Arrow: Move Backward.
 		D: Face Right
 		Right Arrow: Turns Right.
 		Shift + W/Up: "Sprint", moves faster while sprint gauge is not empty.
